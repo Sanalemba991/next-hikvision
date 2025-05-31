@@ -5,18 +5,21 @@ import ProductDetail from '@/models/ProductDetail'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // Change this line
 ) {
   try {
     await dbConnect()
     
+    // Await params before using
+    const { id } = await params // Add this line
+    
     // Fetch basic product info
     const product = await Product.findOne({ 
-      _id: params.id, 
+      _id: id, // Use id instead of params.id
       isActive: true 
     }).select('-__v').lean()
     
-    if (!product || Array.isArray(product)) {
+    if (!product) {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
@@ -25,12 +28,9 @@ export async function GET(
 
     // Fetch detailed product information
     const productDetail = await ProductDetail.findOne({ 
-      productId: params.id,
+      productId: id, // Use id instead of params.id
       isActive: true 
     }).select('-__v').lean()
-    
-    // Debug: Log the productDetail to see what we're getting
-    console.log('Product Detail:', JSON.stringify(productDetail, null, 2))
     
     return NextResponse.json({
       success: true,

@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import ProductDetail from '@/models/ProductDetail'
-import Product from '@/models/Product'
 
 // GET - Fetch single product details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect()
     
-    const productDetail = await ProductDetail.findById(params.id).populate('productId')
+    const { id } = await params
+    
+    const productDetail = await ProductDetail.findById(id)
+      .populate('productId', 'name image category subCategory')
+      .lean()
     
     if (!productDetail) {
       return NextResponse.json(
@@ -37,42 +40,43 @@ export async function GET(
 // PUT - Update product details
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect()
     
+    const { id } = await params
     const body = await request.json()
+    
     const {
       longDescription,
       featureImages,
       specifications,
       features,
-      reviews,
-      seo
+      reviews
     } = body
     
-    // Validate required fields
-    if (!longDescription || !seo?.focusKeyword) {
+    // Remove SEO validation - only check for longDescription
+    if (!longDescription) {
       return NextResponse.json(
-        { error: 'Long description and SEO focus keyword are required' },
+        { error: 'Long description is required' },
         { status: 400 }
       )
     }
     
     // Update product details
     const productDetail = await ProductDetail.findByIdAndUpdate(
-      params.id,
+      id,
       {
         longDescription,
         featureImages: featureImages || [],
         specifications: specifications || [],
         features: features || [],
-        reviews: reviews || [],
-        seo
+        reviews: reviews || []
+        // Remove seo field completely
       },
       { new: true }
-    ).populate('productId')
+    ).populate('productId', 'name image category subCategory')
     
     if (!productDetail) {
       return NextResponse.json(
@@ -99,12 +103,14 @@ export async function PUT(
 // DELETE - Delete product details
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect()
     
-    const productDetail = await ProductDetail.findByIdAndDelete(params.id)
+    const { id } = await params
+    
+    const productDetail = await ProductDetail.findByIdAndDelete(id)
     
     if (!productDetail) {
       return NextResponse.json(

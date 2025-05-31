@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { FiUsers, FiUserCheck, FiUserX, FiMail, FiRefreshCw, FiPackage, FiShoppingCart, FiMessageSquare, FiPhone, FiTrendingUp, FiTrendingDown, FiActivity } from 'react-icons/fi'
+import PageAnalytics from '@/components/PageAnalytics'
 
 interface DashboardStats {
   users: {
@@ -486,6 +487,11 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Page Analytics Component */}
+      <div className="mb-8">
+        <PageAnalytics />
       </div>
     </div>
   )

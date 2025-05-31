@@ -48,12 +48,14 @@ export async function PATCH(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect()
-
-    const enquiry = await ContactEnquiry.findById(params.id)
+    
+    const { id } = await params // Add this line
+    
+    const enquiry = await ContactEnquiry.findById(id)
 
     if (!enquiry) {
       return NextResponse.json(

@@ -72,8 +72,8 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect()
     
+    // Option 1: Without populate (simpler)
     const enquiries = await ProductEnquiry.find({})
-      .populate('productId', 'name images') // Add this line to populate product details
       .sort({ createdAt: -1 })
       .lean()
 

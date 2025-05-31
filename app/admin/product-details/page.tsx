@@ -15,7 +15,6 @@ import {
 } from 'react-icons/fi'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import AdvancedSEOGenerator from '@/components/AdvancedSEOGenerator'
 
 interface Product {
   _id: string
@@ -44,12 +43,6 @@ interface ProductDetail {
     comment: string
     date: string
   }>
-  seo: {
-    focusKeyword: string
-    title: string
-    description: string
-    keywords: string[]
-  }
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -85,13 +78,7 @@ const ProductDetailsPage = () => {
     featureImages: [{ image: '', altText: '' }],
     specifications: [{ key: '', value: '' }],
     features: [''],
-    reviews: [{ customerName: '', rating: 5, comment: '', date: new Date().toISOString() }],
-    seo: {
-      focusKeyword: '',
-      title: '',
-      description: '',
-      keywords: ['']
-    }
+    reviews: [{ customerName: '', rating: 5, comment: '', date: new Date().toISOString() }]
   })
 
   // Fetch product details
@@ -150,43 +137,12 @@ const ProductDetailsPage = () => {
     fetchProductDetails(page, searchTerm)
   }
 
-  // Auto-generate SEO
-  const autoGenerateSEO = () => {
-    const selectedProduct = products.find(p => p._id === formData.productId)
-    if (selectedProduct && formData.longDescription) {
-      const generatedTitle = `${selectedProduct.name} - ${selectedProduct.category} | Professional Security Solutions`
-      const generatedDesc = formData.longDescription.substring(0, 150) + '...'
-      const generatedKeywords = [
-        formData.seo.focusKeyword,
-        selectedProduct.name.toLowerCase(),
-        selectedProduct.category.toLowerCase(),
-        'security camera',
-        'surveillance',
-        'hikvision'
-      ].filter(Boolean)
-
-      setFormData(prev => ({
-        ...prev,
-        seo: {
-          ...prev.seo,
-          title: generatedTitle,
-          description: generatedDesc,
-          keywords: generatedKeywords
-        }
-      }))
-
-      toast.success('SEO content auto-generated successfully!')
-    } else {
-      toast.error('Please select a product and add description first')
-    }
-  }
-
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.productId || !formData.longDescription || !formData.seo.focusKeyword) {
-      toast.error('Product, long description, and SEO focus keyword are required')
+    if (!formData.productId || !formData.longDescription) {
+      toast.error('Product and long description are required')
       return
     }
 
@@ -203,11 +159,7 @@ const ProductDetailsPage = () => {
         featureImages: formData.featureImages.filter(img => img.image && img.altText),
         specifications: formData.specifications.filter(spec => spec.key && spec.value),
         features: formData.features.filter(feature => feature.trim()),
-        reviews: formData.reviews.filter(review => review.customerName && review.comment),
-        seo: {
-          ...formData.seo,
-          keywords: formData.seo.keywords.filter(keyword => keyword.trim())
-        }
+        reviews: formData.reviews.filter(review => review.customerName && review.comment)
       }
       
       const response = await fetch(url, {
@@ -336,26 +288,6 @@ const ProductDetailsPage = () => {
     }))
   }
 
-  const addKeyword = () => {
-    setFormData(prev => ({
-      ...prev,
-      seo: {
-        ...prev.seo,
-        keywords: [...prev.seo.keywords, '']
-      }
-    }))
-  }
-
-  const removeKeyword = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      seo: {
-        ...prev.seo,
-        keywords: prev.seo.keywords.filter((_, i) => i !== index)
-      }
-    }))
-  }
-
   // Form helpers
   const openCreateModal = () => {
     resetForm()
@@ -370,13 +302,7 @@ const ProductDetailsPage = () => {
       featureImages: detail.featureImages.length > 0 ? detail.featureImages : [{ image: '', altText: '' }],
       specifications: detail.specifications.length > 0 ? detail.specifications : [{ key: '', value: '' }],
       features: detail.features.length > 0 ? detail.features : [''],
-      reviews: detail.reviews.length > 0 ? detail.reviews : [{ customerName: '', rating: 5, comment: '', date: new Date().toISOString() }],
-      seo: {
-        focusKeyword: detail.seo.focusKeyword,
-        title: detail.seo.title,
-        description: detail.seo.description,
-        keywords: detail.seo.keywords.length > 0 ? detail.seo.keywords : ['']
-      }
+      reviews: detail.reviews.length > 0 ? detail.reviews : [{ customerName: '', rating: 5, comment: '', date: new Date().toISOString() }]
     })
     setEditingDetail(detail)
     setShowModal(true)
@@ -389,13 +315,7 @@ const ProductDetailsPage = () => {
       featureImages: [{ image: '', altText: '' }],
       specifications: [{ key: '', value: '' }],
       features: [''],
-      reviews: [{ customerName: '', rating: 5, comment: '', date: new Date().toISOString() }],
-      seo: {
-        focusKeyword: '',
-        title: '',
-        description: '',
-        keywords: ['']
-      }
+      reviews: [{ customerName: '', rating: 5, comment: '', date: new Date().toISOString() }]
     })
   }
 
@@ -430,7 +350,7 @@ const ProductDetailsPage = () => {
           <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by product name, category, or SEO keyword..."
+            placeholder="Search by product name, category, or description..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
@@ -457,7 +377,7 @@ const ProductDetailsPage = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SEO Info</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Features</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reviews</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
@@ -490,11 +410,11 @@ const ProductDetailsPage = () => {
                         </div>
                       </td>
 
-                      {/* SEO Info */}
+                      {/* Description Preview */}
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-900">
-                          <div className="font-medium">Focus: {detail.seo.focusKeyword}</div>
-                          <div className="text-gray-500 truncate max-w-xs">{detail.seo.title}</div>
+                          <div className="truncate max-w-xs">{detail.longDescription?.substring(0, 100)}...</div>
+                          <div className="text-gray-500">{detail.specifications?.length || 0} specs</div>
                         </div>
                       </td>
 
@@ -925,133 +845,6 @@ const ProductDetailsPage = () => {
                       />
                     </div>
                   ))}
-                </div>
-              </div>
-
-              {/* Advanced SEO Section */}
-              <div className="border-t border-gray-200 pt-6">
-                <AdvancedSEOGenerator
-                  seoData={formData.seo}
-                  productName={products.find(p => p._id === formData.productId)?.name || ''}
-                  productCategory={products.find(p => p._id === formData.productId)?.category || ''}
-                  longDescription={formData.longDescription}
-                  onSEOUpdate={(seo) => setFormData(prev => ({ ...prev, seo }))}
-                />
-                
-                {/* Manual SEO Fields (for fine-tuning) */}
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h4 className="font-medium text-gray-900 mb-4">Manual SEO Adjustments</h4>
-                  <div className="grid grid-cols-1 gap-4">
-                    {/* Focus Keyword */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Focus Keyword *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.seo.focusKeyword}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          seo: { ...prev.seo, focusKeyword: e.target.value }
-                        }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="Main keyword for SEO"
-                        required
-                      />
-                    </div>
-
-                    {/* SEO Title */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        SEO Title
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.seo.title}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          seo: { ...prev.seo, title: e.target.value }
-                        }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="SEO title for search engines"
-                        maxLength={60}
-                      />
-                      <div className="flex justify-between text-xs mt-1">
-                        <span className="text-gray-500">{formData.seo.title.length}/60 characters</span>
-                        <span className={`${formData.seo.title.length >= 30 && formData.seo.title.length <= 60 ? 'text-green-600' : 'text-orange-600'}`}>
-                          {formData.seo.title.length >= 30 && formData.seo.title.length <= 60 ? 'Optimal' : 'Needs adjustment'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* SEO Description */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        SEO Description
-                      </label>
-                      <textarea
-                        value={formData.seo.description}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          seo: { ...prev.seo, description: e.target.value }
-                        }))}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="SEO description for search engines"
-                        maxLength={160}
-                      />
-                      <div className="flex justify-between text-xs mt-1">
-                        <span className="text-gray-500">{formData.seo.description.length}/160 characters</span>
-                        <span className={`${formData.seo.description.length >= 120 && formData.seo.description.length <= 160 ? 'text-green-600' : 'text-orange-600'}`}>
-                          {formData.seo.description.length >= 120 && formData.seo.description.length <= 160 ? 'Optimal' : 'Needs adjustment'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* SEO Keywords */}
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <label className="block text-sm font-medium text-gray-700">
-                          SEO Keywords ({formData.seo.keywords.filter(k => k.trim()).length} keywords)
-                        </label>
-                        <button
-                          type="button"
-                          onClick={addKeyword}
-                          className="text-sm text-red-600 hover:text-red-700"
-                        >
-                          + Add Keyword
-                        </button>
-                      </div>
-                      <div className="space-y-2 max-h-32 overflow-y-auto">
-                        {formData.seo.keywords.map((keyword, index) => (
-                          <div key={index} className="flex gap-3 items-center">
-                            <input
-                              type="text"
-                              placeholder="SEO keyword"
-                              value={keyword}
-                              onChange={(e) => setFormData(prev => ({
-                                ...prev,
-                                seo: {
-                                  ...prev.seo,
-                                  keywords: prev.seo.keywords.map((k, i) => 
-                                    i === index ? e.target.value : k
-                                  )
-                                }
-                              }))}
-                              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeKeyword(index)}
-                              className="text-red-600 hover:text-red-700 p-2"
-                            >
-                              <FiX className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
 

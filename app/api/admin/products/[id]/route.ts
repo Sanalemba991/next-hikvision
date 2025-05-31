@@ -2,14 +2,48 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Product from '@/models/Product'
 
-// PUT - Update product
-export async function PUT(
+// GET - Get product by ID
+export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect()
     
+    const { id } = await params
+    
+    const product = await Product.findById(id)
+    
+    if (!product) {
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      )
+    }
+    
+    return NextResponse.json({
+      success: true,
+      product
+    })
+
+  } catch (error) {
+    console.error('Product retrieval error:', error)
+    return NextResponse.json(
+      { error: 'Failed to retrieve product' },
+      { status: 500 }
+    )
+  }
+}
+
+// PUT - Update product
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await dbConnect()
+    
+    const { id } = await params
     const body = await request.json()
     const { name, shortDescription, category, subCategory, image } = body
     
@@ -24,7 +58,7 @@ export async function PUT(
     // Check if another product with same name exists
     const existingProduct = await Product.findOne({ 
       name, 
-      _id: { $ne: params.id } 
+      _id: { $ne: id } 
     })
     if (existingProduct) {
       return NextResponse.json(
@@ -35,7 +69,7 @@ export async function PUT(
     
     // Update product
     const product = await Product.findByIdAndUpdate(
-      params.id,
+      id,
       {
         name,
         shortDescription,
@@ -71,12 +105,14 @@ export async function PUT(
 // DELETE - Delete product
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect()
     
-    const product = await Product.findByIdAndDelete(params.id)
+    const { id } = await params
+    
+    const product = await Product.findByIdAndDelete(id)
     
     if (!product) {
       return NextResponse.json(
