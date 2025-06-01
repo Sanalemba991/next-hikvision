@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import ProductDetailClient from './ProductDetailClient'
+import dbConnect from '@/lib/mongodb'
 
 interface Product {
   _id: string
@@ -33,55 +34,106 @@ interface ProductDetail {
     comment: string
     date: string
   }>
-  seo?: {
-    focusKeyword: string
-    title: string
-    description: string
-    keywords: string[]
-  }
   isActive: boolean
   createdAt: string
   updatedAt: string
 }
 
 interface PageProps {
-  params: Promise<{ id: string }> // FIXED: Changed to Promise
+  params: Promise<{ id: string }>
 }
 
-// Server-side data fetching
+// FIXED: Direct database access instead of HTTP fetch
 async function getProductData(id: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/products/${id}`, {
-      cache: 'no-store'
-    })
+    await dbConnect()
     
-    if (!response.ok) {
+    const { default: Product } = await import('@/models/Product')
+    const { default: ProductDetail } = await import('@/models/ProductDetail')
+    
+    const product = await Product.findById(id).lean()
+    
+    if (!product || Array.isArray(product)) {
       return null
     }
     
-    const data = await response.json()
-    return data
+    const productDetail = await ProductDetail.findOne({
+      productId: id,
+      isActive: true
+    }).lean()
+    
+    // Serialize for client
+    const serializedProduct: Product = {
+      _id: (product._id as any).toString(),
+      name: product.name || '',
+      shortDescription: product.shortDescription || '',
+      category: product.category || '',
+      subCategory: product.subCategory || '',
+      image: product.image || '',
+      isActive: product.isActive ?? true,
+      createdAt: product.createdAt?.toISOString?.() || new Date().toISOString(),
+      updatedAt: product.updatedAt?.toISOString?.() || new Date().toISOString(),
+    }
+    
+    const serializedProductDetail: ProductDetail | null = productDetail ? {
+      _id: (productDetail._id as any).toString(),
+      productId: (productDetail.productId as any).toString(),
+      longDescription: productDetail.longDescription || '',
+      featureImages: productDetail.featureImages || [],
+      specifications: productDetail.specifications || [],
+      features: productDetail.features || [],
+      reviews: (productDetail.reviews || []).map((review: any) => ({
+        customerName: review.customerName,
+        rating: review.rating,
+        comment: review.comment,
+        date: review.date instanceof Date ? review.date.toISOString() : review.date
+      })),
+      isActive: productDetail.isActive ?? true,
+      createdAt: productDetail.createdAt?.toISOString?.() || new Date().toISOString(),
+      updatedAt: productDetail.updatedAt?.toISOString?.() || new Date().toISOString(),
+    } : null
+    
+    return {
+      product: serializedProduct,
+      productDetail: serializedProductDetail
+    }
+    
   } catch (error) {
     console.error('Failed to fetch product:', error)
     return null
   }
 }
 
-async function getRelatedProducts(category: string, excludeId: string) {
+// FIXED: Direct database access instead of HTTP fetch
+async function getRelatedProducts(category: string, excludeId: string): Promise<Product[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/products?category=${encodeURIComponent(category)}&limit=4`, {
-      cache: 'no-store'
+    await dbConnect()
+    
+    const { default: Product } = await import('@/models/Product')
+    
+    const products = await Product.find({
+      category,
+      isActive: true,
+      _id: { $ne: excludeId }
     })
+    .limit(3)
+    .lean()
     
-    if (!response.ok) {
-      return []
-    }
+    // Serialize for client
+    const serializedProducts: Product[] = products.map(product => ({
+      _id: (product._id as any).toString(),
+      name: product.name || '',
+      shortDescription: product.shortDescription || '',
+      category: product.category || '',
+      subCategory: product.subCategory || '',
+      image: product.image || '',
+      isActive: product.isActive ?? true,
+      createdAt: product.createdAt?.toISOString?.() || new Date().toISOString(),
+      updatedAt: product.updatedAt?.toISOString?.() || new Date().toISOString(),
+    }))
     
-    const data = await response.json()
-    const filtered = data.products.filter((p: Product) => p._id !== excludeId)
-    return filtered.slice(0, 3)
+    return serializedProducts
+    
   } catch (error) {
     console.error('Failed to fetch related products:', error)
     return []
@@ -90,40 +142,43 @@ async function getRelatedProducts(category: string, excludeId: string) {
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id } = await params // FIXED: Await params first
-  const data = await getProductData(id) // FIXED: Use id instead of params.id
+  const { id } = await params
+  const data = await getProductData(id)
   
   if (!data || !data.product) {
     return {
       title: 'Product Not Found | Hikvision Security Solutions',
-      description: 'The requested product could not be found.'
+      description: 'The requested product could not be found.',
+      robots: {
+        index: false,
+        follow: false,
+      },
     }
   }
 
   const { product, productDetail } = data
   
-  // Use SEO data from productDetail if available, otherwise fallback to product data
-  const title = productDetail?.seo?.title || `${product.name} | Professional Security Solutions`
-  const description = productDetail?.seo?.description || product.shortDescription
-  const keywords = productDetail?.seo?.keywords || [product.category, product.subCategory, 'security', 'surveillance']
+  const title = `${product.name} | Professional Security Solutions`
+  const description = product.shortDescription || `${product.name} - Professional security solution`
+  const keywords = [product.category, product.subCategory, 'security', 'surveillance']
   
   return {
     title,
     description,
     keywords: keywords.join(', '),
-    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'), // FIXED: Added metadataBase
+    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
     openGraph: {
       title,
       description,
       images: [
         {
-          url: product.image,
+          url: product.image || '/placeholder-product.png',
           width: 800,
           height: 600,
           alt: product.name,
         },
         ...(productDetail?.featureImages?.map((img: { image: string; altText: string }) => ({
-          url: img.image,
+          url: img.image || '/placeholder-product.png',
           width: 800,
           height: 600,
           alt: img.altText || product.name,
@@ -136,10 +191,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: 'summary_large_image',
       title,
       description,
-      images: [product.image],
+      images: [product.image || '/placeholder-product.png'],
     },
     alternates: {
-      canonical: `/products/${id}`, // FIXED: Use id instead of params.id
+      canonical: `/products/${id}`,
     },
     robots: {
       index: true,
@@ -157,18 +212,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 // Main page component (Server Component)
 export default async function ProductDetailPage({ params }: PageProps) {
-  const { id } = await params // FIXED: Await params first
-  const data = await getProductData(id) // FIXED: Use id instead of params.id
+  const { id } = await params
+  const data = await getProductData(id)
   
   if (!data || !data.product) {
     notFound()
   }
 
   const { product, productDetail } = data
-  const relatedProducts = await getRelatedProducts(product.category, id) // FIXED: Use id instead of params.id
+  const relatedProducts = await getRelatedProducts(product.category, id)
 
   // Generate JSON-LD structured data for SEO
-  const averageRating = productDetail?.reviews?.length > 0 
+  const averageRating = productDetail?.reviews && productDetail.reviews.length > 0 
     ? productDetail.reviews.reduce((acc: number, review: any) => acc + review.rating, 0) / productDetail.reviews.length 
     : 0
 
@@ -176,8 +231,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.shortDescription,
-    image: product.image,
+    description: product.shortDescription || `${product.name} - Professional security solution`,
+    image: product.image || '/placeholder-product.png',
     category: product.category,
     brand: {
       '@type': 'Brand',
@@ -187,7 +242,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
       '@type': 'Organization',
       name: 'Hikvision'
     },
-    ...(productDetail?.reviews?.length > 0 && {
+    ...(productDetail?.reviews && productDetail.reviews.length > 0 && {
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: averageRating,
@@ -211,16 +266,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   return (
     <>
-      {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      {/* Client Component with pre-fetched data */}
       <ProductDetailClient
         initialProduct={product}
-        initialProductDetail={productDetail}
+        initialProductDetail={productDetail as any}
         initialRelatedProducts={relatedProducts}
       />
     </>
