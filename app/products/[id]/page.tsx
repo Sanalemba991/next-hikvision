@@ -33,7 +33,7 @@ interface ProductDetail {
     comment: string
     date: string
   }>
-  seo: {
+  seo?: {
     focusKeyword: string
     title: string
     description: string
@@ -45,7 +45,7 @@ interface ProductDetail {
 }
 
 interface PageProps {
-  params: { id: string }
+  params: Promise<{ id: string }> // FIXED: Changed to Promise
 }
 
 // Server-side data fetching
@@ -90,7 +90,8 @@ async function getRelatedProducts(category: string, excludeId: string) {
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const data = await getProductData(params.id)
+  const { id } = await params // FIXED: Await params first
+  const data = await getProductData(id) // FIXED: Use id instead of params.id
   
   if (!data || !data.product) {
     return {
@@ -110,6 +111,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     keywords: keywords.join(', '),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'), // FIXED: Added metadataBase
     openGraph: {
       title,
       description,
@@ -137,7 +139,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: [product.image],
     },
     alternates: {
-      canonical: `/products/${params.id}`,
+      canonical: `/products/${id}`, // FIXED: Use id instead of params.id
     },
     robots: {
       index: true,
@@ -155,14 +157,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 // Main page component (Server Component)
 export default async function ProductDetailPage({ params }: PageProps) {
-  const data = await getProductData(params.id)
+  const { id } = await params // FIXED: Await params first
+  const data = await getProductData(id) // FIXED: Use id instead of params.id
   
   if (!data || !data.product) {
     notFound()
   }
 
   const { product, productDetail } = data
-  const relatedProducts = await getRelatedProducts(product.category, params.id)
+  const relatedProducts = await getRelatedProducts(product.category, id) // FIXED: Use id instead of params.id
 
   // Generate JSON-LD structured data for SEO
   const averageRating = productDetail?.reviews?.length > 0 
