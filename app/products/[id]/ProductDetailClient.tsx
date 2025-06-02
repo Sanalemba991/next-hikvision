@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -19,10 +19,14 @@ import {
   FiPhone,
   FiImage,
   FiHeart,
-  FiExternalLink
+  FiExternalLink,
+  FiHome,
+  FiChevronRight as FiBreadcrumbChevron
 } from 'react-icons/fi'
 
-// CRITICAL: Remove all dynamic imports for initial load
+// FIXED: Import your existing QuoteModal
+import QuoteModal from '@/components/QuoteModal'
+
 interface Product {
   _id: string
   name: string
@@ -63,11 +67,12 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
   const router = useRouter()
   const { data: session } = useSession()
   
-  // CRITICAL: Minimal state
+  // CRITICAL: Minimal state + QuoteModal state
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [showImageModal, setShowImageModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews'>('description')
   const [isWishlisted, setIsWishlisted] = useState(false)
+  const [showQuoteModal, setShowQuoteModal] = useState(false) // ADDED: Quote modal state
 
   // CRITICAL: Memoized calculations
   const averageRating = useMemo(() => {
@@ -110,13 +115,14 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
     }
   }, [product])
 
-  const handleGetQuote = () => {
+  // FIXED: Correct handleGetQuote logic to show your existing modal
+  const handleGetQuote = useCallback(() => {
     if (!session) {
       router.push('/signup')
     } else {
-      window.open(`/contact?product=${encodeURIComponent(product.name)}`, '_blank')
+      setShowQuoteModal(true) // FIXED: Show your existing quote modal
     }
-  }
+  }, [session, router])
 
   // CRITICAL: Simple star rendering
   const renderStars = useCallback((rating: number) => {
@@ -130,7 +136,7 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* CRITICAL: Minimal header */}
+      {/* CRITICAL: Minimal header with Back button */}
       <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b">
         <div className="container mx-auto px-4 py-3">
           <button
@@ -144,6 +150,29 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
       </div>
 
       <div className="container mx-auto px-4 py-6">
+        {/* ADDED BACK: Breadcrumbs */}
+        <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
+          <Link href="/" className="hover:text-red-600 transition-colors flex items-center">
+            <FiHome className="w-4 h-4 mr-1" />
+            Home
+          </Link>
+          <FiBreadcrumbChevron className="w-4 h-4 text-gray-400" />
+          <Link href="/products" className="hover:text-red-600 transition-colors">
+            Products
+          </Link>
+          <FiBreadcrumbChevron className="w-4 h-4 text-gray-400" />
+          <Link 
+            href={`/products/category/${encodeURIComponent(product.category.toLowerCase())}`}
+            className="hover:text-red-600 transition-colors"
+          >
+            {product.category}
+          </Link>
+          <FiBreadcrumbChevron className="w-4 h-4 text-gray-400" />
+          <span className="text-gray-900 font-medium truncate">
+            {product.name}
+          </span>
+        </div>
+
         {/* CRITICAL: Simplified hero section */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
@@ -312,10 +341,21 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
             <div className="border-b">
               <nav className="flex">
-                {[
-                  { key: 'description', label: 'Overview', icon: FiPackage },
-                  { key: 'specifications', label: 'Specs', icon: FiTag },
-                  { key: 'reviews', label: 'Reviews', icon: FiStar }
+                {[{
+                  key: 'description',
+                  label: 'Overview',
+                  icon: FiPackage
+                },
+                {
+                  key: 'specifications',
+                  label: 'Specs',
+                  icon: FiTag
+                },
+                {
+                  key: 'reviews',
+                  label: 'Reviews',
+                  icon: FiStar
+                }
                 ].map((tab) => (
                   <button
                     key={tab.key}
@@ -464,6 +504,14 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
           </div>
         </div>
       )}
+
+      {/* FIXED: Use your existing QuoteModal - this is what you already have */}
+      <QuoteModal
+        isOpen={showQuoteModal}
+        onClose={() => setShowQuoteModal(false)}
+        productName={product.name}
+        productId={product._id}
+      />
     </div>
   )
 }
