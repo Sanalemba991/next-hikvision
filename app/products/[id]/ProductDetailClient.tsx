@@ -72,7 +72,9 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
   const [showImageModal, setShowImageModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews'>('description')
   const [isWishlisted, setIsWishlisted] = useState(false)
-  const [showQuoteModal, setShowQuoteModal] = useState(false) // ADDED: Quote modal state
+  const [showQuoteModal, setShowQuoteModal] = useState(false)
+  // ADDED: Success message state
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
   // CRITICAL: Memoized calculations
   const averageRating = useMemo(() => {
@@ -123,6 +125,16 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
       setShowQuoteModal(true) // FIXED: Show your existing quote modal
     }
   }, [session, router])
+
+  // ADDED: Handler for successful quote submission
+  const handleQuoteSuccess = useCallback(() => {
+    setShowQuoteModal(false)
+    setShowSuccessMessage(true)
+    // Auto hide success message after 5 seconds
+    setTimeout(() => {
+      setShowSuccessMessage(false)
+    }, 5000)
+  }, [])
 
   // CRITICAL: Simple star rendering
   const renderStars = useCallback((rating: number) => {
@@ -505,12 +517,38 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
         </div>
       )}
 
-      {/* FIXED: Use your existing QuoteModal - this is what you already have */}
+      {/* ADDED: Success Message Modal */}
+      {showSuccessMessage && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiCheck className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Quote Submitted Successfully!
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Thank you for your interest in {product.name}. We will soon connect with you regarding your quote request.
+              </p>
+              <button
+                onClick={() => setShowSuccessMessage(false)}
+                className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* UPDATED: QuoteModal with success callback */}
       <QuoteModal
         isOpen={showQuoteModal}
         onClose={() => setShowQuoteModal(false)}
         productName={product.name}
         productId={product._id}
+        onSuccess={handleQuoteSuccess}
       />
     </div>
   )
