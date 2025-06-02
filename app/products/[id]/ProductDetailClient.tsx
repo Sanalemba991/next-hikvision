@@ -511,6 +511,7 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
         onClose={() => setShowQuoteModal(false)}
         productName={product.name}
         productId={product._id}
+        onSuccess={() => setShowQuoteModal(false)}
       />
     </div>
   )

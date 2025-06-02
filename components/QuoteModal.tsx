@@ -9,9 +9,10 @@ interface QuoteModalProps {
   onClose: () => void
   productName: string
   productId: string
+  onSuccess?: () => void // ADD THIS LINE
 }
 
-const QuoteModal = ({ isOpen, onClose, productName, productId }: QuoteModalProps) => {
+const QuoteModal = ({ isOpen, onClose, productName, productId, onSuccess }: QuoteModalProps) => {
   const { data: session } = useSession()
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -38,9 +39,24 @@ const QuoteModal = ({ isOpen, onClose, productName, productId }: QuoteModalProps
       })
 
       if (response.ok) {
-        toast.success('Quote request sent successfully!')
+        // UPDATED: Show better success message
+        toast.success('🎉 Quote request sent successfully! We will soon connect with you.', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        })
+        
         setMessage('')
-        onClose()
+        
+        // UPDATED: Call onSuccess if provided, otherwise just close
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          onClose()
+        }
       } else {
         const data = await response.json()
         toast.error(data.error || 'Failed to send quote request')

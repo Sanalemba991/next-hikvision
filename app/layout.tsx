@@ -3,8 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers/Providers";
 import ConditionalNavFooter from "./components/ConditionalNavFooter";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,19 +22,6 @@ export default function RootLayout({
         <Providers>
           <ConditionalNavFooter>{children}</ConditionalNavFooter>
         </Providers>
-
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
       </body>
     </html>
   );
