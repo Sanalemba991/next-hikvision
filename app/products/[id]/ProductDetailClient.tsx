@@ -542,13 +542,12 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
         </div>
       )}
 
-      {/* UPDATED: QuoteModal with success callback */}
+      {/* UPDATED: QuoteModal */}
       <QuoteModal
         isOpen={showQuoteModal}
         onClose={() => setShowQuoteModal(false)}
         productName={product.name}
         productId={product._id}
-        onSuccess={handleQuoteSuccess}
       />
     </div>
   )

@@ -9,55 +9,47 @@ interface QuoteModalProps {
   onClose: () => void
   productName: string
   productId: string
-  onSuccess?: () => void // ADDED: Success callback
 }
 
-const QuoteModal = ({ isOpen, onClose, productName, productId, onSuccess }: QuoteModalProps) => {
+const QuoteModal = ({ isOpen, onClose, productName, productId }: QuoteModalProps) => {
   const { data: session } = useSession()
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
+    if (!message.trim()) {
+      toast.error('Please enter your message')
+      return
+    }
 
+    setLoading(true)
     try {
-      const response = await fetch('/api/quotes', {
+      const response = await fetch('/api/product-enquiries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          productName,
           productId,
-        }),
+          productName,
+          message: message.trim()
+        })
       })
 
       if (response.ok) {
-        // Reset form
-        setFormData({ name: '', email: '', phone: '', message: '' })
-        // Call success callback if provided
-        if (onSuccess) {
-          onSuccess()
-        } else {
-          // Fallback if no callback provided
-          alert('Quote submitted successfully! We will contact you soon.')
-          onClose()
-        }
+        toast.success('Quote request sent successfully!')
+        setMessage('')
+        onClose()
       } else {
-        throw new Error('Failed to submit quote')
+        const data = await response.json()
+        toast.error(data.error || 'Failed to send quote request')
       }
     } catch (error) {
-      console.error('Error submitting quote:', error)
-      alert('Failed to submit quote. Please try again.')
+      console.error('Quote submission error:', error)
+      toast.error('Failed to send quote request')
     } finally {
-      setIsSubmitting(false)
+      setLoading(false)
     }
   }
 
@@ -118,8 +110,8 @@ const QuoteModal = ({ isOpen, onClose, productName, productId, onSuccess }: Quot
             <textarea
               id="message"
               rows={5}
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
               placeholder="Please describe your requirements, quantity needed, or any specific questions about this product..."
               required
@@ -127,50 +119,6 @@ const QuoteModal = ({ isOpen, onClose, productName, productId, onSuccess }: Quot
             <p className="text-sm text-gray-500 mt-2">
               Include details like quantity, delivery timeline, or specific requirements
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Your Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your name"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Your Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                Your Phone (optional)
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your phone number"
-              />
-            </div>
           </div>
 
           <div className="flex gap-4">
@@ -183,10 +131,10 @@ const QuoteModal = ({ isOpen, onClose, productName, productId, onSuccess }: Quot
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={loading || !message.trim()}
               className="flex-1 bg-gradient-to-r from-red-600 to-rose-600 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-red-200/50 transition-all duration-300 font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? (
+              {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
