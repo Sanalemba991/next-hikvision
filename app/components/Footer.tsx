@@ -1,13 +1,31 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { FiArrowRight, FiMail, FiPhone, FiMapPin, FiArrowUp, FiExternalLink } from 'react-icons/fi'
+import { FiArrowRight, FiMail, FiPhone, FiMapPin, FiArrowUp, FiExternalLink, FiCheck } from 'react-icons/fi'
 import { HiSparkles } from 'react-icons/hi'
 
 const Footer = () => {
   const [email, setEmail] = useState('')
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [currentTime, setCurrentTime] = useState('')
+  const [isVisible, setIsVisible] = useState(false)
+  const [hoveredStat, setHoveredStat] = useState<number | null>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting)
+      },
+      { threshold: 0.1 }
+    )
+
+    const footerElement = document.querySelector('#footer-section')
+    if (footerElement) {
+      observer.observe(footerElement)
+    }
+
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const updateTime = () => {
@@ -64,286 +82,201 @@ const Footer = () => {
     { name: 'Developer API', href: '/api' }
   ]
 
+  const stats = [
+    { metric: '500M+', label: 'Devices Connected', description: 'Global IoT network' },
+    { metric: '180+', label: 'Countries', description: 'Worldwide presence' },
+    { metric: '25+', label: 'Years Innovation', description: 'Industry expertise' },
+    { metric: '40+', label: 'R&D Centers', description: 'Innovation hubs' }
+  ]
+
   return (
-    <footer className="relative bg-white text-gray-900 overflow-hidden">
-      
-      {/* Light Background */}
+    <footer id="footer-section" className="relative bg-gray-800 text-gray-300 overflow-hidden">
+      {/* Dark Background */}
       <div className="absolute inset-0">
-        {/* Main light gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-gray-100"></div>
+        {/* Primary gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-black"></div>
         
-        {/* Subtle colored mesh gradient */}
+        {/* Animated mesh gradients */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-100 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gray-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse animation-delay-2s"></div>
-          <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-red-50 rounded-full mix-blend-multiply filter blur-3xl animate-pulse animation-delay-4s"></div>
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-red-600/30 to-red-700/30 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-gray-600/30 to-gray-700/30 rounded-full mix-blend-multiply filter blur-3xl animate-float-delayed"></div>
         </div>
 
-        {/* Light geometric pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, #333333 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
-          }}></div>
+        {/* Subtle animated lines */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-red-500 to-transparent animate-slide-x"></div>
         </div>
       </div>
 
       <div className="relative z-10">
-        
-        {/* Hero CTA Section */}
-        <div className="relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            
-            {/* Floating time badge */}
-            <div className="absolute top-8 right-8 hidden lg:block">
-              <div className="bg-white bg-opacity-90 backdrop-blur-lg rounded-2xl px-6 py-3 border border-gray-200 shadow-lg">
-                <div className="text-xs text-gray-500 mb-1">New York Time</div>
-                <div className="text-lg font-mono text-gray-900">{currentTime}</div>
-              </div>
-            </div>
 
-            <div className="grid lg:grid-cols-3 gap-16 items-center">
-              
-              {/* Main CTA */}
-              <div className="lg:col-span-2">
-                <div className="inline-flex items-center gap-3 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-full text-sm font-bold mb-8 shadow-xl">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  Global Security Leader
-                </div>
-                
-                <h2 className="text-5xl lg:text-6xl font-black mb-8 leading-tight">
-                  <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent">
-                    Ready to Secure
-                  </span>
-                  <br />
-                  <span className="text-red-600">Your Future?</span>
-                </h2>
-                
-                <p className="text-xl text-gray-600 mb-10 leading-relaxed max-w-2xl">
-                  Join the millions who trust Hikvision's cutting-edge security technology. 
-                  Experience innovation that protects what matters most.
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-6">
-                  <Link
-                    href="/get-started"
-                    className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
-                  >
-                    <span>Get Started Today</span>
-                    <FiArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                  </Link>
-                  
-                  <Link
-                    href="/demo"
-                    className="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-300 text-gray-700 hover:bg-gray-900 hover:text-white hover:border-gray-900 font-bold rounded-2xl transition-all duration-300 backdrop-blur-sm"
-                  >
-                    <span>Book Demo</span>
-                    <FiExternalLink className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Newsletter Card */}
-              <div className="bg-white bg-opacity-80 backdrop-blur-lg rounded-3xl p-8 border border-gray-200 shadow-2xl">
-                <div className="text-center mb-6">
-                  <HiSparkles className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Stay Informed</h3>
-                  <p className="text-gray-600">Get weekly security insights</p>
-                </div>
-
-                <form onSubmit={handleSubscribe} className="space-y-4">
-                  <div className="relative">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="your@email.com"
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
-                      required
-                    />
-                    <FiMail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    disabled={isSubscribed}
-                    className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                  >
-                    {isSubscribed ? '✅ Subscribed!' : 'Subscribe Now'}
-                  </button>
-                </form>
-
-                <div className="flex justify-center gap-4 mt-6 text-xs text-gray-500">
-                  <span>✓ No spam</span>
-                  <span>✓ Weekly updates</span>
-                  <span>✓ Unsubscribe anytime</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Main Footer Content */}
-        <div className="border-t border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="grid lg:grid-cols-5 gap-12">
-              
-              {/* Company Section */}
-              <div className="lg:col-span-2">
-                <div className="mb-8">
-                  <h3 className="text-4xl font-black mb-6">
-                    <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Hik</span>
-                    <span className="text-gray-900">vision</span>
-                  </h3>
-                  <p className="text-lg text-gray-600 leading-relaxed mb-8">
-                    Pioneering the future of AIoT with intelligent security solutions. 
-                    Protecting lives, property, and possibilities worldwide.
-                  </p>
-                </div>
+        <div className={`border-t border-gray-200/50 transition-all duration-1000 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-8">
+              {/* Logo */}
+              <div className="animate-fadeInUp mb-4 md:mb-0">
+                <h3 className="text-3xl font-black">
+                  <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">HIK</span>
+                  <span className="text-white">VISION</span>
+                </h3>
+              </div>
+              {/* Social Links */}
+              <div className="flex gap-4 animate-fadeInUp delay-200">
+                {[
+                  { name: 'Facebook', href: '#', icon: '📘' },
+                  { name: 'Twitter', href: '#', icon: '🔗' },
+                  { name: 'LinkedIn', href: '#', icon: '💼' },
+                  { name: 'Instagram', href: '#', icon: '📷' },
+                  { name: 'YouTube', href: '#', icon: '📹' },
+                  { name: 'WeChat', href: '#', icon: '💬' }
+                ].map((social, index) => (
+                  <Link
+                    key={index}
+                    href={social.href}
+                    aria-label={social.name}
+                    className="w-8 h-8 text-gray-400 hover:text-white transition-all duration-300 transform hover:scale-110 flex items-center justify-center"
+                  >
+                    <span className="text-xl">{social.icon}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
 
-                {/* Global Presence */}
-                <div className="grid grid-cols-2 gap-6 mb-8">
+            {/* Footer Links Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-6">
+              {/* About Us */}
+              <div className={`transition-all duration-1000 delay-300 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
+                <h4 className="text-white font-semibold mb-3 text-lg">About Us</h4>
+                <ul className="space-y-2 text-base">
                   {[
-                    { metric: '500M+', label: 'Devices Connected' },
-                    { metric: '180+', label: 'Countries' },
-                    { metric: '25+', label: 'Years Innovation' },
-                    { metric: '40+', label: 'R&D Centers' }
-                  ].map((stat, index) => (
-                    <div key={index} className="text-center group">
-                      <div className="text-2xl font-bold text-red-600 mb-1 group-hover:text-red-700 transition-colors duration-300">
-                        {stat.metric}
-                      </div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider">
-                        {stat.label}
-                      </div>
-                    </div>
+                    'Company Profile',
+                    'Investor Relations',
+                    'Cybersecurity',
+                    'Compliance',
+                    'Sustainability',
+                    'Focused on Quality',
+                    'Contact Us'
+                  ].map((item, index) => (
+                    <li key={index}>
+                      <Link
+                        href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                        className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
+                      >
+                        {item}
+                      </Link>
+                    </li>
                   ))}
-                </div>
+                </ul>
+              </div>
 
-                {/* Contact & Social */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 text-gray-600 hover:text-gray-900 transition-colors duration-300 cursor-pointer">
-                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                      <FiPhone className="w-5 h-5 text-red-600" />
-                    </div>
-                    <span>+1 (855) 447-8392</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-gray-600 hover:text-gray-900 transition-colors duration-300 cursor-pointer">
-                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                      <FiMail className="w-5 h-5 text-red-600" />
-                    </div>
-                    <span>info@hikvision.com</span>
-                  </div>
-                </div>
-
-                {/* Social Links */}
-                <div className="flex gap-3 mt-6">
+              {/* Newsroom */}
+              <div className={`transition-all duration-1000 delay-400 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
+                <h4 className="text-white font-semibold mb-3 text-lg">Newsroom</h4>
+                <ul className="space-y-2 text-base">
                   {[
-                    { name: 'LinkedIn', href: '#', icon: '💼', color: 'hover:bg-blue-100' },
-                    { name: 'Twitter', href: '#', icon: '🔗', color: 'hover:bg-blue-50' },
-                    { name: 'YouTube', href: '#', icon: '📹', color: 'hover:bg-red-100' },
-                    { name: 'Instagram', href: '#', icon: '📷', color: 'hover:bg-pink-100' }
-                  ].map((social, index) => (
-                    <Link
-                      key={index}
-                      href={social.href}
-                      className={`w-12 h-12 bg-gray-100 ${social.color} rounded-xl flex items-center justify-center text-lg transition-all duration-300 transform hover:scale-110`}
-                    >
-                      {social.icon}
-                    </Link>
+                    'Blog',
+                    'Latest News',
+                    'Success Stories',
+                    'HikSnap',
+                    'Video Library'
+                  ].map((item, index) => (
+                    <li key={index}>
+                      <Link
+                        href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                        className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
+                      >
+                        {item}
+                      </Link>
+                    </li>
                   ))}
+                </ul>
+              </div>
+
+              {/* Partner */}
+              <div className={`transition-all duration-1000 delay-500 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
+                <h4 className="text-white font-semibold mb-3 text-lg">Partner</h4>
+                <ul className="space-y-2 text-base">
+                  {[
+                    'Hik-Partner Pro',
+                    'Find A Distributor',
+                    'Find A Technology Partner',
+                    'Technology Partner Portal',
+                    'Hikvision Embedded Open Platform',
+                    'Technology Partner Story'
+                  ].map((item, index) => (
+                    <li key={index}>
+                      <Link
+                        href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                        className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
+                      >
+                        {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Quick Links */}
+              <div className={`transition-all duration-1000 delay-600 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
+                <h4 className="text-white font-semibold mb-3 text-lg">Quick Links</h4>
+                <ul className="space-y-2 text-base">
+                  {[
+                    'Hikvision eLearning',
+                    'Where to Buy',
+                    'Discontinued Products',
+                    'Event List',
+                    'Hikvision Live',
+                    'Sitemap'
+                  ].map((item, index) => (
+                    <li key={index}>
+                      <Link
+                        href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                        className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
+                      >
+                        {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Newsletter & Contact */}
+              <div className={`col-span-2 transition-all duration-1000 delay-700 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
+                <div className="flex flex-col sm:flex-row justify-end gap-2">
+                  <button className="px-4 py-1.5 bg-transparent border border-gray-400 text-gray-400 hover:text-white hover:border-white rounded transition-all duration-300 transform hover:scale-105 text-sm">
+                    Contact Us
+                  </button>
+                  <button 
+                    onClick={handleSubscribe}
+                    className="px-4 py-1.5 bg-transparent border border-gray-400 text-gray-400 hover:text-white hover:border-white rounded transition-all duration-300 transform hover:scale-105 text-sm flex items-center gap-2"
+                  >
+                    <FiMail className="w-4 h-4" />
+                    Subscribe Newsletter
+                  </button>
                 </div>
-              </div>
-
-              {/* Products */}
-              <div>
-                <h4 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <div className="w-1 h-6 bg-red-600 rounded-full"></div>
-                  Products
-                </h4>
-                <ul className="space-y-3">
-                  {quickLinks.map((link, index) => (
-                    <li key={index}>
-                      <Link
-                        href={link.href}
-                        className="group flex items-center justify-between text-gray-600 hover:text-red-600 transition-all duration-300"
-                      >
-                        <span className="group-hover:translate-x-1 transition-transform duration-300">
-                          {link.name}
-                        </span>
-                        {link.popular && (
-                          <span className="text-xs bg-red-600 text-white px-2 py-1 rounded-full">HOT</span>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Industries */}
-              <div>
-                <h4 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <div className="w-1 h-6 bg-red-600 rounded-full"></div>
-                  Industries
-                </h4>
-                <ul className="space-y-3">
-                  {industries.map((industry, index) => (
-                    <li key={index}>
-                      <Link
-                        href={industry.href}
-                        className="group flex items-center gap-3 text-gray-600 hover:text-red-600 transition-all duration-300"
-                      >
-                        <span className="text-lg">{industry.icon}</span>
-                        <span className="group-hover:translate-x-1 transition-transform duration-300">
-                          {industry.name}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Resources */}
-              <div>
-                <h4 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <div className="w-1 h-6 bg-red-600 rounded-full"></div>
-                  Resources
-                </h4>
-                <ul className="space-y-3">
-                  {resources.map((resource, index) => (
-                    <li key={index}>
-                      <Link
-                        href={resource.href}
-                        className="text-gray-600 hover:text-red-600 transition-all duration-300 hover:translate-x-1 inline-block"
-                      >
-                        {resource.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-gray-200 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
-              
+        {/* Enhanced Bottom Bar */}
+        <div className={`border-t border-gray-700/50 bg-gray-900/80 transition-all duration-1000 delay-800 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex flex-col lg:flex-row justify-between items-center gap-2 text-xs">
               {/* Copyright */}
-              <div className="text-gray-500 text-sm text-center lg:text-left">
-                <p>&copy; 2024 Hangzhou Hikvision Digital Technology Co., Ltd. All rights reserved.</p>
+              <div className="text-gray-400 text-center lg:text-left">
+                <p>&copy; 2025 Hangzhou Hikvision Digital Technology Co., Ltd. All Rights Reserved.</p>
               </div>
 
-              {/* Legal */}
-              <div className="flex flex-wrap gap-6 text-sm">
-                {['Privacy', 'Terms', 'Cookie Settings', 'Sitemap'].map((item, index) => (
+              {/* Legal Links */}
+              <div className="flex flex-wrap gap-4">
+                {['Privacy Policy', 'Cookie Policy', 'Cookies Preferences', 'General Terms of Use'].map((item, index) => (
                   <Link
                     key={index}
                     href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="text-gray-500 hover:text-gray-900 transition-colors duration-300 hover:underline"
+                    className="text-gray-400 hover:text-white transition-colors duration-300 hover:underline underline-offset-4"
                   >
                     {item}
                   </Link>
@@ -353,10 +286,10 @@ const Footer = () => {
               {/* Back to Top */}
               <button
                 onClick={scrollToTop}
-                className="group bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110 shadow-lg"
+                className="group bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-all duration-300 transform hover:scale-110 shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400"
                 aria-label="Back to top"
               >
-                <FiArrowUp className="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-1" />
+                <FiArrowUp className="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-1" />
               </button>
             </div>
           </div>
@@ -364,11 +297,107 @@ const Footer = () => {
       </div>
 
       <style jsx>{`
-        .animation-delay-2s { animation-delay: 2s; }
-        .animation-delay-4s { animation-delay: 4s; }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        
+        @keyframes float-delayed {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-15px) rotate(-2deg); }
+        }
+        
+        @keyframes float-slow {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-8px) rotate(1deg); }
+        }
+        
+        @keyframes slide-x {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        @keyframes slide-x-reverse {
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+        }
+        
+        @keyframes slideUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(40px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+        
+        @keyframes fadeInUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(30px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+        
+        @keyframes bounce-subtle {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-float-delayed {
+          animation: float-delayed 8s ease-in-out infinite;
+        }
+        
+        .animate-float-slow {
+          animation: float-slow 10s ease-in-out infinite;
+        }
+        
+        .animate-slide-x {
+          animation: slide-x 10s linear infinite;
+        }
+        
+        .animate-slide-x-reverse {
+          animation: slide-x-reverse 12s linear infinite;
+        }
+        
+        .animate-slideUp {
+          animation: slideUp 1s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        
+        .animate-fadeInUp {
+          animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        
+        .animate-bounce-subtle {
+          animation: bounce-subtle 3s ease-in-out infinite;
+        }
+        
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .delay-400 { animation-delay: 400ms; }
+        .delay-500 { animation-delay: 500ms; }
+        .delay-700 { animation-delay: 700ms; }
+        .delay-900 { animation-delay: 900ms; }
+        .delay-1100 { animation-delay: 1100ms; }
+        
+        /* Backdrop blur fallback */
+        @supports not (backdrop-filter: blur(12px)) {
+          .backdrop-blur-sm {
+            background-color: rgba(255, 255, 255, 0.9);
+          }
+        }
       `}</style>
     </footer>
   )
 }
 
-export default Footer
+export default Footer;
