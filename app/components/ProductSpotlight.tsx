@@ -131,15 +131,10 @@ const ProductSpotlight = () => {
       ref={inViewRef}
       className="py-24 bg-gradient-to-br from-slate-50 via-white to-red-50/30 relative overflow-hidden"
     >
-      {/* Enhanced Background Pattern with scroll animation */}
-      <div className={`absolute inset-0 opacity-[0.02] transition-all duration-1000 ${sectionInView ? 'opacity-[0.02]' : 'opacity-0 translate-y-10'}`}>
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2280%22%20height%3D%2280%22%20viewBox%3D%220%200%2080%2080%22%20xmlns%3D%22http://www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23000000%22%20fill-opacity%3D%221%22%3E%3Cpath%20d%3D%22M40%2040c0-11.046-8.954-20-20-20s-20%208.954-20%2020%208.954%2020%2020%2020%2020-8.954%2020-20zm0%200c0-11.046%208.954-20%2020-20s20%208.954%2020%2020-8.954%2020-20%2020-20-8.954-20-20z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
-      </div>
-
-      {/* Floating elements with scroll-triggered animations */}
-      <div className={`absolute top-20 left-10 w-2 h-2 bg-red-400 rounded-full animate-pulse transition-all duration-1000 delay-100 ${sectionInView ? 'opacity-100' : 'opacity-0 -translate-x-5'}`}></div>
-      <div className={`absolute top-40 right-20 w-3 h-3 bg-blue-400 rounded-full animate-bounce transition-all duration-1000 delay-200 ${sectionInView ? 'opacity-100' : 'opacity-0 translate-x-5'}`} style={{animationDelay: '1s'}}></div>
-      <div className={`absolute bottom-40 left-20 w-1 h-1 bg-green-400 rounded-full animate-ping transition-all duration-1000 delay-300 ${sectionInView ? 'opacity-100' : 'opacity-0 -translate-y-5'}`} style={{animationDelay: '2s'}}></div>
+      {/* Remove the round background decorations below */}
+      {/* <div className={`absolute top-20 left-10 w-2 h-2 bg-red-400 rounded-full animate-pulse ...`}></div>
+      <div className={`absolute top-40 right-20 w-3 h-3 bg-blue-400 rounded-full animate-bounce ...`}></div>
+      <div className={`absolute bottom-40 left-20 w-1 h-1 bg-green-400 rounded-full animate-ping ...`}></div> */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Enhanced Section Header with scroll animation */}
