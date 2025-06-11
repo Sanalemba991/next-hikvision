@@ -1,53 +1,46 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { FiArrowRight, FiMail, FiPhone, FiMapPin, FiArrowUp, FiExternalLink, FiCheck } from 'react-icons/fi'
-import { HiSparkles } from 'react-icons/hi'
+import { FiMail, FiPhone, FiMapPin, FiArrowUp } from 'react-icons/fi'
 
 const Footer = () => {
   const [email, setEmail] = useState('')
   const [isSubscribed, setIsSubscribed] = useState(false)
-  const [currentTime, setCurrentTime] = useState('')
-  const [isVisible, setIsVisible] = useState(false)
-  const [hoveredStat, setHoveredStat] = useState<number | null>(null)
+  
+  // Dynamic categories from API - same as Navbar
+  const [categories, setCategories] = useState<string[]>([])
+  const [subCategories, setSubCategories] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting)
-      },
-      { threshold: 0.1 }
-    )
-
-    const footerElement = document.querySelector('#footer-section')
-    if (footerElement) {
-      observer.observe(footerElement)
-    }
-
-    return () => observer.disconnect()
+    fetchCategories()
   }, [])
 
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date()
-      setCurrentTime(now.toLocaleTimeString('en-US', { 
-        timeZone: 'America/New_York',
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit'
-      }))
+  // Fetch categories from API - same as Navbar
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/products?limit=1')
+      const data = await response.json()
+      
+      if (data.success) {
+        setCategories(data.categories || [])
+        setSubCategories(data.subCategories || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch categories:', error)
+      // Fallback to default categories if API fails
+      setCategories(['Network Cameras', 'Access Control', 'Video Surveillance', 'Thermal Cameras', 'Alarm Systems'])
+    } finally {
+      setLoading(false)
     }
-    updateTime()
-    const interval = setInterval(updateTime, 1000)
-    return () => clearInterval(interval)
-  }, [])
+  }
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault()
     if (email) {
       setIsSubscribed(true)
       setEmail('')
-      setTimeout(() => setIsSubscribed(false), 4000)
+      setTimeout(() => setIsSubscribed(false), 3000)
     }
   }
 
@@ -55,230 +48,318 @@ const Footer = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const quickLinks = [
-    { name: 'Security Cameras', href: '/cameras', popular: true },
-    { name: 'AI Analytics', href: '/ai-analytics', popular: true },
-    { name: 'Access Control', href: '/access-control', popular: false },
-    { name: 'Video Management', href: '/vms', popular: false },
-    { name: 'Thermal Imaging', href: '/thermal', popular: true },
-    { name: 'Network Storage', href: '/storage', popular: false }
-  ]
-
-  const industries = [
-    { name: 'Smart Cities', href: '/smart-cities', icon: '🏙️' },
-    { name: 'Retail', href: '/retail', icon: '🛍️' },
-    { name: 'Transportation', href: '/transportation', icon: '🚊' },
-    { name: 'Healthcare', href: '/healthcare', icon: '🏥' },
-    { name: 'Education', href: '/education', icon: '🎓' },
-    { name: 'Banking', href: '/banking', icon: '🏦' }
-  ]
-
-  const resources = [
-    { name: 'Download Center', href: '/downloads' },
-    { name: 'Technical Docs', href: '/docs' },
-    { name: 'Training Hub', href: '/training' },
-    { name: 'Support Portal', href: '/support' },
-    { name: 'Community Forum', href: '/forum' },
-    { name: 'Developer API', href: '/api' }
-  ]
-
-  const stats = [
-    { metric: '500M+', label: 'Devices Connected', description: 'Global IoT network' },
-    { metric: '180+', label: 'Countries', description: 'Worldwide presence' },
-    { metric: '25+', label: 'Years Innovation', description: 'Industry expertise' },
-    { metric: '40+', label: 'R&D Centers', description: 'Innovation hubs' }
-  ]
-
   return (
-    <footer id="footer-section" className="relative bg-gray-800 text-gray-300 overflow-hidden">
-      {/* Dark Background */}
-      <div className="absolute inset-0">
-        {/* Primary gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-black"></div>
-        
-        {/* Animated mesh gradients */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-red-600/30 to-red-700/30 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-gray-600/30 to-gray-700/30 rounded-full mix-blend-multiply filter blur-3xl animate-float-delayed"></div>
-        </div>
-
-        {/* Subtle animated lines */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-red-500 to-transparent animate-slide-x"></div>
-        </div>
-      </div>
+    <footer className="relative bg-gray-900 text-gray-300">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-black"></div>
 
       <div className="relative z-10">
-
-
         {/* Main Footer Content */}
-        <div className={`border-t border-gray-200/50 transition-all duration-1000 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-8">
+        <div className="border-t border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {/* Logo and Social Links */}
+            <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
               {/* Logo */}
-              <div className="animate-fadeInUp mb-4 md:mb-0">
-                <h3 className="text-3xl font-black">
-                  <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">HIK</span>
-                  <span className="text-white">VISION</span>
+              <div>
+                <h3 className="text-3xl font-bold">
+                  <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">HIKVISION</span>
+                  <span className="text-white"> UAE</span>
                 </h3>
+                <p className="text-gray-400 mt-2 max-w-sm">
+                  Leading provider of innovative security solutions and video surveillance technology in the UAE.
+                </p>
               </div>
+
               {/* Social Links */}
-              <div className="flex gap-4 animate-fadeInUp delay-200">
+              <div className="flex gap-4">
                 {[
-                  { name: 'Facebook', href: '#', icon: '📘' },
-                  { name: 'Twitter', href: '#', icon: '🔗' },
-                  { name: 'LinkedIn', href: '#', icon: '💼' },
-                  { name: 'Instagram', href: '#', icon: '📷' },
-                  { name: 'YouTube', href: '#', icon: '📹' },
-                  { name: 'WeChat', href: '#', icon: '💬' }
+                  {
+                    name: 'Facebook',
+                    href: 'https://www.facebook.com/hikvision.uae',
+                    icon: '📘'
+                  },
+                  {
+                    name: 'Twitter',
+                    href: 'https://twitter.com/hikvision_uae',
+                    icon: '🐦'
+                  },
+                  {
+                    name: 'LinkedIn',
+                    href: 'https://www.linkedin.com/company/hikvision-uae',
+                    icon: '💼'
+                  },
+                  {
+                    name: 'Instagram',
+                    href: 'https://www.instagram.com/hikvision.uae',
+                    icon: '📷'
+                  },
+                  {
+                    name: 'YouTube',
+                    href: 'https://www.youtube.com/hikvision',
+                    icon: '📹'
+                  },
+                  {
+                    name: 'WhatsApp',
+                    href: 'https://wa.me/971552929644',
+                    icon: '💬'
+                  }
                 ].map((social, index) => (
                   <Link
                     key={index}
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     aria-label={social.name}
-                    className="w-8 h-8 text-gray-400 hover:text-white transition-all duration-300 transform hover:scale-110 flex items-center justify-center"
+                    className="w-10 h-10 bg-gray-800 hover:bg-red-600 rounded-lg flex items-center justify-center transition-colors duration-300"
                   >
-                    <span className="text-xl">{social.icon}</span>
+                    <span className="text-lg">{social.icon}</span>
                   </Link>
                 ))}
               </div>
             </div>
 
             {/* Footer Links Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-6">
-              {/* About Us */}
-              <div className={`transition-all duration-1000 delay-300 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
-                <h4 className="text-white font-semibold mb-3 text-lg">About Us</h4>
-                <ul className="space-y-2 text-base">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+              {/* Products - Dynamic from API - Same as Navbar */}
+              <div>
+                <h4 className="text-white font-semibold mb-4 text-lg">Products</h4>
+                <ul className="space-y-3">
+                  {loading ? (
+                    <li className="text-gray-400 text-sm">Loading categories...</li>
+                  ) : (
+                    categories.slice(0, 5).map((category, index) => (
+                      <li key={index}>
+                        <Link
+                          href={`/products?category=${encodeURIComponent(category)}`}
+                          className="text-gray-400 hover:text-white transition-colors duration-300"
+                        >
+                          {category}
+                        </Link>
+                      </li>
+                    ))
+                  )
+                  }
+                  {categories.length > 5 && (
+                    <li>
+                      <Link
+                        href="/products"
+                        className="text-red-400 hover:text-red-300 transition-colors duration-300 text-sm font-medium"
+                      >
+                        View All Products →
+                      </Link>
+                    </li>
+                  )}
+                </ul>
+              </div>
+
+              {/* Solutions - With specific categories */}
+              <div>
+                <h4 className="text-white font-semibold mb-4 text-lg">Solutions</h4>
+                <ul className="space-y-3">
                   {[
-                    'Company Profile',
-                    'Investor Relations',
-                    'Cybersecurity',
-                    'Compliance',
-                    'Sustainability',
-                    'Focused on Quality',
-                    'Contact Us'
+                    {
+                      name: 'Smart Cities',
+                      href: '/solutions/smart-cities'
+                    },
+                    {
+                      name: 'Retail Security',
+                      href: '/solutions/retail-security'
+                    },
+                    {
+                      name: 'Transportation',
+                      href: '/solutions/transportation'
+                    },
+                    {
+                      name: 'Healthcare',
+                      href: '/solutions/healthcare'
+                    },
+                    {
+                      name: 'Education',
+                      href: '/solutions/education'
+                    }
+                  ].map((solution, index) => (
+                    <li key={index}>
+                      <Link
+                        href={solution.href}
+                        className="text-gray-400 hover:text-white transition-colors duration-300"
+                      >
+                        {solution.name}
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link
+                      href="/solutions"
+                      className="text-red-400 hover:text-red-300 transition-colors duration-300 text-sm font-medium"
+                    >
+                      View All Solutions →
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Support - With specific categories */}
+              <div>
+                <h4 className="text-white font-semibold mb-4 text-lg">Support</h4>
+                <ul className="space-y-3">
+                  {[
+                    {
+                      name: 'Technical Support',
+                      href: '/support/technical'
+                    },
+                    {
+                      name: 'Documentation',
+                      href: '/support/documentation'
+                    },
+                    {
+                      name: 'Downloads',
+                      href: '/support/downloads'
+                    },
+                    {
+                      name: 'Training',
+                      href: '/support/training'
+                    },
+                    {
+                      name: 'Warranty',
+                      href: '/support/warranty'
+                    }
+                  ].map((support, index) => (
+                    <li key={index}>
+                      <Link
+                        href={support.href}
+                        className="text-gray-400 hover:text-white transition-colors duration-300"
+                      >
+                        {support.name}
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link
+                      href="/support"
+                      className="text-red-400 hover:text-red-300 transition-colors duration-300 text-sm font-medium"
+                    >
+                      Support Center →
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Company - Reduced links */}
+              <div>
+                <h4 className="text-white font-semibold mb-4 text-lg">Company</h4>
+                <ul className="space-y-3">
+                  {[
+                    {
+                      name: 'About Us',
+                      href: '/about'
+                    },
+                    {
+                      name: 'Contact Us',
+                      href: '/contact'
+                    },
+                    {
+                      name: 'Careers',
+                      href: '/careers'
+                    },
+                    {
+                      name: 'News & Events',
+                      href: '/news'
+                    },
+                    {
+                      name: 'Partners',
+                      href: '/partners'
+                    }
                   ].map((item, index) => (
                     <li key={index}>
                       <Link
-                        href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                        className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
+                        href={item.href}
+                        className="text-gray-400 hover:text-white transition-colors duration-300"
                       >
-                        {item}
+                        {item.name}
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* Newsroom */}
-              <div className={`transition-all duration-1000 delay-400 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
-                <h4 className="text-white font-semibold mb-3 text-lg">Newsroom</h4>
-                <ul className="space-y-2 text-base">
-                  {[
-                    'Blog',
-                    'Latest News',
-                    'Success Stories',
-                    'HikSnap',
-                    'Video Library'
-                  ].map((item, index) => (
-                    <li key={index}>
-                      <Link
-                        href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                        className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
-                      >
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* Contact & Newsletter */}
+              <div>
+                <h4 className="text-white font-semibold mb-4 text-lg">Stay Connected</h4>
+                <div className="space-y-4">
+                  {/* Newsletter */}
+                  <form onSubmit={handleSubscribe} className="space-y-3">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      required
+                    />
+                    <button
+                      type="submit"
+                      className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-300 flex items-center justify-center gap-2"
+                    >
+                      <FiMail className="w-4 h-4" />
+                      {isSubscribed ? 'Subscribed!' : 'Subscribe'}
+                    </button>
+                  </form>
 
-              {/* Partner */}
-              <div className={`transition-all duration-1000 delay-500 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
-                <h4 className="text-white font-semibold mb-3 text-lg">Partner</h4>
-                <ul className="space-y-2 text-base">
-                  {[
-                    'Hik-Partner Pro',
-                    'Find A Distributor',
-                    'Find A Technology Partner',
-                    'Technology Partner Portal',
-                    'Hikvision Embedded Open Platform',
-                    'Technology Partner Story'
-                  ].map((item, index) => (
-                    <li key={index}>
-                      <Link
-                        href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                        className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
-                      >
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Quick Links */}
-              <div className={`transition-all duration-1000 delay-600 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
-                <h4 className="text-white font-semibold mb-3 text-lg">Quick Links</h4>
-                <ul className="space-y-2 text-base">
-                  {[
-                    'Hikvision eLearning',
-                    'Where to Buy',
-                    'Discontinued Products',
-                    'Event List',
-                    'Hikvision Live',
-                    'Sitemap'
-                  ].map((item, index) => (
-                    <li key={index}>
-                      <Link
-                        href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                        className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
-                      >
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Newsletter & Contact */}
-              <div className={`col-span-2 transition-all duration-1000 delay-700 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
-                <div className="flex flex-col sm:flex-row justify-end gap-2">
-                  <button className="px-4 py-1.5 bg-transparent border border-gray-400 text-gray-400 hover:text-white hover:border-white rounded transition-all duration-300 transform hover:scale-105 text-sm">
-                    Contact Us
-                  </button>
-                  <button 
-                    onClick={handleSubscribe}
-                    className="px-4 py-1.5 bg-transparent border border-gray-400 text-gray-400 hover:text-white hover:border-white rounded transition-all duration-300 transform hover:scale-105 text-sm flex items-center gap-2"
-                  >
-                    <FiMail className="w-4 h-4" />
-                    Subscribe Newsletter
-                  </button>
+                  {/* Contact Info - Updated to match support page */}
+                  <div className="space-y-2 text-sm text-gray-400">
+                    <p className="flex items-center gap-2">
+                      <FiPhone className="w-4 h-4" />
+                      +971 55 292 9644
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <FiMail className="w-4 h-4" />
+                      support@hikvision.ae
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <FiMapPin className="w-4 h-4" />
+                      Dubai, UAE
+                    </p>
+                    <div className="text-xs text-gray-500 mt-2">
+                      Mon-Fri 9AM-6PM GST
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Enhanced Bottom Bar */}
-        <div className={`border-t border-gray-700/50 bg-gray-900/80 transition-all duration-1000 delay-800 ${isVisible ? 'animate-slideUp' : 'opacity-0 translate-y-8'}`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <div className="flex flex-col lg:flex-row justify-between items-center gap-2 text-xs">
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-700 bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               {/* Copyright */}
-              <div className="text-gray-400 text-center lg:text-left">
-                <p>&copy; 2025 Hangzhou Hikvision Digital Technology Co., Ltd. All Rights Reserved.</p>
+              <div className="text-gray-400 text-sm text-center md:text-left">
+                <p>&copy; 2025 Hikvision UAE. All Rights Reserved.</p>
               </div>
 
               {/* Legal Links */}
-              <div className="flex flex-wrap gap-4">
-                {['Privacy Policy', 'Cookie Policy', 'Cookies Preferences', 'General Terms of Use'].map((item, index) => (
+              <div className="flex flex-wrap justify-center gap-6 text-sm">
+                {[
+                  {
+                    name: 'Privacy Policy',
+                    href: '/privacy-policy'
+                  },
+                  {
+                    name: 'Terms of Use',
+                    href: '/terms-of-use'
+                  },
+                  {
+                    name: 'Cookie Policy',
+                    href: '/cookie-policy'
+                  }
+                ].map((item, index) => (
                   <Link
                     key={index}
-                    href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="text-gray-400 hover:text-white transition-colors duration-300 hover:underline underline-offset-4"
+                    href={item.href}
+                    className="text-gray-400 hover:text-white transition-colors duration-300"
                   >
-                    {item}
+                    {item.name}
                   </Link>
                 ))}
               </div>
@@ -286,118 +367,17 @@ const Footer = () => {
               {/* Back to Top */}
               <button
                 onClick={scrollToTop}
-                className="group bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-all duration-300 transform hover:scale-110 shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
                 aria-label="Back to top"
               >
-                <FiArrowUp className="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-1" />
+                <FiArrowUp className="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-10px) rotate(2deg); }
-        }
-        
-        @keyframes float-delayed {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-15px) rotate(-2deg); }
-        }
-        
-        @keyframes float-slow {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-8px) rotate(1deg); }
-        }
-        
-        @keyframes slide-x {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        
-        @keyframes slide-x-reverse {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
-        }
-        
-        @keyframes slideUp {
-          from { 
-            opacity: 0; 
-            transform: translateY(40px); 
-          }
-          to { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
-        }
-        
-        @keyframes fadeInUp {
-          from { 
-            opacity: 0; 
-            transform: translateY(30px); 
-          }
-          to { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
-        }
-        
-        @keyframes bounce-subtle {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-        }
-        
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        
-        .animate-float-delayed {
-          animation: float-delayed 8s ease-in-out infinite;
-        }
-        
-        .animate-float-slow {
-          animation: float-slow 10s ease-in-out infinite;
-        }
-        
-        .animate-slide-x {
-          animation: slide-x 10s linear infinite;
-        }
-        
-        .animate-slide-x-reverse {
-          animation: slide-x-reverse 12s linear infinite;
-        }
-        
-        .animate-slideUp {
-          animation: slideUp 1s cubic-bezier(0.4, 0, 0.2, 1) both;
-        }
-        
-        .animate-fadeInUp {
-          animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
-        }
-        
-        .animate-bounce-subtle {
-          animation: bounce-subtle 3s ease-in-out infinite;
-        }
-        
-        .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
-        .delay-400 { animation-delay: 400ms; }
-        .delay-500 { animation-delay: 500ms; }
-        .delay-700 { animation-delay: 700ms; }
-        .delay-900 { animation-delay: 900ms; }
-        .delay-1100 { animation-delay: 1100ms; }
-        
-        /* Backdrop blur fallback */
-        @supports not (backdrop-filter: blur(12px)) {
-          .backdrop-blur-sm {
-            background-color: rgba(255, 255, 255, 0.9);
-          }
-        }
-      `}</style>
     </footer>
   )
 }
 
-export default Footer;
+export default Footer

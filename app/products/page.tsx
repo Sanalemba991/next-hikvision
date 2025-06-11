@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   FiSearch, 
@@ -35,6 +36,9 @@ interface PaginationInfo {
 }
 
 const ProductsPage = () => {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -121,6 +125,31 @@ const ProductsPage = () => {
     }
   }
 
+  // Read URL parameters on component mount
+  useEffect(() => {
+    const categoryParam = searchParams.get('category')
+    const subCategoryParam = searchParams.get('subCategory')
+    const searchParam = searchParams.get('search')
+    
+    if (categoryParam) setSelectedCategory(categoryParam)
+    if (subCategoryParam) setSelectedSubCategory(subCategoryParam)
+    if (searchParam) setSearchTerm(searchParam)
+  }, [searchParams])
+
+  // Update URL when filters change
+  const updateURL = (newCategory: string, newSubCategory: string, newSearch: string) => {
+    const params = new URLSearchParams()
+    
+    if (newCategory) params.set('category', newCategory)
+    if (newSubCategory) params.set('subCategory', newSubCategory)
+    if (newSearch) params.set('search', newSearch)
+    
+    const queryString = params.toString()
+    const newUrl = queryString ? `/products?${queryString}` : '/products'
+    
+    router.push(newUrl, { scroll: false })
+  }
+
   // Fetch products with filters
   const fetchProducts = async (page = 1) => {
     try {
@@ -159,6 +188,23 @@ const ProductsPage = () => {
     fetchProducts()
   }, [searchTerm, selectedCategory, selectedSubCategory, sortBy])
 
+  // Handle filter changes with URL updates
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category)
+    setSelectedSubCategory('') // Reset subcategory when category changes
+    updateURL(category, '', searchTerm)
+  }
+
+  const handleSubCategoryChange = (subCategory: string) => {
+    setSelectedSubCategory(subCategory)
+    updateURL(selectedCategory, subCategory, searchTerm)
+  }
+
+  const handleSearchChange = (search: string) => {
+    setSearchTerm(search)
+    updateURL(selectedCategory, selectedSubCategory, search)
+  }
+
   // Handle pagination
   const handlePageChange = (page: number) => {
     fetchProducts(page)
@@ -171,6 +217,7 @@ const ProductsPage = () => {
     setSelectedCategory('')
     setSelectedSubCategory('')
     setSortBy('newest')
+    router.push('/products', { scroll: false })
   }
 
   // Format date
@@ -244,48 +291,54 @@ const ProductsPage = () => {
             >
               Supporting Smart Decision Making and Delivering Commercial Growth
             </motion.p>
+
+            {/* Show active filters */}
+            {(selectedCategory || selectedSubCategory) && (
+              <motion.div 
+                className="mt-6 flex items-center gap-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+              >
+                <span className="text-white/70 text-sm">Filtered by:</span>
+                {selectedCategory && (
+                  <span className="px-3 py-1 bg-red-600 text-white text-sm rounded-full">
+                    {selectedCategory}
+                  </span>
+                )}
+                {selectedSubCategory && (
+                  <span className="px-3 py-1 bg-red-500 text-white text-sm rounded-full">
+                    {selectedSubCategory}
+                  </span>
+                )}
+              </motion.div>
+            )}
           </div>
         </div>
       </motion.section>
 
       <div className="container mx-auto px-4 py-8">
         {/* Search and Filter Bar */}
-        <motion.div 
-          className="bg-white rounded-lg shadow-sm p-6 mb-8"
-          variants={searchBarVariants}
-          initial="hidden"
-          animate="visible"
-        >
+        <motion.div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             
             {/* Search Bar */}
-            <motion.div 
-              className="relative flex-1 w-full"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div className="relative flex-1 w-full">
               <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
               />
             </motion.div>
 
             {/* Category Filter */}
-            <motion.div 
-              className="w-full lg:w-48"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div className="w-full lg:w-48">
               <select
                 value={selectedCategory}
-                onChange={(e) => {
-                  setSelectedCategory(e.target.value)
-                  setSelectedSubCategory('') // Reset subcategory when category changes
-                }}
+                onChange={(e) => handleCategoryChange(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
               >
                 <option value="">All Categories</option>
@@ -298,14 +351,10 @@ const ProductsPage = () => {
             </motion.div>
 
             {/* Sub Category Filter */}
-            <motion.div 
-              className="w-full lg:w-48"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div className="w-full lg:w-48">
               <select
                 value={selectedSubCategory}
-                onChange={(e) => setSelectedSubCategory(e.target.value)}
+                onChange={(e) => handleSubCategoryChange(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
                 disabled={!selectedCategory}
               >
@@ -319,11 +368,7 @@ const ProductsPage = () => {
             </motion.div>
 
             {/* Sort By */}
-            <motion.div 
-              className="w-full lg:w-48"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div className="w-full lg:w-48">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -337,24 +382,16 @@ const ProductsPage = () => {
             </motion.div>
 
             {/* View Mode Toggle */}
-            <motion.div 
-              className="flex border border-gray-300 rounded-lg overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div className="flex border border-gray-300 rounded-lg overflow-hidden">
               <motion.button
                 onClick={() => setViewMode('grid')}
                 className={`p-3 ${viewMode === 'grid' ? 'bg-red-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
               >
                 <FiGrid className="w-5 h-5" />
               </motion.button>
               <motion.button
                 onClick={() => setViewMode('list')}
                 className={`p-3 ${viewMode === 'list' ? 'bg-red-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
               >
                 <FiList className="w-5 h-5" />
               </motion.button>
@@ -369,8 +406,6 @@ const ProductsPage = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   <FiX className="w-4 h-4" />
                   Clear
@@ -381,12 +416,7 @@ const ProductsPage = () => {
         </motion.div>
 
         {/* Results Summary */}
-        <motion.div 
-          className="flex justify-between items-center mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
+        <motion.div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
               {pagination.totalProducts} Product{pagination.totalProducts !== 1 ? 's' : ''} Found

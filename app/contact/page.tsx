@@ -3,7 +3,12 @@ import { useState } from 'react'
 import { FiMail, FiPhone, FiMapPin, FiClock, FiSend, FiUser, FiMessageSquare, FiHome } from 'react-icons/fi'
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaWhatsapp } from 'react-icons/fa'
 import { toast, ToastContainer } from 'react-toastify'
+
+import { motion } from 'framer-motion'
 import 'react-toastify/dist/ReactToastify.css'
+
+const HIKVISION_BANNER =
+  'http://atechs.in/assets/frontend/img/hikvision/banner2.jpg'
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -61,25 +66,25 @@ const ContactPage = () => {
     {
       icon: FiPhone,
       title: 'Phone',
-      details: ['+1 (555) 123-4567', '+1 (555) 987-6543'],
-      action: 'tel:+15551234567'
+      details: ['+971 4 123 4567', '+971 50 123 4567'],
+      action: 'tel:+97141234567'
     },
     {
       icon: FiMail,
       title: 'Email',
-      details: ['info@hikvision.com', 'support@hikvision.com'],
-      action: 'mailto:info@hikvision.com'
+      details: ['info@hikvision.ae', 'support@hikvision.ae'],
+      action: 'mailto:info@hikvision.ae'
     },
     {
       icon: FiMapPin,
       title: 'Address',
-      details: ['123 Security Street', 'Tech City, TC 12345'],
-      action: 'https://maps.google.com'
+      details: ['Dubai Marina, UAE', 'P.O. Box 12345, Dubai'],
+      action: 'https://maps.google.com/maps?q=25.262528,55.290111'
     },
     {
       icon: FiClock,
       title: 'Business Hours',
-      details: ['Mon - Fri: 9:00 AM - 6:00 PM', 'Sat: 10:00 AM - 4:00 PM'],
+      details: ['Sun - Thu: 9:00 AM - 6:00 PM', 'Sat: 10:00 AM - 4:00 PM'],
       action: null
     }
   ]
@@ -98,47 +103,90 @@ const ContactPage = () => {
       <ToastContainer position="top-right" />
       
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-red-600 via-red-700 to-rose-800 text-white">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 opacity-0 animate-[fadeInUp_0.6s_ease-out_forwards]">
-              Get In Touch
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-red-100 opacity-0 animate-[fadeInUp_0.6s_ease-out_0.2s_forwards]">
-              We're here to help with all your security and surveillance needs
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 opacity-0 animate-[fadeInUp_0.6s_ease-out_0.4s_forwards]">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 flex items-center gap-3">
-                <FiPhone className="w-5 h-5" />
-                <span>24/7 Support</span>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 flex items-center gap-3">
-                <FiMail className="w-5 h-5" />
-                <span>Quick Response</span>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 flex items-center gap-3">
-                <FiMapPin className="w-5 h-5" />
-                <span>Global Reach</span>
-              </div>
+      <motion.div
+        className="relative h-[340px] md:h-[420px] flex items-center justify-center overflow-hidden"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+      >
+        <img
+          src={HIKVISION_BANNER}
+          alt="Hikvision Banner"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          style={{ filter: 'brightness(0.7) blur(0px)' }}
+          draggable={false}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-red-700/70 via-black/40 to-black/60"></div>
+        <motion.div
+          className="relative z-10 text-center max-w-4xl mx-auto px-4"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+        >
+          <motion.h1
+            className="text-5xl md:text-6xl font-bold mb-6 text-white"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            Get In Touch
+          </motion.h1>
+          <motion.p
+            className="text-xl md:text-2xl mb-8 text-red-100"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45, duration: 0.6 }}
+          >
+            We're here to help with all your security and surveillance needs
+          </motion.p>
+          <motion.div
+            className="flex flex-wrap justify-center gap-4"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+          >
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 flex items-center gap-3 border border-white/20 shadow-md">
+              <FiPhone className="w-5 h-5 text-white" />
+              <span className="text-white">24/7 Support</span>
             </div>
-          </div>
-        </div>
-      </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 flex items-center gap-3 border border-white/20 shadow-md">
+              <FiMail className="w-5 h-5 text-white" />
+              <span className="text-white">Quick Response</span>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 flex items-center gap-3 border border-white/20 shadow-md">
+              <FiMapPin className="w-5 h-5 text-white" />
+              <span className="text-white">Global Reach</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-16">
+      <motion.div
+        className="container mx-auto px-4 py-16"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Contact Information */}
-          <div className="lg:col-span-1">
+          <motion.div
+            className="lg:col-span-1"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.7 }}
+          >
             <div className="sticky top-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-8">Contact Information</h2>
               
               <div className="space-y-6 mb-8">
                 {contactInfo.map((item, index) => (
-                  <div
+                  <motion.div
                     key={index}
                     className="group bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-red-200 transition-all duration-300"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-rose-600 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
@@ -152,6 +200,8 @@ const ContactPage = () => {
                               <a 
                                 href={item.action}
                                 className="text-red-600 hover:text-red-700 transition-colors"
+                                target={item.action.startsWith('http') ? '_blank' : undefined}
+                                rel={item.action.startsWith('http') ? 'noopener noreferrer' : undefined}
                               >
                                 {detail}
                               </a>
@@ -162,36 +212,77 @@ const ContactPage = () => {
                         ))}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
               {/* Social Media */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              <motion.div
+                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
+              >
                 <h3 className="font-semibold text-gray-900 mb-4">Follow Us</h3>
                 <div className="flex gap-3">
                   {[
-                    { icon: FaFacebookF, color: 'hover:bg-blue-600', href: '#' },
-                    { icon: FaTwitter, color: 'hover:bg-sky-500', href: '#' },
-                    { icon: FaLinkedinIn, color: 'hover:bg-blue-700', href: '#' },
-                    { icon: FaInstagram, color: 'hover:bg-pink-600', href: '#' },
-                    { icon: FaWhatsapp, color: 'hover:bg-green-600', href: '#' }
+                    { 
+                      icon: FaFacebookF, 
+                      color: 'hover:bg-blue-600', 
+                      href: 'https://www.facebook.com/hikvision.uae',
+                      label: 'Facebook'
+                    },
+                    { 
+                      icon: FaTwitter, 
+                      color: 'hover:bg-sky-500', 
+                      href: 'https://twitter.com/hikvision_uae',
+                      label: 'Twitter'
+                    },
+                    { 
+                      icon: FaLinkedinIn, 
+                      color: 'hover:bg-blue-700', 
+                      href: 'https://www.linkedin.com/company/hikvision-uae',
+                      label: 'LinkedIn'
+                    },
+                    { 
+                      icon: FaInstagram, 
+                      color: 'hover:bg-pink-600', 
+                      href: 'https://www.instagram.com/hikvision.uae',
+                      label: 'Instagram'
+                    },
+                    { 
+                      icon: FaWhatsapp, 
+                      color: 'hover:bg-green-600', 
+                      href: 'https://wa.me/971552929644',
+                      label: 'WhatsApp'
+                    }
                   ].map((social, index) => (
-                    <a
+                    <motion.a
                       key={index}
                       href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={`w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 ${social.color} hover:text-white transition-all duration-300 transform hover:scale-110`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.9 + index * 0.08, duration: 0.4 }}
+                      title={`Follow us on ${social.label}`}
                     >
                       <social.icon className="w-5 h-5" />
-                    </a>
+                    </motion.a>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Contact Form */}
-          <div className="lg:col-span-2">
+          <motion.div
+            className="lg:col-span-2"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.7 }}
+          >
             <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
               <div className="bg-gradient-to-r from-red-50 to-rose-50 p-8 border-b border-gray-100">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Send Us a Message</h2>
@@ -199,9 +290,20 @@ const ContactPage = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                >
                   {/* Name */}
-                  <div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-3">
                       Full Name *
                     </label>
@@ -220,10 +322,15 @@ const ContactPage = () => {
                         placeholder="Enter your full name"
                       />
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Email */}
-                  <div>
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                  >
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-3">
                       Email Address *
                     </label>
@@ -242,10 +349,15 @@ const ContactPage = () => {
                         placeholder="Enter your email address"
                       />
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Phone */}
-                  <div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                  >
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-3">
                       Phone Number
                     </label>
@@ -263,10 +375,15 @@ const ContactPage = () => {
                         placeholder="Enter your phone number"
                       />
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Company */}
-                  <div>
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                  >
                     <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-3">
                       Company
                     </label>
@@ -284,11 +401,17 @@ const ContactPage = () => {
                         placeholder="Enter your company name"
                       />
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 {/* Subject */}
-                <div className="mb-6">
+                <motion.div
+                  className="mb-6"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.7, delay: 0.6 }}
+                >
                   <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-3">
                     Subject *
                   </label>
@@ -305,10 +428,16 @@ const ContactPage = () => {
                       <option key={index} value={subject}>{subject}</option>
                     ))}
                   </select>
-                </div>
+                </motion.div>
 
                 {/* Message */}
-                <div className="mb-8">
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                >
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-3">
                     Message *
                   </label>
@@ -327,13 +456,19 @@ const ContactPage = () => {
                       placeholder="Enter your message here..."
                     />
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Submit Button */}
-                <button
+                <motion.button
                   type="submit"
                   disabled={loading}
                   className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white px-8 py-4 rounded-xl hover:shadow-lg hover:shadow-red-200/50 transition-all duration-300 font-semibold flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   {loading ? (
                     <>
@@ -346,32 +481,55 @@ const ContactPage = () => {
                       Send Message
                     </>
                   )}
-                </button>
+                </motion.button>
               </form>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Map Section */}
-        <div className="mt-16">
+        <motion.div
+          className="mt-16"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+        >
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-            <div className="p-8 bg-gradient-to-r from-red-50 to-rose-50 border-b border-gray-100">
+            <motion.div 
+              className="p-8 bg-gradient-to-r from-red-50 to-rose-50 border-b border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Find Us</h2>
               <p className="text-gray-600">Visit our office or contact us for directions</p>
-            </div>
-            <div className="h-96 bg-gray-200 relative overflow-hidden">
-              {/* You can replace this with Google Maps embed or any map service */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <FiMapPin className="w-16 h-16 text-red-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Interactive Map</h3>
-                  <p className="text-gray-600">Map integration coming soon</p>
-                </div>
+            </motion.div>
+            <motion.div 
+              className="h-96 relative overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+            >
+              <div className="h-full">
+                <iframe
+                  src="https://www.google.com/maps?q=25.262528,55.290111&hl=en&z=16&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Hikvision UAE Office Location"
+                  className="rounded-b-3xl"
+                />
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

@@ -12,65 +12,11 @@ const ChevronDownIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-const GlobeAltIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s-1.343-9 3-9m-9 9a9 9 0 019-9" />
-  </svg>
-)
-
 const UserIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
   </svg>
 )
-
-// Simplified menu structure
-const productCategories = [
-  'Network Cameras', 'Access Control', 'Video Surveillance',
-  'Thermal Cameras', 'Alarm Systems'
-]
-
-const networkProductsSubcategories = {
-  'Network Cameras': [
-    'IP Cameras', 'PTZ Cameras', 'Dome Cameras', 'Bullet Cameras',
-  ]
-}
-
-const accessControlProductsSubcategories = {
-  'Access Control': [
-    'Face Recognition',
-    'Card Readers',
-    'Turnstiles',
-    'Controllers', 
-  ]
-}
-
-const videoSurveillanceSubcategories = {
-  'Video Surveillance': [
-    'NVR Systems',
-    'DVR Systems',
-    'Monitors',
-    'Accessories',
-  ]
-}
-
-const thermalCamerasSubcategories = {
-  'Thermal Cameras': [
-    'Handheld',
-    'Fixed',
-    'Mobile',
-    'Speciality'
-  ],  
-}
-
-const alarmSystemsSubcategories = {
-  'Alarm Systems': [
-    'Intrusion Detection',
-    'Fire Alarm',
-    'Sensors',
-    'Control Panels'
-  ],
-}
 
 export default function Navbar() {
   const { data: session } = useSession()
@@ -79,22 +25,74 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  
+  // Dynamic categories from API
+  const [categories, setCategories] = useState<string[]>([])
+  const [subCategories, setSubCategories] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadingSubCategories, setLoadingSubCategories] = useState(false)
+  
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setIsClient(true)
+    fetchCategories()
   }, [])
+
+  // Fetch categories from API
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/products?limit=1')
+      const data = await response.json()
+      
+      if (data.success) {
+        setCategories(data.categories || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch categories:', error)
+      // Fallback to default categories if API fails
+      setCategories(['Network Cameras', 'Access Control', 'Video Surveillance', 'Thermal Cameras', 'Alarm Systems'])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Fetch subcategories for specific category
+  const fetchSubCategories = async (category: string) => {
+    try {
+      setLoadingSubCategories(true)
+      setSubCategories([]) // Clear previous subcategories immediately
+      
+      const response = await fetch(`/api/products?category=${encodeURIComponent(category)}&limit=1`)
+      const data = await response.json()
+      
+      if (data.success) {
+        setSubCategories(data.subCategories || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch subcategories:', error)
+      setSubCategories([])
+    } finally {
+      setLoadingSubCategories(false)
+    }
+  }
 
   const handleMouseEnter = (menu: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveDropdown(menu);
-    setActiveSubmenu(productCategories[0]); // auto-select first category
+    
+    // Auto-select first category and load its subcategories
+    if (categories.length > 0) {
+      setActiveSubmenu(categories[0]);
+      fetchSubCategories(categories[0]);
+    }
   }
 
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setActiveDropdown(null)
       setActiveSubmenu(null)
+      setSubCategories([]) // Clear subcategories when closing menu
     }, 150)
   }
 
@@ -102,13 +100,18 @@ export default function Navbar() {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
-    setActiveSubmenu(submenu)
+    
+    // Only fetch if different category is selected
+    if (activeSubmenu !== submenu) {
+      setActiveSubmenu(submenu)
+      fetchSubCategories(submenu)
+    }
   }
 
   const handleLogout = async () => {
     try {
       await signOut({
-        callbackUrl: '/', // Redirect to home page after logout
+        callbackUrl: '/',
         redirect: true
       })
     } catch (error) {
@@ -189,60 +192,78 @@ export default function Navbar() {
                           Categories
                         </h3>
                         <ul>
-                          {productCategories.map((category) => (
-                            <li
-                              key={category}
-                              className={`py-2 px-4 rounded cursor-pointer font-semibold text-gray-200 hover:text-red-500 transition-colors ${
-                                activeSubmenu === category ? 'bg-gray-800 text-red-500' : ''
-                              }`}
-                              onMouseEnter={() => setActiveSubmenu(category)}
-                            >
-                              {category}
-                            </li>
-                          ))}
+                          {loading ? (
+                            <li className="py-2 px-4 text-gray-400">Loading categories...</li>
+                          ) : (
+                            categories.map((category) => (
+                              <li
+                                key={category}
+                                className={`py-2 px-4 rounded cursor-pointer font-semibold text-gray-200 hover:text-red-500 transition-all duration-200 ${
+                                  activeSubmenu === category ? 'bg-gray-800 text-red-500 border-l-2 border-red-500' : 'hover:bg-gray-800'
+                                }`}
+                                onMouseEnter={() => handleSubmenuEnter(category)}
+                              >
+                                <Link
+                                  href={`/products?category=${encodeURIComponent(category)}`}
+                                  className="block w-full h-full"
+                                  onClick={() => {
+                                    setActiveDropdown(null)
+                                    setActiveSubmenu(null)
+                                    setSubCategories([])
+                                  }}
+                                >
+                                  {category}
+                                </Link>
+                              </li>
+                            ))
+                          )}
                         </ul>
                       </div>
-                      {/* Right: Subcategories & Products */}
+                      
+                      {/* Right: Subcategories */}
                       <div className="flex-1 grid grid-cols-3 gap-8">
-                        {(() => {
-                          let subcats = null;
-                          if (activeSubmenu === 'Network Cameras') subcats = networkProductsSubcategories;
-                          else if (activeSubmenu === 'Access Control') subcats = accessControlProductsSubcategories;
-                          else if (activeSubmenu === 'Video Surveillance') subcats = videoSurveillanceSubcategories;
-                          else if (activeSubmenu === 'Thermal Cameras') subcats = thermalCamerasSubcategories;
-                          else if (activeSubmenu === 'Alarm Systems') subcats = alarmSystemsSubcategories;
-
-                          if (!subcats) {
-                            return (
-                              <div className="col-span-3 flex items-center justify-center text-gray-400">
-                                <span>Select a category to view products</span>
-                              </div>
-                            );
-                          }
-
-                          return Object.entries(subcats).map(([subcat, items]) => (
-                            <div key={subcat} className="min-w-[180px] mb-4">
-                              <h4 className="font-semibold text-gray-100 text-xs uppercase tracking-wide border-b border-gray-700 pb-1 mb-2">
-                                {subcat}
-                              </h4>
-                              <div className="flex flex-col gap-1">
-                                {items.length === 0 ? (
-                                  <span className="text-xs text-gray-500 italic">No products</span>
-                                ) : (
-                                  items.map((item, idx) => (
-                                    <Link
-                                      key={idx}
-                                      href={`/products/${activeSubmenu?.toLowerCase().replace(/\s+/g, '-')}/${subcat.toLowerCase().replace(/\s+/g, '-')}/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                                      className="block text-xs text-gray-300 hover:text-red-400 hover:bg-gray-800 px-2 py-1 rounded transition-colors"
-                                    >
-                                      {item}
-                                    </Link>
-                                  ))
-                                )}
-                              </div>
+                        {loading ? (
+                          <div className="col-span-3 flex items-center justify-center text-gray-400">
+                            <span>Loading categories...</span>
+                          </div>
+                        ) : loadingSubCategories ? (
+                          <div className="col-span-3 flex items-center justify-center text-gray-400">
+                            <div className="flex items-center gap-2">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
+                              <span>Loading subcategories...</span>
                             </div>
-                          ));
-                        })()}
+                          </div>
+                        ) : activeSubmenu && subCategories.length > 0 ? (
+                          <div className="col-span-3">
+                            <h4 className="font-semibold text-gray-100 text-sm uppercase tracking-wide border-b border-gray-700 pb-2 mb-4">
+                              {activeSubmenu} Subcategories
+                            </h4>
+                            <div className="grid grid-cols-3 gap-4">
+                              {subCategories.map((subCategory, idx) => (
+                                <Link
+                                  key={idx}
+                                  href={`/products?category=${encodeURIComponent(activeSubmenu)}&subCategory=${encodeURIComponent(subCategory)}`}
+                                  className="block text-sm text-gray-300 hover:text-red-400 hover:bg-gray-800 px-3 py-2 rounded transition-all duration-200 border border-transparent hover:border-gray-600"
+                                  onClick={() => {
+                                    setActiveDropdown(null)
+                                    setActiveSubmenu(null)
+                                    setSubCategories([])
+                                  }}
+                                >
+                                  {subCategory}
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        ) : activeSubmenu ? (
+                          <div className="col-span-3 flex items-center justify-center text-gray-400">
+                            <span>No subcategories available for {activeSubmenu}</span>
+                          </div>
+                        ) : (
+                          <div className="col-span-3 flex items-center justify-center text-gray-400">
+                            <span>Hover over a category to view subcategories</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -253,17 +274,15 @@ export default function Navbar() {
             {/* Other Menu Items */}
             <NavLink href="/solutions">Solutions</NavLink>
             <NavLink href="/support">Support</NavLink>
-            <NavLink href="/technologies">Technologies</NavLink>
-            <NavLink href="/commercial-display">Commercial Display</NavLink>
-            <NavLink href="/about">About</NavLink>
+            <NavLink href="/about">About Us</NavLink>
+            <NavLink href="/contact">Contact Us</NavLink>
           </div>
 
           {/* Right side */}
           <div className="flex items-center space-x-4">
-            {/* User Icon - Sign Up */}
+            {/* User Authentication */}
             {session ? (
               <div className="relative group">
-                {/* Profile Button */}
                 <Link 
                   href="/profile" 
                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300"
@@ -289,7 +308,6 @@ export default function Navbar() {
                   </div>
                 </Link>
 
-                {/* Dropdown Menu */}
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                   <div className="py-2">
                     <Link
@@ -327,7 +345,6 @@ export default function Navbar() {
                 <span className="font-bold tracking-wide z-10 transition-colors duration-300 group-hover:text-yellow-200 animate-fadeIn">
                   Sign In
                 </span>
-                <span className="absolute left-0 top-0 w-full h-full rounded-full pointer-events-none group-hover:animate-pulseGlow"></span>
               </Link>
             )}
 
@@ -375,28 +392,20 @@ export default function Navbar() {
                 Support
               </Link>
               <Link 
-                href="/technologies" 
-                className="block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Technologies
-              </Link>
-              <Link 
-                href="/commercial-display" 
-                className="block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Commercial Display
-              </Link>
-              <Link 
                 href="/about" 
                 className="block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
               </Link>
+              <Link 
+                href="/contact" 
+                className="block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contact Us
+              </Link>
               
-              {/* Mobile Sign Up Link */}
               <Link 
                 href="/signup" 
                 className="block px-3 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md font-medium transition-colors mt-2"
@@ -408,6 +417,7 @@ export default function Navbar() {
           </div>
         )}
       </div>
+      
       <style jsx global>{`
         @keyframes navbarFadeIn {
           from {
