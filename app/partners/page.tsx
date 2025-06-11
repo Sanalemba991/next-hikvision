@@ -4,9 +4,8 @@ import { motion } from "framer-motion";
 import { FiSearch, FiChevronDown, FiMail, FiPhone, FiMapPin, FiExternalLink, FiUsers, FiGlobe, FiAward, FiTrendingUp } from "react-icons/fi";
 
 const partnerTabs = [
-  { id: "channel", label: "Channel Partners" },
-  { id: "technology", label: "Technology Partners" },
-  { id: "discover", label: "Discover More" }
+  { id: "channel", label: "Channel Program" },
+  { id: "technology", label: "Technology Program" },
 ];
 
 const partnerTypes = [
@@ -108,7 +107,7 @@ const technologyPartnersData = [
 
 const channelPartnerBenefits = [
   "Comprehensive product portfolio",
-  "Co-marketing opportunities", 
+  "Co-marketing opportunities",
   "Growth incentives",
   "Project registration, solution & special price support",
   "World-class training and support",
@@ -165,91 +164,335 @@ export default function PartnersPage() {
 
   const filteredPartners = getCurrentPartners().filter(partner => {
     const matchesSearch = partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         partner.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         partner.expertise.some(exp => exp.toLowerCase().includes(searchTerm.toLowerCase()));
+      partner.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      partner.expertise.some(exp => exp.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = selectedType === "All Partners" || partner.type === selectedType;
     const matchesRegion = selectedRegion === "All Regions" || partner.region === selectedRegion;
     return matchesSearch && matchesType && matchesRegion;
   });
+
+  // Function to navigate to contact page
+  const handleContactUs = () => {
+    window.location.href = '/contact';
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        duration: 0.4,
-        staggerChildren: 0.06
+        duration: 0.6,
+        staggerChildren: 0.1
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.4,
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const slideInLeft = {
+    hidden: { opacity: 0, x: -50 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const slideInRight = {
+    hidden: { opacity: 0, x: 50 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.8,
         ease: "easeOut"
       }
     }
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, scale: 0.98 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
       scale: 1,
       transition: {
-        duration: 0.3,
+        duration: 0.5,
         ease: "easeOut"
       }
     },
     hover: {
-      scale: 1.01,
-      boxShadow: "0 6px 25px rgba(220, 38, 38, 0.1)",
+      scale: 1.02,
+      boxShadow: "0 8px 30px rgba(220, 38, 38, 0.15)",
       transition: {
-        duration: 0.2
+        duration: 0.3
       }
     }
   };
 
   return (
-    <motion.main 
+    <motion.main
       initial="hidden"
       animate="visible"
       variants={containerVariants}
       style={{ fontFamily: "Inter, -apple-system, sans-serif", background: "#fafafa", color: "#1f2937", minHeight: "100vh" }}
     >
-      {/* Hero Section */}
+      {/* Hero Banner Section with Hikvision Banner Image */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+        style={{
+          position: "relative",
+          height: "70vh",
+          minHeight: "500px",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        {/* Background Banner Image */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: "url('https://www.bsysnetwork.com/uploads/3540/Hikvision-banner.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            zIndex: 1
+          }}
+        />
+
+        {/* Animated Background Elements */}
+        <motion.div
+          animate={{
+            rotate: 360,
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          style={{
+            position: "absolute",
+            top: "-50%",
+            left: "-50%",
+            width: "200%",
+            height: "200%",
+            background: "radial-gradient(circle, rgba(220, 38, 38, 0.1) 0%, transparent 70%)",
+            zIndex: 3
+          }}
+        />
+
+        <motion.div
+          animate={{
+            rotate: -360,
+            scale: [1, 0.9, 1]
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          style={{
+            position: "absolute",
+            top: "-30%",
+            right: "-30%",
+            width: "150%",
+            height: "150%",
+            background: "radial-gradient(circle, rgba(220, 38, 38, 0.05) 0%, transparent 60%)",
+            zIndex: 3
+          }}
+        />
+
+        {/* Floating Particles */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{
+              y: [-20, -60, -20],
+              x: [-10, 10, -10],
+              opacity: [0.3, 0.7, 0.3]
+            }}
+            transition={{
+              duration: 4 + i * 0.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.8
+            }}
+            style={{
+              position: "absolute",
+              width: "8px",
+              height: "8px",
+              background: "#dc2626",
+              borderRadius: "50%",
+              left: `${20 + i * 12}%`,
+              top: `${30 + (i % 3) * 20}%`,
+              zIndex: 4,
+              filter: "blur(1px)"
+            }}
+          />
+        ))}
+
+        {/* Banner Content */}
+        <div style={{
+          position: "relative",
+          zIndex: 5,
+          textAlign: "center",
+          color: "#ffffff",
+          maxWidth: "800px",
+          padding: "0 2rem"
+        }}>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
+            style={{
+              marginBottom: "2rem"
+            }}
+          >
+            <motion.h1
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+              style={{
+                fontSize: "4rem",
+                fontWeight: "800",
+                marginBottom: "1rem",
+                textShadow: "0 4px 20px rgba(0,0,0,0.5)",
+                background: "linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text"
+              }}
+            >
+             OUR PARTNERS
+            </motion.h1>
+          </motion.div>
+
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
+            style={{
+              fontSize: "1.25rem",
+              marginBottom: "2rem",
+              opacity: 0.95,
+              maxWidth: "600px",
+              margin: "0 auto 2rem",
+              lineHeight: 1.6,
+              textShadow: "0 2px 10px rgba(0,0,0,0.3)"
+            }}
+          >
+            Building the Future of Security Technology Together
+          </motion.div>
+
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut", delay: 1.1 }}
+            style={{
+              display: "flex",
+              gap: "1rem",
+              justifyContent: "center",
+              flexWrap: "wrap"
+            }}
+          >
+            <motion.div
+              whileHover={{ scale: 1.05, y: -2 }}
+              transition={{ duration: 0.3 }}
+              style={{
+                padding: "0.75rem 2rem",
+                background: "rgba(220, 38, 38, 0.9)",
+                color: "#ffffff",
+                borderRadius: "50px",
+                fontSize: "1rem",
+                fontWeight: "600",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
+              }}
+            >
+              Channel Partners
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05, y: -2 }}
+              transition={{ duration: 0.3 }}
+              style={{
+                padding: "0.75rem 2rem",
+                background: "rgba(255, 255, 255, 0.15)",
+                color: "#ffffff",
+                borderRadius: "50px",
+                fontSize: "1rem",
+                fontWeight: "600",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.3)",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
+              }}
+            >
+              Technology Partners
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Animated Bottom Wave */}
+        <motion.div
+          animate={{
+            x: [-100, 0, -100]
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "100px",
+            background: "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1200 120\" preserveAspectRatio=\"none\"><path d=\"M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z\" fill=\"%23fafafa\"></path></svg>') repeat-x",
+            backgroundSize: "200% 100%",
+            zIndex: 6
+          }}
+        />
+      </motion.section>
+
+      {/* Hero Section with Tabs */}
       <motion.section
         variants={itemVariants}
         style={{
-          background: "#f8f9fa",
-          padding: "3rem 2rem 2rem 2rem",
+          background: "#fafafa",
+          padding: "2rem 2rem 2rem 2rem",
           borderBottom: "1px solid #e5e7eb"
         }}
       >
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <motion.h1 
-            variants={itemVariants}
-            style={{ 
-              fontSize: "2.5rem", 
-              fontWeight: "700", 
-              marginBottom: "0.5rem",
-              color: "#1f2937"
-            }}
-          >
-            Partners
-          </motion.h1>
-          
           {/* Tab Navigation */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             style={{
               display: "flex",
               gap: "2rem",
-              marginTop: "2rem",
+              justifyContent: "center",
               borderBottom: "1px solid #e5e7eb"
             }}
           >
@@ -260,7 +503,7 @@ export default function PartnersPage() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab(tab.id)}
                 style={{
-                  padding: "1rem 0",
+                  padding: "1rem 2rem",
                   background: "transparent",
                   border: "none",
                   fontSize: "1rem",
@@ -281,52 +524,72 @@ export default function PartnersPage() {
       {/* Tab Content */}
       <motion.div
         key={activeTab}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
         style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}
       >
-        {/* Channel Partners Tab */}
+        {/* Channel Program Tab */}
         {activeTab === "channel" && (
-          <>
-            {/* Channel Partner Program Section */}
-            <motion.section 
-              variants={itemVariants}
-              style={{
-                background: "#ffffff",
-                margin: "3rem 0",
-                padding: "3rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.04)"
-              }}
-            >
-              <div style={{ display: "flex", gap: "3rem", alignItems: "center", flexWrap: "wrap" }}>
-                <div style={{ flex: "1", minWidth: "300px" }}>
-                  <motion.h2 
+          <motion.section
+            variants={containerVariants}
+            style={{
+              background: "#ffffff",
+              margin: "1rem 0",
+              padding: "4rem 3rem",
+              borderRadius: "12px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+              border: "1px solid #f1f5f9"
+            }}
+          >
+            <div style={{ display: "flex", gap: "4rem", alignItems: "center", flexWrap: "wrap" }}>
+              {/* Left side - Description */}
+              <motion.div 
+                variants={slideInLeft}
+                style={{ flex: "1", minWidth: "350px" }}
+              >
+                <motion.h2
+                  variants={itemVariants}
+                  style={{
+                    fontSize: "2.5rem",
+                    fontWeight: "800",
+                    color: "#1f2937",
+                    marginBottom: "2rem",
+                    lineHeight: 1.2
+                  }}
+                >
+                  Hikvision Channel Partner Program
+                </motion.h2>
+
+                <motion.p
+                  variants={itemVariants}
+                  style={{
+                    fontSize: "1.1rem",
+                    color: "#6b7280",
+                    marginBottom: "2.5rem",
+                    lineHeight: 1.7
+                  }}
+                >
+                  Hikvision's Channel Partner Program is tailored for resellers, system integrators and installers around the globe to promote products and solutions and grow businesses together. Join our network of certified partners and unlock exclusive benefits.
+                </motion.p>
+
+                <motion.div
+                  variants={containerVariants}
+                  style={{ marginBottom: "2.5rem" }}
+                >
+                  <motion.h3
                     variants={itemVariants}
-                    style={{ 
-                      fontSize: "2rem", 
-                      fontWeight: "700", 
+                    style={{
+                      fontSize: "1.3rem",
+                      fontWeight: "700",
                       color: "#1f2937",
                       marginBottom: "1.5rem"
                     }}
                   >
-                    Hikvision Channel Partner Program
-                  </motion.h2>
+                    Partner Benefits Include:
+                  </motion.h3>
                   
-                  <motion.p 
-                    variants={itemVariants}
-                    style={{
-                      fontSize: "1rem",
-                      color: "#6b7280",
-                      marginBottom: "2rem",
-                      lineHeight: 1.6
-                    }}
-                  >
-                    Hikvision's Channel Partner Program is tailored for resellers, system integrators and installers around the globe to promote products and solutions and grow businesses together. As a channel partner of Hikvision, you will immediately enjoy benefits that include:
-                  </motion.p>
-
-                  <motion.ul 
+                  <motion.ul
                     variants={containerVariants}
                     style={{ listStyle: "none", padding: 0 }}
                   >
@@ -334,18 +597,23 @@ export default function PartnersPage() {
                       <motion.li
                         key={idx}
                         variants={itemVariants}
+                        whileHover={{ scale: 1.02, x: 10 }}
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "0.75rem",
-                          marginBottom: "0.75rem",
-                          fontSize: "0.95rem",
-                          color: "#374151"
+                          gap: "1rem",
+                          marginBottom: "1rem",
+                          fontSize: "1rem",
+                          color: "#374151",
+                          padding: "0.75rem",
+                          borderRadius: "8px",
+                          background: "#fafafa",
+                          border: "1px solid #f1f5f9"
                         }}
                       >
                         <div style={{
-                          width: "6px",
-                          height: "6px",
+                          width: "8px",
+                          height: "8px",
                           background: "#dc2626",
                           borderRadius: "50%",
                           flexShrink: 0
@@ -354,86 +622,204 @@ export default function PartnersPage() {
                       </motion.li>
                     ))}
                   </motion.ul>
-                </div>
-                
-                <div style={{ flex: "0 0 400px", minWidth: "300px" }}>
-                  <img 
+                </motion.div>
+
+                <motion.div 
+                  variants={itemVariants}
+                  style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleContactUs}
+                    style={{
+                      padding: "1rem 2rem",
+                      background: "#dc2626",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: "1rem",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease"
+                    }}
+                  >
+                    Contact Us
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+
+              {/* Right side - Channel Program Visual */}
+              <motion.div 
+                variants={slideInRight}
+                style={{ flex: "0 0 450px", minWidth: "350px" }}
+              >
+                <motion.div
+                  variants={cardVariants}
+                  whileHover="hover"
+                  style={{
+                    position: "relative",
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.12)"
+                  }}
+                >
+                  <img
                     src="https://images.unsplash.com/photo-1600508774634-4e11d34730e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                     alt="Channel Partner Program"
                     style={{
                       width: "100%",
-                      height: "250px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
+                      height: "320px",
+                      objectFit: "cover"
                     }}
                   />
-                </div>
-              </div>
-            </motion.section>
-          </>
+                  <motion.div
+                    style={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      background: "linear-gradient(transparent, rgba(0,0,0,0.8))",
+                      color: "#ffffff",
+                      padding: "2rem",
+                      textAlign: "center"
+                    }}
+                  >
+                    <h4 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "0.5rem" }}>
+                      Global Partner Network
+                    </h4>
+                    <p style={{ fontSize: "0.9rem", opacity: 0.9 }}>
+                      Join thousands of certified partners worldwide
+                    </p>
+                  </motion.div>
+                </motion.div>
+
+                {/* Partner Stats */}
+                <motion.div
+                  variants={containerVariants}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: "1rem",
+                    marginTop: "1.5rem"
+                  }}
+                >
+                  {[
+                    { number: "10,000+", label: "Partners" },
+                    { number: "150+", label: "Countries" },
+                    { number: "24/7", label: "Support" }
+                  ].map((stat, idx) => (
+                    <motion.div
+                      key={idx}
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.05 }}
+                      style={{
+                        textAlign: "center",
+                        padding: "1rem",
+                        background: "#f8f9fa",
+                        borderRadius: "8px",
+                        border: "1px solid #f1f5f9"
+                      }}
+                    >
+                      <div style={{ fontSize: "1.5rem", fontWeight: "800", color: "#dc2626" }}>
+                        {stat.number}
+                      </div>
+                      <div style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+                        {stat.label}
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </div>
+          </motion.section>
         )}
 
-        {/* Technology Partners Tab */}
+        {/* Technology Program Tab */}
         {activeTab === "technology" && (
-          <>
-            {/* Technology Partner Program Section */}
-            <motion.section 
-              variants={itemVariants}
-              style={{
-                background: "#ffffff",
-                margin: "3rem 0",
-                padding: "3rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.04)"
-              }}
-            >
-              <div style={{ display: "flex", gap: "3rem", alignItems: "center", flexWrap: "wrap" }}>
-                <div style={{ flex: "1", minWidth: "300px" }}>
-                  <motion.h2 
+          <motion.section
+            variants={containerVariants}
+            style={{
+              background: "#ffffff",
+              margin: "1rem 0",
+              padding: "4rem 3rem",
+              borderRadius: "12px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+              border: "1px solid #f1f5f9"
+            }}
+          >
+            <div style={{ display: "flex", gap: "4rem", alignItems: "center", flexWrap: "wrap" }}>
+              {/* Left side - Description */}
+              <motion.div 
+                variants={slideInLeft}
+                style={{ flex: "1", minWidth: "350px" }}
+              >
+                <motion.h2
+                  variants={itemVariants}
+                  style={{
+                    fontSize: "2.5rem",
+                    fontWeight: "800",
+                    color: "#1f2937",
+                    marginBottom: "2rem",
+                    lineHeight: 1.2
+                  }}
+                >
+                  Technology Partner Program
+                </motion.h2>
+
+                <motion.p
+                  variants={itemVariants}
+                  style={{
+                    fontSize: "1.1rem",
+                    color: "#6b7280",
+                    marginBottom: "2.5rem",
+                    lineHeight: 1.7
+                  }}
+                >
+                  By joining the technology partner program, you will enjoy access to a wealth of technical and commercial resources. We ensure that your solution gets the proper response through our communication channels.
+                </motion.p>
+
+                <motion.div
+                  variants={containerVariants}
+                  style={{ marginBottom: "2.5rem" }}
+                >
+                  <motion.h3
                     variants={itemVariants}
-                    style={{ 
-                      fontSize: "2rem", 
-                      fontWeight: "700", 
+                    style={{
+                      fontSize: "1.3rem",
+                      fontWeight: "700",
                       color: "#1f2937",
                       marginBottom: "1.5rem"
                     }}
                   >
-                    Hikvision Technology Partner Program
-                  </motion.h2>
+                    Technology Benefits:
+                  </motion.h3>
                   
-                  <motion.p 
-                    variants={itemVariants}
-                    style={{
-                      fontSize: "1rem",
-                      color: "#6b7280",
-                      marginBottom: "2rem",
-                      lineHeight: 1.6
-                    }}
-                  >
-                    By joining the technology partner program, you will enjoy access to a wealth of technical and commercial resources. We ensure that your solution gets the proper response through our communication channels.
-                  </motion.p>
-
-                  <motion.ul 
+                  <motion.ul
                     variants={containerVariants}
-                    style={{ listStyle: "none", padding: 0, marginBottom: "2rem" }}
+                    style={{ listStyle: "none", padding: 0 }}
                   >
                     {technologyPartnerBenefits.map((benefit, idx) => (
                       <motion.li
                         key={idx}
                         variants={itemVariants}
+                        whileHover={{ scale: 1.02, x: 10 }}
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "0.75rem",
-                          marginBottom: "0.75rem",
-                          fontSize: "0.95rem",
-                          color: "#374151"
+                          gap: "1rem",
+                          marginBottom: "1rem",
+                          fontSize: "1rem",
+                          color: "#374151",
+                          padding: "0.75rem",
+                          borderRadius: "8px",
+                          background: "#fafafa",
+                          border: "1px solid #f1f5f9"
                         }}
                       >
                         <div style={{
-                          width: "6px",
-                          height: "6px",
+                          width: "8px",
+                          height: "8px",
                           background: "#dc2626",
                           borderRadius: "50%",
                           flexShrink: 0
@@ -442,433 +828,129 @@ export default function PartnersPage() {
                       </motion.li>
                     ))}
                   </motion.ul>
+                </motion.div>
 
-                  <motion.p 
-                    variants={itemVariants}
+                <motion.p
+                  variants={itemVariants}
+                  style={{
+                    fontSize: "1rem",
+                    color: "#6b7280",
+                    lineHeight: 1.6,
+                    marginBottom: "2rem"
+                  }}
+                >
+                  The Hikvision Technology Partner Program features three levels. Choose the partnership level that best suits your scope and ambitions as well as organizational capabilities.
+                </motion.p>
+
+                <motion.div 
+                  variants={itemVariants}
+                  style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleContactUs}
                     style={{
-                      fontSize: "0.95rem",
-                      color: "#6b7280",
-                      lineHeight: 1.6
+                      padding: "1rem 2rem",
+                      background: "#dc2626",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: "1rem",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease"
                     }}
                   >
-                    The Hikvision Technology Partner Program features three levels. Choose the partnership level that best suits your scope and ambitions ad well as organizational capabilities. With Hikvision, you can opt for project integration only, or you can choose to invest more time and effort and explore the many opportunities afforded by the partner program.
-                  </motion.p>
-                </div>
-                
-                <div style={{ flex: "0 0 400px", minWidth: "300px" }}>
-                  <img 
+                    Contact Us
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+
+              {/* Right side - Technology Program Visual */}
+              <motion.div 
+                variants={slideInRight}
+                style={{ flex: "0 0 450px", minWidth: "350px" }}
+              >
+                <motion.div
+                  variants={cardVariants}
+                  whileHover="hover"
+                  style={{
+                    position: "relative",
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.12)"
+                  }}
+                >
+                  <img
                     src="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                     alt="Technology Partner Program"
                     style={{
                       width: "100%",
-                      height: "300px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
+                      height: "320px",
+                      objectFit: "cover"
                     }}
                   />
-                </div>
-              </div>
-            </motion.section>
-
-            {/* Technology Partners Directory */}
-            <motion.section 
-              variants={itemVariants}
-              style={{
-                background: "#ffffff",
-                margin: "2rem 0",
-                padding: "2rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.04)"
-              }}
-            >
-              <h3 style={{ 
-                fontSize: "1.5rem", 
-                fontWeight: "600", 
-                color: "#1f2937",
-                marginBottom: "1.5rem",
-                textAlign: "center"
-              }}>
-                Find Technology Partners
-              </h3>
-
-              {/* Search Bar for Technology Partners */}
-              <div style={{
-                display: "flex",
-                gap: "1rem",
-                maxWidth: 600,
-                margin: "0 auto 2rem",
-                flexWrap: "wrap"
-              }}>
-                <motion.div 
-                  style={{
-                    position: "relative",
-                    flex: "1",
-                    minWidth: "250px"
-                  }}
-                >
-                  <FiSearch style={{
-                    position: "absolute",
-                    left: "1rem",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "#9ca3af",
-                    fontSize: "1rem"
-                  }} />
-                  <input
-                    type="text"
-                    placeholder="Search technology partners..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                  <motion.div
                     style={{
-                      width: "100%",
-                      padding: "0.75rem 1rem 0.75rem 2.5rem",
-                      border: "1px solid #d1d5db",
-                      borderRadius: "6px",
-                      fontSize: "0.9rem",
-                      outline: "none",
-                      transition: "all 0.2s ease",
-                      backgroundColor: "#ffffff"
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      background: "linear-gradient(transparent, rgba(0,0,0,0.8))",
+                      color: "#ffffff",
+                      padding: "2rem",
+                      textAlign: "center"
                     }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = "#dc2626";
-                      e.target.style.boxShadow = "0 0 0 3px rgba(220, 38, 38, 0.08)";
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = "#d1d5db";
-                      e.target.style.boxShadow = "none";
-                    }}
-                  />
+                  >
+                    <h4 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "0.5rem" }}>
+                      Innovation Ecosystem
+                    </h4>
+                    <p style={{ fontSize: "0.9rem", opacity: 0.9 }}>
+                      Cutting-edge technology integration platform
+                    </p>
+                  </motion.div>
                 </motion.div>
-              </div>
 
-              {/* Results Counter */}
-              <div style={{ textAlign: "center", color: "#6b7280", fontSize: "0.85rem", marginBottom: "2rem" }}>
-                Showing {filteredPartners.length} of {getCurrentPartners().length} technology partners
-              </div>
-
-              {/* Technology Partners Grid */}
-              {filteredPartners.length > 0 ? (
+                {/* Technology Stats */}
                 <motion.div
                   variants={containerVariants}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-                    gap: "1.5rem"
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: "1rem",
+                    marginTop: "1.5rem"
                   }}
                 >
-                  {filteredPartners.map((partner) => (
+                  {[
+                    { number: "500+", label: "Tech Partners" },
+                    { number: "50+", label: "Integrations" },
+                    { number: "99.9%", label: "Uptime" }
+                  ].map((stat, idx) => (
                     <motion.div
-                      key={partner.id}
-                      variants={cardVariants}
-                      whileHover="hover"
+                      key={idx}
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.05 }}
                       style={{
+                        textAlign: "center",
+                        padding: "1rem",
                         background: "#f8f9fa",
                         borderRadius: "8px",
-                        padding: "1.5rem",
-                        border: "1px solid #e5e7eb"
+                        border: "1px solid #f1f5f9"
                       }}
                     >
-                      {/* Partner Header */}
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem", marginBottom: "1rem" }}>
-                        <div style={{
-                          width: "50px",
-                          height: "50px",
-                          background: "#dc2626",
-                          borderRadius: "6px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0
-                        }}>
-                          <span style={{ fontSize: "1.25rem", fontWeight: "600", color: "#ffffff" }}>
-                            {partner.name.charAt(0)}
-                          </span>
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <h3 style={{ 
-                            fontSize: "1.1rem", 
-                            fontWeight: "600", 
-                            color: "#1f2937",
-                            marginBottom: "0.25rem"
-                          }}>
-                            {partner.name}
-                          </h3>
-                          <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>
-                            📍 {partner.location}
-                          </div>
-                        </div>
+                      <div style={{ fontSize: "1.5rem", fontWeight: "800", color: "#dc2626" }}>
+                        {stat.number}
                       </div>
-
-                      {/* Partner Description */}
-                      <p style={{ 
-                        color: "#6b7280", 
-                        fontSize: "0.9rem",
-                        marginBottom: "1rem",
-                        lineHeight: 1.5
-                      }}>
-                        {partner.description}
-                      </p>
-
-                      {/* Expertise Tags */}
-                      <div style={{ marginBottom: "1rem" }}>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                          <span style={{
-                            padding: "0.25rem 0.5rem",
-                            background: "#dc2626",
-                            color: "#ffffff",
-                            borderRadius: "12px",
-                            fontSize: "0.7rem",
-                            fontWeight: "500"
-                          }}>
-                            {partner.type}
-                          </span>
-                          {partner.expertise.map((skill, idx) => (
-                            <span key={idx} style={{
-                              padding: "0.25rem 0.5rem",
-                              background: "#fef2f2",
-                              color: "#dc2626",
-                              borderRadius: "12px",
-                              fontSize: "0.7rem",
-                              fontWeight: "500"
-                            }}>
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Contact Information */}
-                      <div style={{ 
-                        paddingTop: "1rem", 
-                        borderTop: "1px solid #e5e7eb",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: "1rem"
-                      }}>
-                        <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", marginBottom: "0.25rem" }}>
-                            <FiMail style={{ fontSize: "0.7rem" }} />
-                            <span>{partner.email}</span>
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                            <FiPhone style={{ fontSize: "0.7rem" }} />
-                            <span>{partner.phone}</span>
-                          </div>
-                        </div>
-                        <motion.a
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          href={partner.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.25rem",
-                            padding: "0.5rem 1rem",
-                            background: "#dc2626",
-                            color: "#ffffff",
-                            textDecoration: "none",
-                            borderRadius: "6px",
-                            fontSize: "0.8rem",
-                            fontWeight: "500",
-                            transition: "all 0.2s ease"
-                          }}
-                          onMouseEnter={(e) => {
-                            (e.target as HTMLAnchorElement).style.background = "#b91c1c";
-                          }}
-                          onMouseLeave={(e) => {
-                            (e.target as HTMLAnchorElement).style.background = "#dc2626";
-                          }}
-                        >
-                          Visit
-                          <FiExternalLink style={{ fontSize: "0.7rem" }} />
-                        </motion.a>
+                      <div style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+                        {stat.label}
                       </div>
                     </motion.div>
                   ))}
                 </motion.div>
-              ) : (
-                <motion.div
-                  variants={itemVariants}
-                  style={{
-                    textAlign: "center",
-                    padding: "3rem",
-                    color: "#6b7280",
-                    background: "#f8f9fa",
-                    borderRadius: "8px"
-                  }}
-                >
-                  <p style={{ fontSize: "1rem", marginBottom: "0.5rem" }}>No technology partners found matching your criteria.</p>
-                  <p style={{ fontSize: "0.9rem" }}>Try adjusting your search terms.</p>
-                </motion.div>
-              )}
-            </motion.section>
-          </>
-        )}
-
-        {/* Discover More Tab */}
-        {activeTab === "discover" && (
-          <>
-            {/* Partnership Benefits */}
-            <motion.section 
-              variants={itemVariants}
-              style={{ 
-                background: "#ffffff",
-                margin: "3rem 0", 
-                padding: "3rem", 
-                borderRadius: "8px",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.04)"
-              }}
-            >
-              <motion.h2 
-                variants={itemVariants}
-                style={{ 
-                  textAlign: "center", 
-                  fontSize: "2rem", 
-                  fontWeight: "700", 
-                  color: "#1f2937",
-                  marginBottom: "1rem"
-                }}
-              >
-                Why Partner with Hikvision?
-              </motion.h2>
-              <motion.p 
-                variants={itemVariants}
-                style={{ 
-                  textAlign: "center", 
-                  fontSize: "1.1rem", 
-                  color: "#6b7280",
-                  marginBottom: "3rem",
-                  maxWidth: 650,
-                  margin: "0 auto 3rem"
-                }}
-              >
-                Join our global partner ecosystem and unlock new opportunities for growth and success
-              </motion.p>
-              <motion.div
-                variants={containerVariants}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-                  gap: "2rem",
-                }}
-              >
-                {partnershipBenefits.map((benefit, idx) => (
-                  <motion.div
-                    key={idx}
-                    variants={cardVariants}
-                    whileHover="hover"
-                    style={{
-                      textAlign: "center",
-                      padding: "1.5rem",
-                    }}
-                  >
-                    <div style={{ 
-                      color: "#dc2626", 
-                      marginBottom: "1rem",
-                      display: "flex",
-                      justifyContent: "center"
-                    }}>
-                      {benefit.icon}
-                    </div>
-                    <h3 style={{ 
-                      fontSize: "1.125rem", 
-                      fontWeight: "600", 
-                      marginBottom: "0.75rem", 
-                      color: "#1f2937" 
-                    }}>
-                      {benefit.title}
-                    </h3>
-                    <p style={{ 
-                      fontSize: "0.95rem", 
-                      color: "#6b7280",
-                      lineHeight: 1.6
-                    }}>
-                      {benefit.description}
-                    </p>
-                  </motion.div>
-                ))}
               </motion.div>
-            </motion.section>
-
-            {/* Become a Partner CTA */}
-            <motion.section 
-              variants={itemVariants}
-              style={{ 
-                background: "linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)",
-                color: "#ffffff",
-                padding: "3rem 2rem", 
-                textAlign: "center",
-                borderRadius: "8px",
-                margin: "0 0 4rem"
-              }}
-            >
-              <motion.h2 
-                variants={itemVariants}
-                style={{ 
-                  fontSize: "2rem", 
-                  fontWeight: "700", 
-                  marginBottom: "1rem"
-                }}
-              >
-                Ready to Become a Partner?
-              </motion.h2>
-              <motion.p 
-                variants={itemVariants}
-                style={{ 
-                  fontSize: "1.1rem", 
-                  marginBottom: "2rem",
-                  maxWidth: 650,
-                  margin: "0 auto 2rem",
-                  opacity: 0.95
-                }}
-              >
-                Join our growing network of partners and help shape the future of security technology
-              </motion.p>
-              <motion.div
-                variants={itemVariants}
-                style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}
-              >
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{
-                    padding: "0.875rem 2rem",
-                    background: "#ffffff",
-                    color: "#dc2626",
-                    border: "none",
-                    borderRadius: "6px",
-                    fontSize: "1rem",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease"
-                  }}
-                >
-                  Apply Now
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{
-                    padding: "0.875rem 2rem",
-                    background: "transparent",
-                    color: "#ffffff",
-                    border: "2px solid #ffffff",
-                    borderRadius: "6px",
-                    fontSize: "1rem",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease"
-                  }}
-                >
-                  Learn More
-                </motion.button>
-              </motion.div>
-            </motion.section>
-          </>
+            </div>
+          </motion.section>
         )}
       </motion.div>
     </motion.main>
