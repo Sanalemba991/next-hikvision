@@ -152,36 +152,72 @@ const Footer = () => {
                 </ul>
               </div>
 
-              {/* Solutions - With specific categories */}
+              {/* Solutions - With enhanced hash navigation */}
               <div>
                 <h4 className="text-white font-semibold mb-4 text-lg">Solutions</h4>
                 <ul className="space-y-3">
                   {[
                     {
-                      name: 'Smart Cities',
-                      href: '/solutions/smart-cities'
+                      name: 'Smart City',
+                      href: '/solutions#smart-city',
+                      hash: 'smart-city'
                     },
                     {
-                      name: 'Retail Security',
-                      href: '/solutions/retail-security'
+                      name: 'Retail',
+                      href: '/solutions#retail',
+                      hash: 'retail'
                     },
                     {
-                      name: 'Transportation',
-                      href: '/solutions/transportation'
+                      name: 'Industrial',
+                      href: '/solutions#industrial',
+                      hash: 'industrial'
                     },
                     {
                       name: 'Healthcare',
-                      href: '/solutions/healthcare'
+                      href: '/solutions#healthcare',
+                      hash: 'healthcare'
                     },
                     {
                       name: 'Education',
-                      href: '/solutions/education'
+                      href: '/solutions#education',
+                      hash: 'education'
+                    },
+                    {
+                      name: 'Transportation',
+                      href: '/solutions#transportation',
+                      hash: 'transportation'
                     }
                   ].map((solution, index) => (
                     <li key={index}>
                       <Link
                         href={solution.href}
                         className="text-gray-400 hover:text-white transition-colors duration-300"
+                        onClick={(e) => {
+                          // If we're already on solutions page, handle hash change manually
+                          if (typeof window !== 'undefined' && window.location.pathname === '/solutions') {
+                            e.preventDefault();
+                            
+                            // Update URL hash
+                            window.location.hash = solution.hash;
+                            
+                            // Manually trigger hashchange event
+                            window.dispatchEvent(new HashChangeEvent('hashchange', {
+                              newURL: window.location.href,
+                              oldURL: window.location.href.split('#')[0]
+                            }));
+                            
+                            // Scroll to solutions section
+                            setTimeout(() => {
+                              const solutionsSection = document.getElementById('solutions-section');
+                              if (solutionsSection) {
+                                solutionsSection.scrollIntoView({ 
+                                  behavior: 'smooth',
+                                  block: 'start'
+                                });
+                              }
+                            }, 100);
+                          }
+                        }}
                       >
                         {solution.name}
                       </Link>
@@ -199,50 +235,7 @@ const Footer = () => {
               </div>
 
               {/* Support - With specific categories */}
-              <div>
-                <h4 className="text-white font-semibold mb-4 text-lg">Support</h4>
-                <ul className="space-y-3">
-                  {[
-                    {
-                      name: 'Technical Support',
-                      href: '/support/technical'
-                    },
-                    {
-                      name: 'Documentation',
-                      href: '/support/documentation'
-                    },
-                    {
-                      name: 'Downloads',
-                      href: '/support/downloads'
-                    },
-                    {
-                      name: 'Training',
-                      href: '/support/training'
-                    },
-                    {
-                      name: 'Warranty',
-                      href: '/support/warranty'
-                    }
-                  ].map((support, index) => (
-                    <li key={index}>
-                      <Link
-                        href={support.href}
-                        className="text-gray-400 hover:text-white transition-colors duration-300"
-                      >
-                        {support.name}
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link
-                      href="/support"
-                      className="text-red-400 hover:text-red-300 transition-colors duration-300 text-sm font-medium"
-                    >
-                      Support Center →
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+             
 
               {/* Company - Reduced links */}
               <div>
@@ -257,14 +250,7 @@ const Footer = () => {
                       name: 'Contact Us',
                       href: '/contact'
                     },
-                    {
-                      name: 'Careers',
-                      href: '/careers'
-                    },
-                    {
-                      name: 'News & Events',
-                      href: '/news'
-                    },
+                   
                     {
                       name: 'Partners',
                       href: '/partners'
