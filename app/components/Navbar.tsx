@@ -92,7 +92,10 @@ export default function Navbar() {
     setActiveDropdown(menu);
     
     if (menu === 'products') {
-      // Auto-select first category and load its subcategories
+      // Clear previous state and auto-select first category
+      setActiveSubmenu(null);
+      setSubCategories([]);
+      
       if (categories.length > 0) {
         setActiveSubmenu(categories[0]);
         fetchSubCategories(categories[0]);
@@ -113,11 +116,24 @@ export default function Navbar() {
       clearTimeout(timeoutRef.current)
     }
     
-    // Only fetch if different category is selected
-    if (activeSubmenu !== submenu) {
-      setActiveSubmenu(submenu)
-      fetchSubCategories(submenu)
-    }
+    // Always clear previous subcategories and set new selection
+    setSubCategories([]);
+    setActiveSubmenu(submenu);
+    fetchSubCategories(submenu);
+  }
+
+  const handleCategoryClick = (category: string) => {
+    // Reset dropdown state and navigate
+    setActiveDropdown(null);
+    setActiveSubmenu(null);
+    setSubCategories([]);
+  }
+
+  const handleSubCategoryClick = (category: string, subCategory: string) => {
+    // Reset dropdown state and navigate to specific subcategory
+    setActiveDropdown(null);
+    setActiveSubmenu(null);
+    setSubCategories([]);
   }
 
   const handleLogout = async () => {
@@ -210,25 +226,23 @@ export default function Navbar() {
                             categories.map((category) => (
                               <li
                                 key={category}
-                                className={`py-2 px-4 rounded cursor-pointer font-semibold text-gray-200 hover:text-red-500 transition-all duration-200 ${
-                                  activeSubmenu === category ? 'bg-gray-800 text-red-500 border-l-2 border-red-500' : 'hover:bg-gray-800'
+                                className={`py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-200 ${
+                                  activeSubmenu === category 
+                                    ? 'bg-gray-800 text-red-500 border-l-2 border-red-500' 
+                                    : 'text-gray-200 hover:text-red-500 hover:bg-gray-800'
                                 }`}
                                 onMouseEnter={() => handleSubmenuEnter(category)}
                               >
                                 <Link
                                   href={`/products?category=${encodeURIComponent(category)}`}
                                   className="block w-full h-full"
-                                  onClick={() => {
-                                    setActiveDropdown(null)
-                                    setActiveSubmenu(null)
-                                    setSubCategories([])
-                                  }}
+                                  onClick={() => handleCategoryClick(category)}
                                 >
                                   {category}
                                 </Link>
                               </li>
                             ))
-                          )};
+                          )}
                         </ul>
                       </div>
                       
@@ -256,11 +270,7 @@ export default function Navbar() {
                                   key={idx}
                                   href={`/products?category=${encodeURIComponent(activeSubmenu)}&subCategory=${encodeURIComponent(subCategory)}`}
                                   className="block text-sm text-gray-300 hover:text-red-400 hover:bg-gray-800 px-3 py-2 rounded transition-all duration-200 border border-transparent hover:border-gray-600"
-                                  onClick={() => {
-                                    setActiveDropdown(null)
-                                    setActiveSubmenu(null)
-                                    setSubCategories([])
-                                  }}
+                                  onClick={() => handleSubCategoryClick(activeSubmenu || '', subCategory)}
                                 >
                                   {subCategory}
                                 </Link>
@@ -292,7 +302,7 @@ export default function Navbar() {
               <Link 
                 href="/solutions"
                 className={`relative flex items-center px-3 py-2 text-sm font-medium transition-all duration-300 group ${
-                  isActiveLink('/solutions') 
+                  isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(solution.href))
                     ? 'text-red-500' 
                     : 'text-gray-200 hover:text-red-500'
                 }`}
@@ -303,7 +313,7 @@ export default function Navbar() {
                     activeDropdown === 'solutions' ? 'rotate-180' : ''
                   }`}
                 />
-                {isActiveLink('/solutions') && (
+                {(isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(solution.href))) && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-red-500 transform origin-left animate-slideIn"></span>
                 )}
               </Link>
@@ -319,7 +329,11 @@ export default function Navbar() {
                       <li key={index}>
                         <Link
                           href={solution.href}
-                          className="block py-2 px-3 rounded text-gray-200 hover:text-red-500 hover:bg-gray-800 transition-all duration-200 font-medium"
+                          className={`block py-2 px-3 rounded transition-all duration-200 font-medium ${
+                            isActiveLink(solution.href)
+                              ? 'text-red-500 bg-gray-800 border-l-2 border-red-500'
+                              : 'text-gray-200 hover:text-red-500 hover:bg-gray-800'
+                          }`}
                           onClick={() => {
                             setActiveDropdown(null)
                             setActiveSubmenu(null)
@@ -404,7 +418,7 @@ export default function Navbar() {
               >
                 <span className="absolute inset-0 bg-red-700 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-full"></span>
                 <FiUser className="w-5 h-5 z-10 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12" />
-                <span className="font-bold tracking-wide z-10 transition-colors duration-300 group-hover:text-yellow-200 animate-fadeIn">
+                <span className="font-bold tracking-wide z-10 transition-colors duration-300  animate-fadeIn">
                   Sign In
                 </span>
               </Link>

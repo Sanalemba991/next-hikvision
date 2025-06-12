@@ -127,7 +127,7 @@ const Footer = () => {
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <span className="bg-gradient-to-r from-red-500 via-red-600 to-orange-500 bg-clip-text text-transparent">HIKVISION</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-600">HIK</span>VISION
                   <span className="text-white"> UAE</span>
                 </motion.h3>
                 <p className="text-gray-400 text-sm max-w-xs">
