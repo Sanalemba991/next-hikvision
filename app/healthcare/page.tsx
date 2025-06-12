@@ -1,0 +1,545 @@
+'use client';
+import React, { useState, useEffect, useRef } from 'react';
+import { useInView } from 'react-intersection-observer';
+import { useRouter } from 'next/navigation';
+import { 
+  Shield, 
+  Camera, 
+  Users, 
+  TrendingUp, 
+  Eye, 
+  Lock, 
+  BarChart3, 
+  Building, 
+  AlertCircle, 
+  CheckCircle, 
+  ArrowRight, 
+  Play,
+  Star,
+  MapPin,
+  Clock,
+  DollarSign,
+  Activity,
+  Zap,
+  Target,
+  UserCheck,
+  Package,
+  Phone,
+  Info,
+  Car,
+  Navigation,
+  Lightbulb,
+  Wifi,
+  Globe,
+  Monitor,
+  Database,
+  Settings,
+  ChevronRight,
+  FileText,
+  Download,
+  ExternalLink,
+  Heart,
+  Stethoscope,
+  Pause,
+  Hospital,
+  Thermometer
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const HealthcarePage = () => {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  // Refs for sections
+  const overviewRef = useRef<HTMLElement>(null);
+  const solutionsRef = useRef<HTMLElement>(null);
+
+  // Intersection Observer hooks
+  const { ref: bannerRef, inView: bannerInView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const { ref: benefitsRef, inView: benefitsInView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const { ref: solutionsInViewRef, inView: solutionsInView } = useInView({ triggerOnce: true, threshold: 0.1 });
+
+  // Function to scroll to specific section
+  const scrollToSection = (sectionId: string) => {
+    setActiveTab(sectionId);
+    
+    const sectionRefs = {
+      overview: overviewRef,
+      solutions: solutionsRef
+    };
+    
+    const targetRef = sectionRefs[sectionId as keyof typeof sectionRefs];
+    if (targetRef && targetRef.current) {
+      // Offset for sticky nav
+      const navHeight = 80;
+      const elementPosition = targetRef.current.offsetTop - navHeight;
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Handle scroll spy for active tab
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = [
+        { id: 'overview', ref: overviewRef },
+        { id: 'solutions', ref: solutionsRef }
+      ];
+
+      const scrollPosition = window.scrollY + 100;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.ref.current && section.ref.current.offsetTop <= scrollPosition) {
+          setActiveTab(section.id);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Tab navigation data
+  const tabData = [
+    { id: 'overview', label: 'Overview', icon: Hospital },
+    { id: 'solutions', label: 'Solutions', icon: Settings }
+  ];
+
+  // Solutions by category
+  const solutionCategories = [
+    {
+      title: 'Patient Safety & Monitoring',
+      subtitle: 'Advanced Patient Care Systems',
+      description: 'Comprehensive patient monitoring and safety systems to ensure quality care and prevent incidents.',
+      solutions: [
+        'Patient Room Monitoring',
+        'Fall Detection Systems',
+        'Wandering Prevention',
+        'Emergency Response Integration'
+      ],
+      image: 'https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    },
+    {
+      title: 'Access Control & Security',
+      subtitle: 'Secure Healthcare Environments',
+      description: 'Advanced access control systems to protect sensitive areas and ensure authorized personnel access.',
+      solutions: [
+        'Biometric Access Control',
+        'Visitor Management Systems',
+        'Pharmaceutical Security',
+        'Staff Badge Integration'
+      ],
+      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    },
+    {
+      title: 'Operating Room Solutions',
+      subtitle: 'Surgical Environment Monitoring',
+      description: 'Specialized monitoring solutions for operating rooms and critical care environments.',
+      solutions: [
+        'OR Camera Systems',
+        'Surgical Recording',
+        'Temperature Monitoring',
+        'Sterile Environment Control'
+      ],
+      image: 'https://images.unsplash.com/photo-1581056771107-24ca5f033842?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    },
+    {
+      title: 'Emergency & Trauma Centers',
+      subtitle: 'Critical Care Support Systems',
+      description: 'Real-time monitoring and response systems for emergency departments and trauma centers.',
+      solutions: [
+        'Emergency Room Monitoring',
+        'Trauma Bay Surveillance',
+        'Triage Area Management',
+        'Ambulance Bay Security'
+      ],
+      image: 'https://images.unsplash.com/photo-1584432810601-6c7f27d2362b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    }
+  ];
+
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 60 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const scaleUp = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { duration: 0.5, ease: "easeOut" }
+    }
+  };
+
+  const slideInLeft = {
+    hidden: { opacity: 0, x: -60 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  const slideInRight = {
+    hidden: { opacity: 0, x: 60 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <motion.section
+        ref={bannerRef}
+        className="relative py-20 bg-gradient-to-br from-gray-900 via-red-900 to-gray-800 overflow-hidden"
+        initial="hidden"
+        animate={bannerInView ? "visible" : "hidden"}
+        variants={fadeInUp}
+      >
+        <div className="absolute inset-0 bg-black/20" />
+        
+        {/* Animated background elements */}
+        <motion.div 
+          className="absolute top-20 left-20 w-72 h-72 bg-red-600/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-20 right-20 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.4, 0.2, 0.4],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div className="space-y-8" variants={staggerContainer}>
+              <motion.div variants={fadeInUp}>
+                <motion.div 
+                  className="inline-flex items-center px-4 py-2 bg-red-600/20 backdrop-blur-sm border border-red-500/30 rounded-full text-red-300 text-sm font-medium mb-6"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Heart className="w-4 h-4 mr-2" />
+                  Healthcare Solutions
+                </motion.div>
+                <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                  Protecting Healthcare Excellence
+                </h1>
+                <p className="text-xl text-gray-300 leading-relaxed">
+                  Hikvision's healthcare security solutions ensure patient safety, protect sensitive areas, 
+                  and support medical professionals with advanced monitoring and access control systems.
+                </p>
+              </motion.div>
+
+              <motion.div className="flex flex-col sm:flex-row gap-4" variants={fadeInUp}>
+                <motion.button
+                  className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                  onClick={() => scrollToSection('overview')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Explore Solutions
+                </motion.button>
+                <motion.button
+                  className="px-8 py-3 border border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
+                  onClick={() => setIsVideoPlaying(true)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Play className="w-5 h-5 inline mr-2" />
+                  Watch Demo
+                </motion.button>
+              </motion.div>
+            </motion.div>
+
+            <motion.div 
+              className="relative"
+              variants={slideInRight}
+            >
+              <motion.img
+                src="https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Healthcare Security Technology"
+                className="w-full h-96 object-cover rounded-2xl shadow-2xl"
+                transition={{ duration: 0.5 }}
+              />
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Navigation Tabs */}
+      <motion.section 
+        className="bg-white border-b sticky top-0 z-40 backdrop-blur-sm bg-white/95"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-8 overflow-x-auto">
+            {tabData.map((tab, index) => {
+              const Icon = tab.icon;
+              return (
+                <motion.button
+                  key={tab.id}
+                  onClick={() => scrollToSection(tab.id)}
+                  className={`flex items-center px-6 py-4 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-red-600 text-red-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -2 }}
+                >
+                  <Icon className="w-5 h-5 mr-2" />
+                  {tab.label}
+                </motion.button>
+              );
+            })}
+          </nav>
+        </div>
+      </motion.section>
+
+      {/* Overview Section */}
+      <section ref={overviewRef} className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Key Benefits */}
+          <motion.div 
+            ref={benefitsRef}
+            className="bg-gradient-to-r from-red-50 to-gray-50 rounded-2xl p-8"
+            initial="hidden"
+            animate={benefitsInView ? "visible" : "hidden"}
+            variants={fadeInUp}
+          >
+            <motion.div className="text-center mb-8" variants={fadeInUp}>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Why Choose Hikvision Healthcare Solutions?
+              </h2>
+            </motion.div>
+            <motion.div 
+              className="grid md:grid-cols-3 gap-8"
+              variants={staggerContainer}
+            >
+              {[
+                {
+                  icon: TrendingUp,
+                  title: "Patient Safety",
+                  description: "85% reduction in patient incidents and improved emergency response times",
+                  color: "bg-red-600"
+                },
+                {
+                  icon: Shield,
+                  title: "HIPAA Compliance",
+                  description: "Healthcare-grade security with full privacy protection and compliance",
+                  color: "bg-gray-600"
+                },
+                {
+                  icon: Activity,
+                  title: "24/7 Monitoring",
+                  description: "Continuous patient monitoring and real-time alert systems",
+                  color: "bg-red-600"
+                }
+              ].map((benefit, index) => {
+                const Icon = benefit.icon;
+                return (
+                  <motion.div 
+                    key={index}
+                    className="text-center"
+                    variants={scaleUp}
+                    whileHover={{ y: -5 }}
+                  >
+                    <motion.div 
+                      className={`w-16 h-16 ${benefit.color} rounded-full flex items-center justify-center mx-auto mb-4`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                    >
+                      <Icon className="w-8 h-8 text-white" />
+                    </motion.div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                    <p className="text-gray-600">{benefit.description}</p>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Solutions Section */}
+      <section ref={solutionsRef} className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            ref={solutionsInViewRef}
+            initial="hidden"
+            animate={solutionsInView ? "visible" : "hidden"}
+            variants={staggerContainer}
+          >
+            <motion.div className="text-center mb-12" variants={fadeInUp}>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Healthcare Solutions</h2>
+              <p className="text-xl text-gray-600">Comprehensive security and monitoring solutions for healthcare facilities</p>
+            </motion.div>
+
+            <div className="space-y-16">
+              {solutionCategories.map((category, index) => (
+                <motion.div 
+                  key={index} 
+                  className={`grid lg:grid-cols-2 gap-12 items-center ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}`}
+                  variants={fadeInUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.3 }}
+                >
+                  <motion.div 
+                    className={`space-y-6 ${index % 2 === 1 ? 'lg:col-start-2' : ''}`}
+                    variants={index % 2 === 0 ? slideInLeft : slideInRight}
+                  >
+                    <div>
+                      <motion.p 
+                        className="text-sm font-medium text-red-600 uppercase tracking-wide mb-2"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        {category.subtitle}
+                      </motion.p>
+                      <motion.h3 
+                        className="text-3xl font-bold text-gray-900 mb-4"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        {category.title}
+                      </motion.h3>
+                      <motion.p 
+                        className="text-lg text-gray-600"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                      >
+                        {category.description}
+                      </motion.p>
+                    </div>
+                    
+                    <motion.div 
+                      className="space-y-3"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      {category.solutions.map((solution, idx) => (
+                        <motion.div 
+                          key={idx} 
+                          className="flex items-center"
+                          initial={{ opacity: 0, x: -20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.6 + idx * 0.1 }}
+                        >
+                          <CheckCircle className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
+                          <span className="text-gray-700">{solution}</span>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+
+                   
+                  </motion.div>
+
+                  <motion.div 
+                    className={`${index % 2 === 1 ? 'lg:col-start-1' : ''}`}
+                    variants={index % 2 === 0 ? slideInRight : slideInLeft}
+                  >
+                    <motion.img
+                      src={category.image}
+                      alt={category.title}
+                      className="w-full h-80 object-cover rounded-2xl shadow-2xl"
+                      transition={{ duration: 0.5 }}
+                    />
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Contact CTA Section */}
+            
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {isVideoPlaying && (
+          <motion.div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsVideoPlaying(false)}
+          >
+            <motion.div
+              className="relative max-w-4xl w-full aspect-video bg-black rounded-2xl overflow-hidden"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <motion.button
+                className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white z-10"
+                onClick={() => setIsVideoPlaying(false)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                ×
+              </motion.button>
+              <iframe
+                src="https://www.youtube.com/embed/Q_p3pka81uc?autoplay=1"
+                className="w-full h-full"
+                allowFullScreen
+                title="Hikvision Healthcare Solutions Demo"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default HealthcarePage;

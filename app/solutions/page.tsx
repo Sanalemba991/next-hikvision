@@ -1,127 +1,35 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
+import { useRouter } from 'next/navigation';
 import { ChevronRight, Shield, Camera, Zap, Users, Building, Car, Globe, ArrowRight, Play, Star, Eye, Lock, Cpu, Network, AlertTriangle, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SecuritySolutionsPage = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('smart-city');
 
-  // ENHANCED: Better hash detection logic with improved scrolling
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '');
-      console.log('Hash detected:', hash); // Debug log
-      
-      if (hash) {
-        const validCategories = ['smart-city', 'retail', 'industrial', 'healthcare', 'education', 'transportation'];
-        
-        if (validCategories.includes(hash)) {
-          console.log('Setting active tab to:', hash); // Debug log
-          setActiveTab(hash);
-          
-          // Enhanced scrolling with multiple attempts
-          const scrollToSolution = () => {
-            const solutionsSection = document.getElementById('solutions-section');
-            if (solutionsSection) {
-              console.log('Scrolling to solutions section'); // Debug log
-              solutionsSection.scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-              });
-            } else {
-              console.log('Solutions section not found, retrying...'); // Debug log
-              // Retry if element not found
-              setTimeout(scrollToSolution, 100);
-            }
-          };
-          
-          // Multiple scroll attempts to ensure it works
-          setTimeout(scrollToSolution, 50);
-          setTimeout(scrollToSolution, 200);
-          setTimeout(scrollToSolution, 500);
-        }
-      }
+  // Navigation function for Learn More buttons
+  const handleLearnMore = (category: string) => {
+    const routeMap: { [key: string]: string } = {
+      'smart-city': '/smart',
+      'retail': '/retail',
+      'industrial': '/industrial',
+      'healthcare': '/healthcare',
+      'education': '/education',
+      'transportation': '/transportation'
     };
 
-    // Check hash immediately on mount
-    const initialHash = window.location.hash.replace('#', '');
-    if (initialHash) {
-      const validCategories = ['smart-city', 'retail', 'industrial', 'healthcare', 'education', 'transportation'];
-      if (validCategories.includes(initialHash)) {
-        setActiveTab(initialHash);
-        
-        // Scroll for initial load
-        setTimeout(() => {
-          const solutionsSection = document.getElementById('solutions-section');
-          if (solutionsSection) {
-            solutionsSection.scrollIntoView({ 
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        }, 100);
-      }
+    const route = routeMap[category];
+    if (route) {
+      router.push(route);
     }
-
-    // Listen for hash changes
-    window.addEventListener('hashchange', handleHashChange);
-    
-    // Listen for popstate (browser navigation)
-    window.addEventListener('popstate', handleHashChange);
-    
-    // Enhanced observer for hash changes
-    const observer = new MutationObserver(() => {
-      const currentHash = window.location.hash.replace('#', '');
-      if (currentHash && currentHash !== activeTab) {
-        const validCategories = ['smart-city', 'retail', 'industrial', 'healthcare', 'education', 'transportation'];
-        if (validCategories.includes(currentHash)) {
-          console.log('Observer detected hash change to:', currentHash);
-          setActiveTab(currentHash);
-          
-          // Scroll when hash changes via observer
-          setTimeout(() => {
-            const solutionsSection = document.getElementById('solutions-section');
-            if (solutionsSection) {
-              solutionsSection.scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-              });
-            }
-          }, 100);
-        }
-      }
-    });
-
-    observer.observe(document, { 
-      attributes: true, 
-      attributeFilter: ['href'],
-      subtree: true 
-    });
-
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-      window.removeEventListener('popstate', handleHashChange);
-      observer.disconnect();
-    };
-  }, []); // Empty dependency array is important
-
-  // ENHANCED: Better tab change handler
-  const handleTabChange = (tabId: string) => {
-    console.log('Manual tab change to:', tabId); // Debug log
-    setActiveTab(tabId);
-    
-    // Update URL hash
-    window.location.hash = tabId;
-    
-    // Trigger hashchange event for consistency
-    window.dispatchEvent(new HashChangeEvent('hashchange'));
   };
 
-  // ADD: Force re-render when activeTab changes
-  useEffect(() => {
-    console.log('Active tab changed to:', activeTab); // Debug log
-  }, [activeTab]);
+  // Tab change handler
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+  };
 
   // Intersection Observer for smooth fade-in
   const { ref: featuresRef, inView: featuresInView } = useInView({ triggerOnce: true, threshold: 0.1 });
@@ -160,7 +68,7 @@ const SecuritySolutionsPage = () => {
       category: 'healthcare',
       title: 'Healthcare Security',
       description: 'Specialized security solutions tailored for hospitals, clinics, and medical facilities.',
-      image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
       features: ['Patient Safety Monitoring', 'Asset Tracking Systems', 'Restricted Access Control', 'Emergency Response']
     },
     {
@@ -309,14 +217,7 @@ const SecuritySolutionsPage = () => {
                 Protecting what matters most with AI-powered surveillance, smart analytics,
                 and comprehensive security solutions tailored for modern enterprises.
               </motion.p>
-              <motion.div
-                className="flex flex-col sm:flex-row gap-4 mb-12"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1, duration: 0.8 }}
-              >
-                
-              </motion.div>
+              
               {/* Stats Row */}
               <motion.div
                 ref={statsRef}
@@ -344,6 +245,7 @@ const SecuritySolutionsPage = () => {
             </motion.div>
           </div>
         </div>
+        
         {/* Floating Elements */}
         <motion.div
           className="absolute bottom-8 right-8 hidden lg:block"
@@ -361,6 +263,7 @@ const SecuritySolutionsPage = () => {
             </div>
           </div>
         </motion.div>
+        
         {/* Scroll Indicator */}
         <motion.div
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce"
@@ -470,7 +373,7 @@ const SecuritySolutionsPage = () => {
 
       {/* Solutions Section */}
       <motion.div
-        id="solutions-section" // This ID is crucial for scrolling
+        id="solutions-section"
         ref={solutionsRef}
         className="bg-white py-16"
         initial="hidden"
@@ -493,7 +396,7 @@ const SecuritySolutionsPage = () => {
             </p>
           </motion.div>
 
-          {/* Category Tabs - Enhanced with better visual feedback */}
+          {/* Category Tabs */}
           <motion.div
             className="flex flex-wrap justify-center mb-12 gap-4"
             variants={container}
@@ -502,16 +405,14 @@ const SecuritySolutionsPage = () => {
           >
             {categories.map((category) => {
               const Icon = category.icon;
-              const isActive = activeTab === category.id;
-              
               return (
                 <motion.button
-                  key={`${category.id}-${activeTab}`} // Force re-render with key
+                  key={category.id}
                   onClick={() => handleTabChange(category.id)}
-                  className={`relative inline-flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
-                    isActive
-                      ? 'bg-red-600 text-white shadow-lg transform scale-105 ring-2 ring-red-200'
-                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-red-200'
+                  className={`inline-flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+                    activeTab === category.id
+                      ? 'bg-red-600 text-white shadow-md'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                   }`}
                   style={{ 
                     transition: 'all 0.3s cubic-bezier(.4,0,.2,1)',
@@ -519,142 +420,136 @@ const SecuritySolutionsPage = () => {
                   }}
                   variants={item}
                   whileHover={{ 
-                    scale: isActive ? 1.05 : 1.03,
+                    scale: 1.03,
                     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
                   }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <Icon className="w-5 h-5 mr-3" />
                   <span className="text-sm md:text-base">{category.name}</span>
-                  {isActive && (
-                    <motion.div
-                      className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-red-400 rounded-full"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.2 }}
-                    />
-                  )}
                 </motion.button>
               );
             })}
           </motion.div>
 
-          {/* Solutions Grid - Add key to force re-render */}
+          {/* Solutions Grid */}
           <AnimatePresence mode="wait">
-            <motion.div
-              key={`solutions-${activeTab}`} // Force re-render when activeTab changes
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-            >
-              {filteredSolutions.length === 1 ? (
-                <motion.div
-                  className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8 flex items-end shadow-lg border border-gray-200"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <img
-                    src={filteredSolutions[0].image}
-                    alt={filteredSolutions[0].title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gray-900/60" />
-                  <div className="relative z-10 p-10 text-white w-full flex flex-col justify-end">
-                    <div className="flex items-center mb-4">
-                      <span className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full mr-4">
-                        {categories.find(cat => cat.id === filteredSolutions[0].category)?.name}
-                      </span>
-                      <h2 className="text-3xl font-bold">{filteredSolutions[0].title}</h2>
-                    </div>
-                    <p className="text-lg mb-4">{filteredSolutions[0].description}</p>
-                    <div className="flex flex-wrap gap-3 mb-6">
-                      {filteredSolutions[0].features.map((feature, idx) => (
-                        <motion.span
-                          key={idx}
-                          className="inline-flex items-center px-4 py-1 bg-white/20 rounded-full text-white text-sm"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 * idx }}
-                        >
-                          <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                          {feature}
-                        </motion.span>
-                      ))}
-                    </div>
-                    <button className="group relative inline-flex items-center px-10 py-4 bg-transparent text-grey-500 font-semibold rounded-xl border border-red-100 hover:border-transparent transition-all duration-500 ease-out shadow-[0_4px_20px_rgba(220,38,38,0.08)] hover:shadow-[0_8px_30px_rgba(220,38,38,0.15)] hover:bg-gradient-to-r hover:from-red-600 hover:to-rose-600 hover:text-white transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_2px_10px_rgba(220,38,38,0.2)] backdrop-blur-sm overflow-hidden w-fit">
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-                      <span className="relative z-10 tracking-wide">Learn More</span>
-                      <ArrowRight className="relative z-10 w-5 h-5 ml-3 transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:scale-110" />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-red-600/0 to-rose-600/0 group-hover:from-red-600/5 group-hover:to-rose-600/5 transition-all duration-500"></div>
-                    </button>
+            {filteredSolutions.length === 1 ? (
+              <motion.div
+                key={`single-${activeTab}`}
+                className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8 flex items-center shadow-lg border border-gray-200"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+              >
+                <img
+                  src={filteredSolutions[0].image}
+                  alt={filteredSolutions[0].title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gray-900/60" />
+                <div className="relative z-10 px-10 py-8 text-white w-full flex flex-col justify-center">
+                  <div className="flex items-center mb-4">
+                    <span className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full mr-4">
+                      {categories.find(cat => cat.id === filteredSolutions[0].category)?.name}
+                    </span>
+                    <h2 className="text-3xl font-bold">{filteredSolutions[0].title}</h2>
                   </div>
-                </motion.div>
-              ) : (
-                // Multiple solutions grid (same as before)
-                <motion.div
-                  className="grid md:grid-cols-2 gap-8"
-                  initial="hidden"
-                  animate="visible"
-                  variants={container}
-                >
-                  {filteredSolutions.map((solution) => (
-                    <motion.div
-                      key={solution.id}
-                      className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-700 overflow-hidden border border-gray-200 hover:border-red-200"
-                      variants={item}
-                      whileHover={{ y: -5 }}
-                    >
-                      <div className="relative overflow-hidden h-64">
-                        <motion.img
-                          src={solution.image}
-                          alt={solution.title}
-                          className="w-full h-full object-cover"
-                          initial={{ scale: 1 }}
-                          whileHover={{ scale: 1.1 }}
-                          transition={{ duration: 0.7 }}
+                  <p className="text-lg mb-6 max-w-3xl leading-relaxed">{filteredSolutions[0].description}</p>
+                  <div className="flex flex-wrap gap-3 mb-8">
+                    {filteredSolutions[0].features.map((feature, idx) => (
+                      <motion.span
+                        key={idx}
+                        className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium border border-white/10"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * idx }}
+                      >
+                        <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
+                        {feature}
+                      </motion.span>
+                    ))}
+                  </div>
+                  <motion.button 
+                    onClick={() => handleLearnMore(filteredSolutions[0].category)}
+                    className="group relative inline-flex items-center px-10 py-4 bg-transparent text-white font-semibold rounded-xl border-2 border-white/30 hover:border-red-500 transition-all duration-500 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_30px_rgba(220,38,38,0.2)] hover:bg-gradient-to-r hover:from-red-600 hover:to-rose-600 hover:text-white transform hover:-translate-y-1 active:translate-y-0 backdrop-blur-sm overflow-hidden w-fit"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+                    <span className="relative z-10 tracking-wide font-medium">Learn More</span>
+                    <ArrowRight className="relative z-10 w-5 h-5 ml-3 transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:scale-110" />
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-red-600/0 to-rose-600/0 group-hover:from-red-600/10 group-hover:to-rose-600/10 transition-all duration-500"></div>
+                  </motion.button>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`grid-${activeTab}`}
+                className="grid md:grid-cols-2 gap-8"
+                initial="hidden"
+                animate="visible"
+                variants={container}
+              >
+                {filteredSolutions.map((solution) => (
+                  <motion.div
+                    key={solution.id}
+                    className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-700 overflow-hidden border border-gray-200 hover:border-red-200"
+                    variants={item}
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className="relative overflow-hidden h-64">
+                      <motion.img
+                        src={solution.image}
+                        alt={solution.title}
+                        className="w-full h-full object-cover"
+                        initial={{ scale: 1 }}
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.7 }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-80 transition-opacity duration-700"></div>
+                      <div className="absolute top-4 right-4">
+                        <span className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full transition-all duration-500 group-hover:bg-orange-500">
+                          {categories.find(cat => cat.id === solution.category)?.name}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors duration-500">
+                        {solution.title}
+                      </h3>
+                      <p className="text-gray-600 mb-4 leading-relaxed">
+                        {solution.description}
+                      </p>
+                      <div className="space-y-2 mb-6">
+                        {solution.features.map((feature, index) => (
+                          <div key={index} className="flex items-center text-sm text-gray-600">
+                            <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                            {feature}
+                          </div>
+                        ))}
+                      </div>
+                      <motion.button 
+                        onClick={() => handleLearnMore(solution.category)}
+                        className="group w-full inline-flex items-center justify-center px-6 py-3 bg-transparent text-gray-700 font-semibold rounded-lg relative overflow-hidden transition-all duration-300"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <span className="relative z-10 flex items-center text-white">
+                          Learn More
+                          <ArrowRight className="w-4 h-4 ml-2 transform transition-transform duration-300 group-hover:translate-x-1" />
+                        </span>
+                        <span
+                          className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg"
+                          aria-hidden="true"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-80 transition-opacity duration-700"></div>
-                        <div className="absolute top-4 right-4">
-                          <span className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full transition-all duration-500 group-hover:bg-orange-500">
-                            {categories.find(cat => cat.id === solution.category)?.name}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors duration-500">
-                          {solution.title}
-                        </h3>
-                        <p className="text-gray-600 mb-4 leading-relaxed">
-                          {solution.description}
-                        </p>
-                        <div className="space-y-2 mb-6">
-                          {solution.features.map((feature, index) => (
-                            <div key={index} className="flex items-center text-sm text-gray-600">
-                              <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                              {feature}
-                            </div>
-                          ))}
-                        </div>
-                        <button className="group w-full inline-flex items-center justify-center px-6 py-3 bg-transparent text-gray-700 font-semibold rounded-lg relative overflow-hidden transition-all duration-300">
-                          <span className="relative z-10 flex items-center">
-                            Learn More
-                            <ArrowRight className="w-4 h-4 ml-2 transform transition-transform duration-300 group-hover:translate-x-1" />
-                          </span>
-                          {/* Animated gradient background */}
-                          <span
-                            className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg"
-                            aria-hidden="true"
-                          />
-                        </button>
-
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </motion.div>
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
           </AnimatePresence>
 
           {/* CTA Section */}
@@ -681,7 +576,6 @@ const SecuritySolutionsPage = () => {
                   <Shield className="w-5 h-5 mr-2" />
                   Get Free Consultation
                 </motion.button>
-               
               </div>
             </div>
           </motion.div>

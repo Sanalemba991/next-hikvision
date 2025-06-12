@@ -34,6 +34,16 @@ export default function Navbar() {
   
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Solutions data - same as footer
+  const solutionsData = [
+    { name: 'Smart City', href: '/smartcity' },
+    { name: 'Retail', href: '/retail' },
+    { name: 'Healthcare', href: '/healthcare' },
+    { name: 'Education', href: '/education' },
+    { name: 'Industrial', href: '/industrial' },
+    { name: 'Transportation', href: '/transportation' }
+  ]
+
   useEffect(() => {
     setIsClient(true)
     fetchCategories()
@@ -81,10 +91,12 @@ export default function Navbar() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveDropdown(menu);
     
-    // Auto-select first category and load its subcategories
-    if (categories.length > 0) {
-      setActiveSubmenu(categories[0]);
-      fetchSubCategories(categories[0]);
+    if (menu === 'products') {
+      // Auto-select first category and load its subcategories
+      if (categories.length > 0) {
+        setActiveSubmenu(categories[0]);
+        fetchSubCategories(categories[0]);
+      }
     }
   }
 
@@ -216,7 +228,7 @@ export default function Navbar() {
                                 </Link>
                               </li>
                             ))
-                          )}
+                          )};
                         </ul>
                       </div>
                       
@@ -271,8 +283,58 @@ export default function Navbar() {
               )}
             </div>
 
+            {/* Solutions Dropdown */}
+            <div 
+              className="relative"
+              onMouseEnter={() => handleMouseEnter('solutions')}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Link 
+                href="/solutions"
+                className={`relative flex items-center px-3 py-2 text-sm font-medium transition-all duration-300 group ${
+                  isActiveLink('/solutions') 
+                    ? 'text-red-500' 
+                    : 'text-gray-200 hover:text-red-500'
+                }`}
+              >
+                Solutions
+                <ChevronDownIcon
+                  className={`ml-1 h-4 w-4 transition-transform duration-300 ${
+                    activeDropdown === 'solutions' ? 'rotate-180' : ''
+                  }`}
+                />
+                {isActiveLink('/solutions') && (
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-red-500 transform origin-left animate-slideIn"></span>
+                )}
+              </Link>
+
+              {/* Solutions Simple Menu */}
+              {isClient && activeDropdown === 'solutions' && (
+                <div className="absolute left-0 top-full mt-1 w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-black rounded-lg shadow-2xl border border-gray-700 p-4 z-50 animate-navbarFadeIn">
+                  <h3 className="text-red-500 font-bold text-sm uppercase tracking-wide mb-4 border-b border-gray-700 pb-2">
+                    Industries
+                  </h3>
+                  <ul className="space-y-1">
+                    {solutionsData.map((solution, index) => (
+                      <li key={index}>
+                        <Link
+                          href={solution.href}
+                          className="block py-2 px-3 rounded text-gray-200 hover:text-red-500 hover:bg-gray-800 transition-all duration-200 font-medium"
+                          onClick={() => {
+                            setActiveDropdown(null)
+                            setActiveSubmenu(null)
+                          }}
+                        >
+                          {solution.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
             {/* Other Menu Items */}
-            <NavLink href="/solutions">Solutions</NavLink>
             <NavLink href="/support">Support</NavLink>
             <NavLink href="/about">About Us</NavLink>
             <NavLink href="/contact">Contact Us</NavLink>
