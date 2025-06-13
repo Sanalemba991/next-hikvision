@@ -12,7 +12,7 @@ const SecuritySolutionsPage = () => {
   // Navigation function for Learn More buttons
   const handleLearnMore = (category: string) => {
     const routeMap: { [key: string]: string } = {
-      'smart-city': '/smart',
+      'smart-city': '/smartcity',
       'retail': '/retail',
       'industrial': '/industrial',
       'healthcare': '/healthcare',

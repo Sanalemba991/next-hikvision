@@ -34,14 +34,14 @@ export default function Navbar() {
   
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Solutions data - same as footer
+  // Solutions data - same structure as products
   const solutionsData = [
-    { name: 'Smart City', href: '/smartcity' },
-    { name: 'Retail', href: '/retail' },
-    { name: 'Healthcare', href: '/healthcare' },
-    { name: 'Education', href: '/education' },
-    { name: 'Industrial', href: '/industrial' },
-    { name: 'Transportation', href: '/transportation' }
+    'Smart City',
+    'Retail',
+    'Industrial',
+     'Healthcare', 
+    'Education',
+    'Transportation',
   ]
 
   useEffect(() => {
@@ -134,6 +134,12 @@ export default function Navbar() {
     setActiveDropdown(null);
     setActiveSubmenu(null);
     setSubCategories([]);
+  }
+
+  const handleSolutionClick = () => {
+    // Reset dropdown state
+    setActiveDropdown(null);
+    setActiveSubmenu(null);
   }
 
   const handleLogout = async () => {
@@ -293,7 +299,7 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Solutions Dropdown */}
+            {/* Solutions Dropdown - Same Structure as Products */}
             <div 
               className="relative"
               onMouseEnter={() => handleMouseEnter('solutions')}
@@ -302,7 +308,7 @@ export default function Navbar() {
               <Link 
                 href="/solutions"
                 className={`relative flex items-center px-3 py-2 text-sm font-medium transition-all duration-300 group ${
-                  isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(solution.href))
+                  isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`))
                     ? 'text-red-500' 
                     : 'text-gray-200 hover:text-red-500'
                 }`}
@@ -313,37 +319,54 @@ export default function Navbar() {
                     activeDropdown === 'solutions' ? 'rotate-180' : ''
                   }`}
                 />
-                {(isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(solution.href))) && (
+                {(isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`))) && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-red-500 transform origin-left animate-slideIn"></span>
                 )}
               </Link>
 
-              {/* Solutions Simple Menu */}
+              {/* Solutions Mega Menu - Same Structure as Products */}
               {isClient && activeDropdown === 'solutions' && (
-                <div className="absolute left-0 top-full mt-1 w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-black rounded-lg shadow-2xl border border-gray-700 p-4 z-50 animate-navbarFadeIn">
-                  <h3 className="text-red-500 font-bold text-sm uppercase tracking-wide mb-4 border-b border-gray-700 pb-2">
-                    Industries
-                  </h3>
-                  <ul className="space-y-1">
-                    {solutionsData.map((solution, index) => (
-                      <li key={index}>
-                        <Link
-                          href={solution.href}
-                          className={`block py-2 px-3 rounded transition-all duration-200 font-medium ${
-                            isActiveLink(solution.href)
-                              ? 'text-red-500 bg-gray-800 border-l-2 border-red-500'
-                              : 'text-gray-200 hover:text-red-500 hover:bg-gray-800'
-                          }`}
-                          onClick={() => {
-                            setActiveDropdown(null)
-                            setActiveSubmenu(null)
-                          }}
-                        >
-                          {solution.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="fixed left-0 top-[80px] w-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black rounded-b-lg shadow-2xl border-t border-gray-700 p-8 z-50 animate-navbarFadeIn">
+                  <div className="max-w-7xl mx-auto">
+                    <div className="flex gap-8">
+                      {/* Left: Solution Categories */}
+                      <div className="w-64 flex-shrink-0">
+                        <h3 className="text-red-500 font-bold text-sm uppercase tracking-wide mb-4 border-b border-gray-700 pb-2">
+                          Solutions
+                        </h3>
+                        <ul>
+                          {solutionsData.map((solution) => (
+                            <li
+                              key={solution}
+                              className="py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-200 text-gray-200 hover:text-red-500 hover:bg-gray-800"
+                            >
+                              <Link
+                                href={`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`}
+                                className="block w-full h-full"
+                                onClick={handleSolutionClick}
+                              >
+                                {solution}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      {/* Right: Content Area (No Subcategories) */}
+                      <div className="flex-1 grid grid-cols-3 gap-8">
+                        <div className="col-span-3 flex items-center justify-center text-gray-400">
+                          <div className="text-center">
+                            <h4 className="font-semibold text-gray-100 text-lg mb-2">
+                              Industry Solutions
+                            </h4>
+                            <p className="text-gray-400 text-sm">
+                              Select a solution category to explore our comprehensive security offerings
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -418,7 +441,7 @@ export default function Navbar() {
               >
                 <span className="absolute inset-0 bg-red-700 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-full"></span>
                 <FiUser className="w-5 h-5 z-10 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12" />
-                <span className="font-bold tracking-wide z-10 transition-colors duration-300  animate-fadeIn">
+                <span className="font-bold tracking-wide z-10 transition-colors duration-300 animate-fadeIn">
                   Sign In
                 </span>
               </Link>
@@ -513,11 +536,22 @@ export default function Navbar() {
             transform: scaleX(1);
           }
         }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
         .animate-navbarFadeIn {
           animation: navbarFadeIn 0.8s cubic-bezier(0.4,0,0.2,1) both;
         }
         .animate-slideIn {
           animation: slideIn 0.3s ease-out both;
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out both;
         }
         body {
           overflow-x: hidden !important;

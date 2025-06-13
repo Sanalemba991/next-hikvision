@@ -207,7 +207,7 @@ const Footer = () => {
                 <h4 className="text-white font-semibold mb-3 text-sm">Solutions</h4>
                 <motion.ul className="space-y-2">
                   {[
-                    { name: 'Smart City', href: '/smart' },
+                    { name: 'Smart City', href: '/smartcity' },
                     { name: 'Retail', href: '/retail' },
                     { name: 'Industrial', href: '/industrial' },
                     { name: 'Healthcare', href: '/healthcare' }

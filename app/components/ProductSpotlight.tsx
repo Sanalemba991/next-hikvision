@@ -203,7 +203,7 @@ const ProductSpotlight = () => {
             <div className="grid lg:grid-cols-2 gap-0">
               
               {/* Product Image Section */}
-              <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 p-6 md:p-8 lg:p-12 flex items-center justify-center min-h-[300px] md:min-h-[400px] lg:min-h-[500px]">
+              <div className="relative bg-gradient-to-br from-gray-900 via-red-900 to-gray-800 p-6 md:p-8 lg:p-12 flex items-center justify-center min-h-[300px] md:min-h-[400px] lg:min-h-[500px]">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeProduct}

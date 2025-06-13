@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 const faqs = [
   {
@@ -50,12 +51,10 @@ const supportSections = [
 ];
 
 const quickLinks = [
-  'SADP for Windows',
-  'iVMS 4200',
-  'Hik-Connect',
-  'Hikvision App Store',
-  'Technical Documentation',
-  'Firmware Updates'
+  { name: 'Home', href: '/' },
+  { name: 'Products', href: '/products' },
+  { name: 'About Us', href: '/about' },
+  { name: 'Contact Us', href: '/contact' },
 ];
 
 export default function ProfessionalSupportPage() {
@@ -93,9 +92,6 @@ export default function ProfessionalSupportPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      
-
       {/* Hero Banner */}
       <motion.div
         initial={{ opacity: 0, y: -40 }}
@@ -248,9 +244,18 @@ export default function ProfessionalSupportPage() {
               <ul className="space-y-3">
                 {quickLinks.map((link, index) => (
                   <li key={index}>
-                    <button className="text-sm text-red-600 hover:text-red-800 hover:underline text-left transition-colors">
-                      {link}
-                    </button>
+                    {link.href.startsWith('#') ? (
+                      <button className="text-sm text-red-600 hover:text-red-800 hover:underline text-left transition-colors">
+                        {link.name}
+                      </button>
+                    ) : (
+                      <Link 
+                        href={link.href}
+                        className="text-sm text-red-600 hover:text-red-800 hover:underline text-left transition-colors block"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
