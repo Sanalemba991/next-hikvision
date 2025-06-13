@@ -25,6 +25,8 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [showMobileProducts, setShowMobileProducts] = useState(false)
+  const [showMobileSolutions, setShowMobileSolutions] = useState(false)
   
   // Dynamic categories from API
   const [categories, setCategories] = useState<string[]>([])
@@ -215,91 +217,95 @@ export default function Navbar() {
                 )}
               </Link>
 
-              {/* Products Mega Menu */}
-              {isClient && activeDropdown === 'products' && (
-                <div className="fixed left-0 top-[80px] w-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black rounded-b-lg shadow-2xl border-t border-gray-700 p-8 z-50 animate-navbarFadeIn">
-                  <div className="max-w-7xl mx-auto">
-                    <div className="flex gap-8">
-                      {/* Left: Categories */}
-                      <div className="w-64 flex-shrink-0">
-                        <h3 className="text-red-500 font-bold text-sm uppercase tracking-wide mb-4 border-b border-gray-700 pb-2">
-                          Categories
-                        </h3>
-                        <ul>
-                          {loading ? (
-                            <li className="py-2 px-4 text-gray-400">Loading categories...</li>
-                          ) : (
-                            categories.map((category) => (
-                              <li
-                                key={category}
-                                className={`py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-200 ${
-                                  activeSubmenu === category 
-                                    ? 'bg-gray-800 text-red-500 border-l-2 border-red-500' 
-                                    : 'text-gray-200 hover:text-red-500 hover:bg-gray-800'
-                                }`}
-                                onMouseEnter={() => handleSubmenuEnter(category)}
-                              >
-                                <Link
-                                  href={`/products?category=${encodeURIComponent(category)}`}
-                                  className="block w-full h-full"
-                                  onClick={() => handleCategoryClick(category)}
-                                >
-                                  {category}
-                                </Link>
-                              </li>
-                            ))
-                          )}
-                        </ul>
-                      </div>
-                      
-                      {/* Right: Subcategories */}
-                      <div className="flex-1 grid grid-cols-3 gap-8">
+              {/* Products Mega Menu - Enhanced Transitions */}
+              <div className={`fixed left-0 top-[80px] w-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black rounded-b-lg shadow-2xl border-t border-gray-700 p-8 z-50 transform transition-all duration-500 ease-out ${
+                isClient && activeDropdown === 'products' 
+                  ? 'opacity-100 translate-y-0 visible' 
+                  : 'opacity-0 -translate-y-4 invisible pointer-events-none'
+              }`}>
+                <div className="max-w-7xl mx-auto">
+                  <div className="flex gap-8">
+                    {/* Left: Categories */}
+                    <div className="w-64 flex-shrink-0">
+                      <h3 className="text-red-500 font-bold text-sm uppercase tracking-wide mb-4 border-b border-gray-700 pb-2">
+                        Categories
+                      </h3>
+                      <ul>
                         {loading ? (
-                          <div className="col-span-3 flex items-center justify-center text-gray-400">
-                            <span>Loading categories...</span>
-                          </div>
-                        ) : loadingSubCategories ? (
-                          <div className="col-span-3 flex items-center justify-center text-gray-400">
-                            <div className="flex items-center gap-2">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
-                              <span>Loading subcategories...</span>
-                            </div>
-                          </div>
-                        ) : activeSubmenu && subCategories.length > 0 ? (
-                          <div className="col-span-3">
-                            <h4 className="font-semibold text-gray-100 text-sm uppercase tracking-wide border-b border-gray-700 pb-2 mb-4">
-                              {activeSubmenu} Subcategories
-                            </h4>
-                            <div className="grid grid-cols-3 gap-4">
-                              {subCategories.map((subCategory, idx) => (
-                                <Link
-                                  key={idx}
-                                  href={`/products?category=${encodeURIComponent(activeSubmenu)}&subCategory=${encodeURIComponent(subCategory)}`}
-                                  className="block text-sm text-gray-300 hover:text-red-400 hover:bg-gray-800 px-3 py-2 rounded transition-all duration-200 border border-transparent hover:border-gray-600"
-                                  onClick={() => handleSubCategoryClick(activeSubmenu || '', subCategory)}
-                                >
-                                  {subCategory}
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        ) : activeSubmenu ? (
-                          <div className="col-span-3 flex items-center justify-center text-gray-400">
-                            <span>No subcategories available for {activeSubmenu}</span>
-                          </div>
+                          <li className="py-2 px-4 text-gray-400">Loading categories...</li>
                         ) : (
-                          <div className="col-span-3 flex items-center justify-center text-gray-400">
-                            <span>Hover over a category to view subcategories</span>
-                          </div>
+                          categories.map((category, index) => (
+                            <li
+                              key={category}
+                              className={`py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-300 ${
+                                activeSubmenu === category 
+                                  ? 'bg-gray-800 text-red-500 border-l-2 border-red-500' 
+                                  : 'text-gray-200 hover:text-red-500 hover:bg-gray-800'
+                              }`}
+                              style={{ animationDelay: `${index * 50}ms` }}
+                              onMouseEnter={() => handleSubmenuEnter(category)}
+                            >
+                              <Link
+                                href={`/products?category=${encodeURIComponent(category)}`}
+                                className="block w-full h-full"
+                                onClick={() => handleCategoryClick(category)}
+                              >
+                                {category}
+                              </Link>
+                            </li>
+                          ))
                         )}
-                      </div>
+                      </ul>
+                    </div>
+                    
+                    {/* Right: Subcategories */}
+                    <div className="flex-1 grid grid-cols-3 gap-8">
+                      {loading ? (
+                        <div className="col-span-3 flex items-center justify-center text-gray-400">
+                          <span>Loading categories...</span>
+                        </div>
+                      ) : loadingSubCategories ? (
+                        <div className="col-span-3 flex items-center justify-center text-gray-400">
+                          <div className="flex items-center gap-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
+                            <span>Loading subcategories...</span>
+                          </div>
+                        </div>
+                      ) : activeSubmenu && subCategories.length > 0 ? (
+                        <div className="col-span-3">
+                          <h4 className="font-semibold text-gray-100 text-sm uppercase tracking-wide border-b border-gray-700 pb-2 mb-4">
+                            {activeSubmenu} Subcategories
+                          </h4>
+                          <div className="grid grid-cols-3 gap-4">
+                            {subCategories.map((subCategory, idx) => (
+                              <Link
+                                key={idx}
+                                href={`/products?category=${encodeURIComponent(activeSubmenu)}&subCategory=${encodeURIComponent(subCategory)}`}
+                                className="block text-sm text-gray-300 hover:text-red-400 hover:bg-gray-800 px-3 py-2 rounded transition-all duration-300 border border-transparent hover:border-gray-600 transform hover:scale-105"
+                                style={{ animationDelay: `${idx * 30}ms` }}
+                                onClick={() => handleSubCategoryClick(activeSubmenu || '', subCategory)}
+                              >
+                                {subCategory}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ) : activeSubmenu ? (
+                        <div className="col-span-3 flex items-center justify-center text-gray-400">
+                          <span>No subcategories available for {activeSubmenu}</span>
+                        </div>
+                      ) : (
+                        <div className="col-span-3 flex items-center justify-center text-gray-400">
+                          <span>Hover over a category to view subcategories</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
-            {/* Solutions Dropdown - Same Structure as Products */}
+            {/* Solutions Dropdown - Enhanced Transitions */}
             <div 
               className="relative"
               onMouseEnter={() => handleMouseEnter('solutions')}
@@ -324,51 +330,54 @@ export default function Navbar() {
                 )}
               </Link>
 
-              {/* Solutions Mega Menu - Same Structure as Products */}
-              {isClient && activeDropdown === 'solutions' && (
-                <div className="fixed left-0 top-[80px] w-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black rounded-b-lg shadow-2xl border-t border-gray-700 p-8 z-50 animate-navbarFadeIn">
-                  <div className="max-w-7xl mx-auto">
-                    <div className="flex gap-8">
-                      {/* Left: Solution Categories */}
-                      <div className="w-64 flex-shrink-0">
-                        <h3 className="text-red-500 font-bold text-sm uppercase tracking-wide mb-4 border-b border-gray-700 pb-2">
-                          Solutions
-                        </h3>
-                        <ul>
-                          {solutionsData.map((solution) => (
-                            <li
-                              key={solution}
-                              className="py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-200 text-gray-200 hover:text-red-500 hover:bg-gray-800"
+              {/* Solutions Mega Menu - Enhanced Transitions */}
+              <div className={`fixed left-0 top-[80px] w-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black rounded-b-lg shadow-2xl border-t border-gray-700 p-8 z-50 transform transition-all duration-500 ease-out ${
+                isClient && activeDropdown === 'solutions' 
+                  ? 'opacity-100 translate-y-0 visible' 
+                  : 'opacity-0 -translate-y-4 invisible pointer-events-none'
+              }`}>
+                <div className="max-w-7xl mx-auto">
+                  <div className="flex gap-8">
+                    {/* Left: Solution Categories */}
+                    <div className="w-64 flex-shrink-0">
+                      <h3 className="text-red-500 font-bold text-sm uppercase tracking-wide mb-4 border-b border-gray-700 pb-2">
+                        Solutions
+                      </h3>
+                      <ul>
+                        {solutionsData.map((solution, index) => (
+                          <li
+                            key={solution}
+                            className="py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-300 text-gray-200 hover:text-red-500 hover:bg-gray-800 transform hover:scale-105"
+                            style={{ animationDelay: `${index * 50}ms` }}
+                          >
+                            <Link
+                              href={`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`}
+                              className="block w-full h-full"
+                              onClick={handleSolutionClick}
                             >
-                              <Link
-                                href={`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`}
-                                className="block w-full h-full"
-                                onClick={handleSolutionClick}
-                              >
-                                {solution}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      {/* Right: Content Area (No Subcategories) */}
-                      <div className="flex-1 grid grid-cols-3 gap-8">
-                        <div className="col-span-3 flex items-center justify-center text-gray-400">
-                          <div className="text-center">
-                            <h4 className="font-semibold text-gray-100 text-lg mb-2">
-                              Industry Solutions
-                            </h4>
-                            <p className="text-gray-400 text-sm">
-                              Select a solution category to explore our comprehensive security offerings
-                            </p>
-                          </div>
+                              {solution}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Right: Content Area (No Subcategories) */}
+                    <div className="flex-1 grid grid-cols-3 gap-8">
+                      <div className="col-span-3 flex items-center justify-center text-gray-400">
+                        <div className="text-center">
+                          <h4 className="font-semibold text-gray-100 text-lg mb-2">
+                            Industry Solutions
+                          </h4>
+                          <p className="text-gray-400 text-sm">
+                            Select a solution category to explore our comprehensive security offerings
+                          </p>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Other Menu Items */}
@@ -379,12 +388,12 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center space-x-4">
-            {/* User Authentication */}
+            {/* User Authentication - Hidden on Mobile */}
             {session ? (
-              <div className="relative group">
+              <div className="relative group hidden sm:block">
                 <Link 
                   href="/profile" 
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition-all duration-300"
                 >
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
                     {session.user?.image ? (
@@ -400,14 +409,14 @@ export default function Navbar() {
                     )}
                   </div>
                   <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-white">
                       {session.user?.name || 'User'}
                     </p>
-                    <p className="text-xs text-gray-500">View Profile</p>
+                    <p className="text-xs text-gray-300">View Profile</p>
                   </div>
                 </Link>
 
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform group-hover:translate-y-0 translate-y-2">
                   <div className="py-2">
                     <Link
                       href="/profile"
@@ -436,12 +445,11 @@ export default function Navbar() {
               </div>
             ) : (
               <Link 
-                href="/signup" 
-                className="relative flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-red-600 via-red-500 to-red-700 text-white rounded-full shadow-xl transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-red-400 group overflow-hidden"
+                href="/signin" 
+                className="hidden sm:flex relative items-center gap-2 px-6 py-2 bg-white/10 backdrop-blur-sm text-white rounded-full border border-white/20 hover:bg-white/20 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-white/30 group"
               >
-                <span className="absolute inset-0 bg-red-700 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-full"></span>
-                <FiUser className="w-5 h-5 z-10 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12" />
-                <span className="font-bold tracking-wide z-10 transition-colors duration-300 animate-fadeIn">
+                <FiUser className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+                <span className="font-medium tracking-wide">
                   Sign In
                 </span>
               </Link>
@@ -450,7 +458,7 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden text-gray-200 hover:text-red-500 p-2"
+              className="lg:hidden text-gray-200 hover:text-red-500 p-2 transition-colors duration-300"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMobileMenuOpen ? (
@@ -463,58 +471,144 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isClient && (
-          <div className={`lg:hidden transition-all duration-300 ease-in-out ${
-            isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
-          }`}>
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-gray-800 rounded-lg mt-2">
-              <Link 
-                href="/products" 
-                className="block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
+        {/* Enhanced Mobile Menu */}
+        <div className={`lg:hidden overflow-hidden transition-all duration-500 ease-out transform ${
+          isMobileMenuOpen ? 'max-h-96 opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-4'
+        }`}>
+          <div className="px-2 pt-2 pb-3 space-y-1 bg-gray-800 rounded-lg mt-2">
+            {/* Home Link */}
+            <Link 
+              href="/" 
+              className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
+                isActiveLink('/') ? 'text-red-500 bg-gray-700' : ''
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Home
+            </Link>
+
+            {/* Products with Dropdown */}
+            <div>
+              <button
+                onClick={() => setShowMobileProducts(!showMobileProducts)}
+                className={`w-full text-left flex items-center justify-between px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-all duration-300 ${
+                  isActiveLink('/products') ? 'text-red-500 bg-gray-700' : ''
+                }`}
               >
                 Products
-              </Link>
-              <Link 
-                href="/solutions" 
-                className="block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
+                <ChevronDownIcon className={`h-4 w-4 transition-transform duration-300 ${showMobileProducts ? 'rotate-180' : ''}`} />
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ${
+                showMobileProducts ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+              }`}>
+                <div className="pl-6 space-y-1">
+                  {categories.slice(0, 3).map((category) => (
+                    <Link
+                      key={category}
+                      href={`/products?category=${encodeURIComponent(category)}`}
+                      className="block px-3 py-2 text-sm text-gray-300 hover:text-red-400 hover:bg-gray-700 rounded-md transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {category}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Solutions with Dropdown */}
+            <div>
+              <button
+                onClick={() => setShowMobileSolutions(!showMobileSolutions)}
+                className={`w-full text-left flex items-center justify-between px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-all duration-300 ${
+                  isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`)) ? 'text-red-500 bg-gray-700' : ''
+                }`}
               >
                 Solutions
-              </Link>
-              <Link 
-                href="/support" 
-                className="block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Support
-              </Link>
-              <Link 
-                href="/about" 
-                className="block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link 
-                href="/contact" 
-                className="block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Contact Us
-              </Link>
-              
-              <Link 
-                href="/signup" 
-                className="block px-3 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md font-medium transition-colors mt-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Sign Up
-              </Link>
+                <ChevronDownIcon className={`h-4 w-4 transition-transform duration-300 ${showMobileSolutions ? 'rotate-180' : ''}`} />
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ${
+                showMobileSolutions ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+              }`}>
+                <div className="pl-6 space-y-1">
+                  {solutionsData.slice(0, 3).map((solution) => (
+                    <Link
+                      key={solution}
+                      href={`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`}
+                      className="block px-3 py-2 text-sm text-gray-300 hover:text-red-400 hover:bg-gray-700 rounded-md transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {solution}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
+
+            {/* Other Links */}
+            <Link 
+              href="/support" 
+              className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
+                isActiveLink('/support') ? 'text-red-500 bg-gray-700' : ''
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Support
+            </Link>
+            <Link 
+              href="/about" 
+              className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
+                isActiveLink('/about') ? 'text-red-500 bg-gray-700' : ''
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              About
+            </Link>
+            <Link 
+              href="/contact" 
+              className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
+                isActiveLink('/contact') ? 'text-red-500 bg-gray-700' : ''
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Contact Us
+            </Link>
+
+            {/* Sign In/Profile Section */}
+            {!session ? (
+              <Link 
+                href="/signin" 
+                className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
+                  isActiveLink('/signin') ? 'text-red-500 bg-gray-700' : ''
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+            ) : (
+              <div className="border-t border-gray-700 pt-2 mt-2">
+                <Link
+                  href="/profile"
+                  className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
+                    isActiveLink('/profile') ? 'text-red-500 bg-gray-700' : ''
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout()
+                    setIsMobileMenuOpen(false)
+                  }}
+                  className="w-full text-left px-3 py-2 text-red-400 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
       
       <style jsx global>{`

@@ -10,6 +10,7 @@ const FeaturedInsights = () => {
   const [gridInView, setGridInView] = useState(false)
   const [statsInView, setStatsInView] = useState(false)
   const [newsletterInView, setNewsletterInView] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   const heroRef = useRef(null)
   const gridRef = useRef(null)
@@ -17,6 +18,17 @@ const FeaturedInsights = () => {
   const newsletterRef = useRef(null)
   
   const router = useRouter()
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 100)
@@ -375,13 +387,13 @@ For more information, visit our website.
     }
   }
 
-  // Animation variants
+  // Subtle animation variants
   const fadeInUp = {
-    hidden: { opacity: 0, y: 60 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      transition: { duration: 0.4, ease: "easeOut" }
     }
   }
 
@@ -397,35 +409,36 @@ For more information, visit our website.
   }
 
   const slideInLeft = {
-    hidden: { opacity: 0, x: -60 },
+    hidden: { opacity: 0, x: -20 },
     visible: {
       opacity: 1,
       x: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      transition: { duration: 0.4, ease: "easeOut" }
     }
   }
 
   const slideInRight = {
-    hidden: { opacity: 0, x: 60 },
+    hidden: { opacity: 0, x: 20 },
     visible: {
       opacity: 1,
       x: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      transition: { duration: 0.4, ease: "easeOut" }
     }
   }
 
   const scaleUp = {
-    hidden: { opacity: 0, scale: 0.8 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.5, ease: "easeOut" }
+      transition: { duration: 0.3, ease: "easeOut" }
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen bg-gray-50 py-16 overflow-hidden">
+      {/* Fixed container to prevent toolkit overflow */}
+      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
 
         {/* Hero Section */}
         <motion.div
@@ -471,16 +484,16 @@ For more information, visit our website.
           </motion.p>
         </motion.div>
 
-        {/* Main Content */}
+        {/* Main Content Grid */}
         <motion.div
           ref={gridRef}
-          className="grid lg:grid-cols-5 gap-8"
+          className="grid lg:grid-cols-5 gap-8 mb-20"
           initial="hidden"
           animate={gridInView ? "visible" : "hidden"}
           variants={staggerContainer}
         >
 
-          {/* Left Navigation */}
+          {/* Left Navigation Panel */}
           <motion.div
             className="lg:col-span-2"
             variants={slideInLeft}
@@ -500,22 +513,22 @@ For more information, visit our website.
                 <motion.button
                   key={item.id}
                   onClick={() => setActiveIndex(index)}
-                  className={`w-full text-left p-5 rounded-xl transition-all duration-500 group ${activeIndex === index
+                  className={`w-full text-left p-5 rounded-xl group transition-all duration-300 ${
+                    activeIndex === index
                       ? 'bg-white shadow-lg border-l-4 border-red-600'
                       : 'bg-white hover:bg-gray-50 border-l-4 border-transparent hover:shadow-md'
-                    }`}
+                  }`}
                   variants={fadeInUp}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                 >
                   <div className="flex items-start gap-4">
                     {/* Image Thumbnail */}
-                    <motion.div
-                      className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 relative"
-                    >
+                    <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 relative">
                       <img
                         src={item.image}
                         alt={item.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
@@ -528,19 +541,17 @@ For more information, visit our website.
                       <div className={`hidden absolute inset-0 w-full h-full bg-gradient-to-r ${item.color} items-center justify-center`}>
                         <span className="text-white text-xs font-bold">{item.category.slice(0, 2).toUpperCase()}</span>
                       </div>
-                    </motion.div>
+                    </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-2">
-                        <motion.span
-                          className={`text-xs font-semibold uppercase tracking-wider transition-colors duration-300 ${activeIndex === index ? 'text-red-600' : 'text-gray-500'
-                            }`}
-                          animate={{
-                            color: activeIndex === index ? '#dc2626' : '#6b7280'
-                          }}
+                        <span
+                          className={`text-xs font-semibold uppercase tracking-wider transition-colors duration-300 ${
+                            activeIndex === index ? 'text-red-600' : 'text-gray-500'
+                          }`}
                         >
                           {item.category}
-                        </motion.span>
+                        </span>
 
                         <motion.div
                           animate={{
@@ -553,19 +564,21 @@ For more information, visit our website.
                         </motion.div>
                       </div>
 
-                      <motion.h4
-                        className={`font-semibold text-base mb-1 transition-colors duration-300 ${activeIndex === index ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'
-                          }`}
+                      <h4
+                        className={`font-semibold text-base mb-1 transition-colors duration-300 ${
+                          activeIndex === index ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'
+                        }`}
                       >
                         {item.title}
-                      </motion.h4>
+                      </h4>
 
-                      <motion.p
-                        className={`text-sm transition-colors duration-300 ${activeIndex === index ? 'text-gray-600' : 'text-gray-500 group-hover:text-gray-600'
-                          }`}
+                      <p
+                        className={`text-sm transition-colors duration-300 ${
+                          activeIndex === index ? 'text-gray-600' : 'text-gray-500 group-hover:text-gray-600'
+                        }`}
                       >
                         {item.subtitle}
-                      </motion.p>
+                      </p>
                     </div>
                   </div>
                 </motion.button>
@@ -578,22 +591,18 @@ For more information, visit our website.
             className="lg:col-span-3"
             variants={slideInRight}
           >
-            <div className="sticky top-8">
-              <motion.div
-                className="bg-white rounded-2xl shadow-xl overflow-hidden"
-                layout
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-              >
+            <div className="relative">
+              <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
 
                 {/* Header with Image */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeIndex}
                     className="h-72 relative overflow-hidden"
-                    initial={{ opacity: 0, scale: 1.1 }}
+                    initial={{ opacity: 0, scale: 1.05 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.4 }}
                   >
                     <motion.img
                       src={insightsData[activeIndex].image}
@@ -601,7 +610,7 @@ For more information, visit our website.
                       className="w-full h-full object-cover"
                       initial={{ scale: 1.1 }}
                       animate={{ scale: 1 }}
-                      transition={{ duration: 0.7 }}
+                      transition={{ duration: 0.6 }}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
@@ -612,46 +621,26 @@ For more information, visit our website.
                     />
 
                     {/* Fallback gradient background */}
-                    <motion.div
-                      className={`hidden absolute inset-0 w-full h-full bg-gradient-to-r ${insightsData[activeIndex].color} items-center justify-center`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5 }}
-                    >
+                    <div className={`hidden absolute inset-0 w-full h-full bg-gradient-to-r ${insightsData[activeIndex].color} items-center justify-center`}>
                       <div className="text-center text-white">
-                        <motion.h2
-                          className="text-3xl font-bold mb-2"
-                          initial={{ y: 20, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{ delay: 0.2 }}
-                        >
+                        <h2 className="text-3xl font-bold mb-2">
                           {insightsData[activeIndex].category}
-                        </motion.h2>
-                        <motion.p
-                          className="text-lg opacity-90"
-                          initial={{ y: 20, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{ delay: 0.3 }}
-                        >
+                        </h2>
+                        <p className="text-lg opacity-90">
                           Featured Content
-                        </motion.p>
+                        </p>
                       </div>
-                    </motion.div>
+                    </div>
 
                     {/* Overlay */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5 }}
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
                     {/* Category Badge */}
                     <motion.div
                       className="absolute top-6 left-6"
-                      initial={{ y: -20, opacity: 0 }}
+                      initial={{ y: -10, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.3 }}
+                      transition={{ delay: 0.2 }}
                     >
                       <span className="px-3 py-1 bg-white/90 text-gray-800 text-sm font-medium rounded-full">
                         {insightsData[activeIndex].category}
@@ -665,132 +654,82 @@ For more information, visit our website.
                   <motion.div
                     key={`content-${activeIndex}`}
                     className="p-8"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <motion.div
-                      className="mb-6"
-                      variants={staggerContainer}
-                      initial="hidden"
-                      animate="visible"
-                    >
-                      <motion.h3
-                        className="text-3xl font-bold text-gray-900 mb-3"
-                        variants={fadeInUp}
-                      >
+                    <div className="mb-6">
+                      <h3 className="text-3xl font-bold text-gray-900 mb-3">
                         {insightsData[activeIndex].title}
-                      </motion.h3>
+                      </h3>
 
-                      <motion.h4
-                        className="text-xl font-semibold text-red-600 mb-4"
-                        variants={fadeInUp}
-                      >
+                      <h4 className="text-xl font-semibold text-red-600 mb-4">
                         {insightsData[activeIndex].subtitle}
-                      </motion.h4>
+                      </h4>
 
-                      <motion.p
-                        className="text-base text-gray-600 leading-relaxed mb-6"
-                        variants={fadeInUp}
-                      >
+                      <p className="text-base text-gray-600 leading-relaxed mb-6">
                         {insightsData[activeIndex].description}
-                      </motion.p>
+                      </p>
 
                       {/* Long Description Preview */}
-                      <motion.div
-                        className="bg-gray-50 p-4 rounded-lg mb-6"
-                        variants={fadeInUp}
-                      >
-                        <motion.p
-                          className="text-sm text-gray-700 leading-relaxed line-clamp-3"
-                          variants={fadeInUp}
-                        >
+                      <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                        <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
                           {insightsData[activeIndex].longDescription.substring(0, 200)}...
-                        </motion.p>
-                        <motion.p
-                          className="text-xs text-red-600 mt-2 font-medium"
-                          variants={fadeInUp}
-                        >
+                        </p>
+                        <p className="text-xs text-red-600 mt-2 font-medium">
                           Click download to read the full article
-                        </motion.p>
-                      </motion.div>
-                    </motion.div>
+                        </p>
+                      </div>
+                    </div>
 
-                    {/* Single Download Button */}
-                    <motion.div
-                      className="flex justify-center"
-                      variants={staggerContainer}
-                      initial="hidden"
-                      animate="visible"
-                    >
+                    {/* Download Button */}
+                    <div className="flex justify-center">
                       <motion.button
                         onClick={() => handleDownload(insightsData[activeIndex])}
                         className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300 relative overflow-hidden group"
-                        variants={fadeInUp}
-                        whileHover={{
+                        whileHover={{ 
                           scale: 1.02,
-                          boxShadow: "0 10px 25px rgba(220, 38, 38, 0.3)"
+                          boxShadow: "0 8px 20px rgba(220, 38, 38, 0.3)"
                         }}
                         whileTap={{ scale: 0.98 }}
-                        transition={{ duration: 0.2 }}
                       >
-                        <motion.span
-                          className="relative z-10"
-                          whileHover={{ x: 1 }}
-                        >
-                          Download PDF
-                        </motion.span>
-                        <motion.div
-                          whileHover={{ x: 1, rotate: 5 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </motion.div>
-                        {/* Shine effect */}
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full"
-                          whileHover={{
-                            translateX: "200%",
-                            transition: { duration: 0.6, ease: "easeInOut" }
-                          }}
-                        />
+                        <span className="relative z-10">Download PDF</span>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        {/* Subtle shine effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                       </motion.button>
-                    </motion.div>
+                    </div>
                   </motion.div>
                 </AnimatePresence>
-              </motion.div>
+              </div>
 
               {/* Navigation Dots */}
-              <motion.div
-                className="flex justify-center mt-6 gap-2"
-                variants={staggerContainer}
-                initial="hidden"
-                animate="visible"
-              >
+              <div className="flex justify-center mt-6 gap-2">
                 {insightsData.map((_, index) => (
                   <motion.button
                     key={index}
                     onClick={() => setActiveIndex(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${activeIndex === index
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      activeIndex === index
                         ? 'bg-red-600'
                         : 'bg-gray-300 hover:bg-gray-400'
-                      }`}
-                    variants={scaleUp}
+                    }`}
+                    whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                   />
                 ))}
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* Bottom Stats Section */}
+        {/* Stats Section */}
         <motion.div
           ref={statsRef}
-          className="mt-20"
+          className="mb-20"
           initial="hidden"
           animate={statsInView ? "visible" : "hidden"}
           variants={staggerContainer}
@@ -800,104 +739,62 @@ For more information, visit our website.
             className="text-center mb-12"
             variants={fadeInUp}
           >
-            <motion.h3
-              className="text-3xl font-bold text-gray-900 mb-4"
-              variants={fadeInUp}
-            >
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
               Trusted by <span className="text-red-600">Millions</span> Worldwide
-            </motion.h3>
-            <motion.p
-              className="text-lg text-gray-600 max-w-2xl mx-auto"
-              variants={fadeInUp}
-            >
+            </h3>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Our global impact speaks for itself through innovation, reach, and trusted partnerships
-            </motion.p>
+            </p>
           </motion.div>
 
           {/* Stats Grid */}
           <motion.div
-            className="bg-white rounded-2xl shadow-lg p-8"
+            className="bg-white rounded-2xl shadow-lg p-8 mb-12"
             variants={fadeInUp}
           >
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-              variants={staggerContainer}
-            >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
-                {
-                  number: "500M+",
-                  label: "Connected Devices",
-                  description: "Devices worldwide"
-                },
-                {
-                  number: "180+",
-                  label: "Countries Served",
-                  description: "Global presence"
-                },
-                {
-                  number: "25+",
-                  label: "Years Innovation",
-                  description: "Industry experience"
-                },
-                {
-                  number: "40+",
-                  label: "R&D Centers",
-                  description: "Research facilities"
-                }
+                { number: "500M+", label: "Connected Devices", description: "Devices worldwide" },
+                { number: "180+", label: "Countries Served", description: "Global presence" },
+                { number: "25+", label: "Years Innovation", description: "Industry experience" },
+                { number: "40+", label: "R&D Centers", description: "Research facilities" }
               ].map((stat, index) => (
                 <motion.div
                   key={index}
                   className="text-center"
                   variants={scaleUp}
+                  whileHover={{ scale: 1.05 }}
                 >
-                  <motion.div
-                    className="text-3xl font-bold text-gray-900 mb-2"
-                    initial={{ scale: 0 }}
-                    animate={statsInView ? { scale: 1 } : { scale: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.5, type: "spring" }}
-                  >
+                  <div className="text-3xl font-bold text-gray-900 mb-2">
                     {stat.number}
-                  </motion.div>
+                  </div>
                   <h4 className="text-base font-semibold text-gray-700 mb-1">{stat.label}</h4>
                   <p className="text-sm text-gray-500">{stat.description}</p>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
 
           {/* Achievement Cards */}
           <motion.div
-            className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
             variants={staggerContainer}
           >
             {[
-              {
-                title: "Industry Leadership",
-                description: "Leading security technology provider globally",
-                metric: "#1"
-              },
-              {
-                title: "Innovation Awards",
-                description: "Recognition for cutting-edge solutions",
-                metric: "50+"
-              },
-              {
-                title: "Customer Satisfaction",
-                description: "Trusted by enterprises worldwide",
-                metric: "98%"
-              }
+              { title: "Industry Leadership", description: "Leading security technology provider globally", metric: "#1" },
+              { title: "Innovation Awards", description: "Recognition for cutting-edge solutions", metric: "50+" },
+              { title: "Customer Satisfaction", description: "Trusted by enterprises worldwide", metric: "98%" }
             ].map((achievement, index) => (
               <motion.div
                 key={index}
                 className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"
                 variants={scaleUp}
+                whileHover={{ y: -5 }}
               >
                 <div className="flex items-start justify-between mb-3">
-                  <motion.div
-                    className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold"
-                  >
+                  <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold">
                     {achievement.metric}
-                  </motion.div>
+                  </div>
                   <ChevronRightIcon className="w-5 h-5 text-gray-400" />
                 </div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-2">
@@ -909,18 +806,16 @@ For more information, visit our website.
           </motion.div>
         </motion.div>
 
-        {/* Professional CTA Section */}
+        {/* CTA Section */}
         <motion.div
-          className="mt-20"
+          className="mb-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={fadeInUp}
         >
-          <motion.div
-            className="bg-gradient-to-br from-gray-900 via-red-900 to-gray-800 rounded-2xl overflow-hidden relative"
-          >
-            {/* Animated background elements */}
+          <div className="bg-gradient-to-br from-gray-900 via-red-900 to-gray-800 rounded-2xl overflow-hidden relative">
+            {/* Background animation */}
             <motion.div
               className="absolute top-10 left-10 w-32 h-32 bg-red-600/10 rounded-full blur-2xl"
               animate={{
@@ -928,85 +823,43 @@ For more information, visit our website.
                 opacity: [0.3, 0.6, 0.3],
               }}
               transition={{
-                duration: 6,
+                duration: 4,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
             />
 
             <div className="relative px-8 py-12 md:px-12 md:py-16">
-              <motion.div
-                className="grid lg:grid-cols-2 gap-8 items-center"
-                variants={staggerContainer}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-              >
+              <div className="grid lg:grid-cols-2 gap-8 items-center">
 
                 {/* Left Content */}
                 <motion.div variants={slideInLeft}>
-                  <motion.h3
-                    className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight"
-                    variants={fadeInUp}
-                  >
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
                     Experience the Future of Security Technology
-                  </motion.h3>
-                  <motion.p
-                    className="text-lg text-gray-300 mb-8 leading-relaxed"
-                    variants={fadeInUp}
-                  >
+                  </h3>
+                  <p className="text-lg text-gray-300 mb-8 leading-relaxed">
                     Join thousands of enterprises worldwide who trust Hikvision for their security needs.
                     Connect with our experts to explore tailored solutions for your organization.
-                  </motion.p>
+                  </p>
 
-                  {/* Action Button - Updated with proper navigation */}
+                  {/* Action Button */}
                   <motion.button
                     onClick={handleTalkToExpert}
                     className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300 relative overflow-hidden group"
-                    whileHover={{
+                    whileHover={{ 
                       scale: 1.03,
                       boxShadow: "0 15px 35px rgba(220, 38, 38, 0.4)"
                     }}
                     whileTap={{ scale: 0.97 }}
-                    transition={{ duration: 0.2 }}
                   >
-                    <motion.span
-                      className="relative z-10"
-                      whileHover={{ x: 3 }}
-                    >
-                      Talk to Expert
-                    </motion.span>
-                    <motion.div
-                      whileHover={{ x: 3, rotate: 8 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ArrowRightIcon />
-                    </motion.div>
-                    {/* Pulse effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-white/10 rounded-lg"
-                      initial={{ scale: 0, opacity: 0 }}
-                      whileHover={{
-                        scale: 1.1,
-                        opacity: [0, 0.5, 0],
-                        transition: { duration: 0.8, repeat: Infinity }
-                      }}
-                    />
-                    {/* Shine effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full"
-                      whileHover={{
-                        translateX: "200%",
-                        transition: { duration: 0.7, ease: "easeInOut" }
-                      }}
-                    />
+                    <span className="relative z-10">Talk to Expert</span>
+                    <ArrowRightIcon />
+                    {/* Background effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300" />
                   </motion.button>
 
                   {/* Trust Indicators */}
-                  <motion.div
-                    className="flex items-center gap-6 mt-6 text-sm text-gray-400"
-                    variants={fadeInUp}
-                  >
+                  <div className="flex items-center gap-6 mt-6 text-sm text-gray-400">
                     <div className="flex items-center gap-2">
                       <motion.div
                         className="w-2 h-2 bg-green-500 rounded-full"
@@ -1023,7 +876,7 @@ For more information, visit our website.
                       />
                       <span>No Commitment</span>
                     </div>
-                  </motion.div>
+                  </div>
                 </motion.div>
 
                 {/* Right Content */}
@@ -1031,19 +884,11 @@ For more information, visit our website.
                   className="relative"
                   variants={slideInRight}
                 >
-                  <motion.div
-                    className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20"
-                  >
-                    <motion.h4
-                      className="text-xl font-semibold text-white mb-4"
-                      variants={fadeInUp}
-                    >
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <h4 className="text-xl font-semibold text-white mb-4">
                       What You'll Get:
-                    </motion.h4>
-                    <motion.div
-                      className="space-y-3"
-                      variants={staggerContainer}
-                    >
+                    </h4>
+                    <div className="space-y-3">
                       {[
                         { title: "Live Product Demo", desc: "See our solutions in action" },
                         { title: "Custom Solution Design", desc: "Tailored to your needs" },
@@ -1053,13 +898,13 @@ For more information, visit our website.
                         <motion.div
                           key={index}
                           className="flex items-center gap-3 p-3 bg-white/5 rounded-lg"
-                          variants={fadeInUp}
+                          initial={{ opacity: 0, x: 20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
                         >
-                          <motion.div
-                            className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xs"
-                          >
+                          <div className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xs">
                             {index + 1}
-                          </motion.div>
+                          </div>
                           <div>
                             <h5 className="text-white font-medium text-sm">
                               {benefit.title}
@@ -1068,105 +913,51 @@ For more information, visit our website.
                           </div>
                         </motion.div>
                       ))}
-                    </motion.div>
-                  </motion.div>
+                    </div>
+                  </div>
                 </motion.div>
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
+          </div>
+        </motion.div>
 
-          {/* Newsletter Signup */}
-          <motion.div
-            ref={newsletterRef}
-            className="mt-12 max-w-2xl mx-auto bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-lg"
-            initial="hidden"
-            animate={newsletterInView ? "visible" : "hidden"}
-            variants={scaleUp}
-          >
-            <motion.div
-              className="flex items-center justify-center mb-4"
-              variants={fadeInUp}
+        {/* Newsletter Signup */}
+        <motion.div
+          ref={newsletterRef}
+          className="max-w-2xl mx-auto bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-lg"
+          initial="hidden"
+          animate={newsletterInView ? "visible" : "hidden"}
+          variants={scaleUp}
+        >
+          <div className="flex items-center justify-center mb-4">
+            <EnvelopeIcon className="w-6 h-6 text-red-600" />
+          </div>
+
+          <h4 className="text-2xl font-bold text-gray-900 mb-3">
+            Stay Updated with Latest Innovations
+          </h4>
+
+          <p className="text-gray-600 mb-6">
+            Get exclusive insights, product updates, and industry trends delivered to your inbox.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+            />
+
+            <motion.button
+              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300 relative overflow-hidden group min-w-[120px]"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <EnvelopeIcon className="w-6 h-6 text-red-600" />
-            </motion.div>
-
-            <motion.h4
-              className="text-2xl font-bold text-gray-900 mb-3"
-              variants={fadeInUp}
-            >
-              Stay Updated with Latest Innovations
-            </motion.h4>
-
-            <motion.p
-              className="text-gray-600 mb-6"
-              variants={fadeInUp}
-            >
-              Get exclusive insights, product updates, and industry trends delivered to your inbox.
-            </motion.p>
-
-            <motion.div
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-              variants={staggerContainer}
-            >
-              {/* Email Input - NO ANIMATIONS */}
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              />
-
-              {/* Subscribe Button - WITH ANIMATIONS BUT NO FADE UP */}
-              <motion.button
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300 relative overflow-hidden group min-w-[120px]"
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 8px 20px rgba(220, 38, 38, 0.3)",
-                  y: -2
-                }}
-                whileTap={{
-                  scale: 0.95,
-                  y: 0
-                }}
-                transition={{ duration: 0.2, type: "spring", stiffness: 400 }}
-              >
-                <motion.span
-                  className="relative z-10"
-                  initial={{ y: 0 }}
-                  whileHover={{ y: -1 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  Subscribe
-                </motion.span>
-                {/* Background animation */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800"
-                  initial={{ x: "-100%" }}
-                  whileHover={{
-                    x: "0%",
-                    transition: { duration: 0.3, ease: "easeOut" }
-                  }}
-                />
-                {/* Shine effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full"
-                  whileHover={{
-                    translateX: "200%",
-                    transition: { duration: 0.5, ease: "easeInOut", delay: 0.1 }
-                  }}
-                />
-                {/* Success ripple effect on click */}
-                <motion.div
-                  className="absolute inset-0 bg-green-400/20 rounded-lg"
-                  initial={{ scale: 0, opacity: 0 }}
-                  whileTap={{
-                    scale: [0, 1.2, 0],
-                    opacity: [0, 0.6, 0],
-                    transition: { duration: 0.4 }
-                  }}
-                />
-              </motion.button>
-            </motion.div>
-          </motion.div>
+              <span className="relative z-10">Subscribe</span>
+              {/* Background animation */}
+              <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300" />
+            </motion.button>
+          </div>
         </motion.div>
       </div>
     </div>
