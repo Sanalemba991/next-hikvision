@@ -20,7 +20,8 @@ import {
   FiShare2,
   FiStar,
   FiSliders,
-  FiRefreshCw
+  FiRefreshCw,
+  FiArrowRight
 } from 'react-icons/fi'
 
 interface Product {
@@ -78,14 +79,15 @@ const ProductsContent = () => {
   const [categories, setCategories] = useState<string[]>([])
   const [subCategories, setSubCategories] = useState<string[]>([])
 
-  // Animation variants
+  // Enhanced animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
+        staggerChildren: 0.15,
+        delayChildren: 0.3,
+        duration: 0.5
       }
     }
   }
@@ -93,7 +95,7 @@ const ProductsContent = () => {
   const itemVariants = {
     hidden: { 
       opacity: 0, 
-      y: 30,
+      y: 40,
       scale: 0.95
     },
     visible: {
@@ -102,18 +104,60 @@ const ProductsContent = () => {
       scale: 1,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
+        ease: [0.25, 0.46, 0.45, 0.94]
       }
     }
   }
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
+    hidden: { 
+      opacity: 0, 
+      y: 30,
+      scale: 0.9
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  }
+
+  const imageVariants = {
+    initial: { scale: 1, rotate: 0 },
     hover: { 
-      y: -8, 
-      scale: 1.02,
-      transition: { duration: 0.3, ease: "easeOut" }
+      scale: 1.05, 
+      transition: { duration: 0.4, ease: "easeOut" }
+    }
+  }
+
+  const badgeVariants = {
+    initial: { scale: 1, opacity: 0.9 },
+    hover: { 
+      scale: 1.05, 
+      opacity: 1,
+      transition: { duration: 0.2 }
+    }
+  }
+
+  const quickActionVariants = {
+    initial: { opacity: 0, scale: 0.8, y: -10 },
+    visible: { 
+      opacity: 1, 
+      scale: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.3,
+        delay: 0.2,
+        ease: "backOut"
+      }
+    },
+    hover: { 
+      scale: 1.1, 
+      transition: { duration: 0.2 }
     }
   }
 
@@ -267,15 +311,6 @@ const ProductsContent = () => {
     }
   }, [])
 
-  // Format date
-  const formatDate = useCallback((dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }, [])
-
   // Render pagination
   const renderPagination = useCallback(() => {
     if (pagination.totalPages <= 1) return null
@@ -335,6 +370,15 @@ const ProductsContent = () => {
       </div>
     )
   }, [pagination, handlePageChange])
+
+  // Format date function
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -583,36 +627,68 @@ const ProductsContent = () => {
           {loading ? (
             <motion.div 
               className="flex justify-center items-center py-20"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.5 }}
             >
-              <div className="inline-block w-12 h-12 border-4 border-gray-200 border-t-red-600 rounded-full animate-spin" />
-              <span className="ml-4 text-gray-600 text-lg font-medium">Loading products...</span>
+              <motion.div 
+                className="inline-block w-12 h-12 border-4 border-gray-200 border-t-red-600 rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              />
+              <motion.span 
+                className="ml-4 text-gray-600 text-lg font-medium"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                Loading products...
+              </motion.span>
             </motion.div>
           ) : products.length === 0 ? (
             <motion.div 
               className="text-center py-20"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -30, scale: 0.9 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+              <motion.div 
+                className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ duration: 0.3 }}
+              >
                 <FiSearch className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">No Products Found</h3>
-              <p className="text-gray-600 mb-6 text-lg max-w-md mx-auto">
+              </motion.div>
+              <motion.h3 
+                className="text-2xl font-bold text-gray-900 mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                No Products Found
+              </motion.h3>
+              <motion.p 
+                className="text-gray-600 mb-6 text-lg max-w-md mx-auto"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
                 {hasActiveFilters
                   ? "Try adjusting your search criteria or filters to find what you're looking for"
                   : "No products are currently available"
                 }
-              </p>
+              </motion.p>
               {hasActiveFilters && (
                 <motion.button
                   onClick={clearFilters}
                   className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-semibold"
+                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  transition={{ delay: 0.4 }}
                 >
                   <FiX className="w-5 h-5 mr-2" />
                   Clear All Filters
@@ -628,96 +704,198 @@ const ProductsContent = () => {
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
+                  key="grid-view"
                 >
                   {products.map((product, index) => (
                     <motion.div 
                       key={product._id} 
-                      className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 group"
+                      className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100"
                       variants={cardVariants}
-                      whileHover="hover"
+                      layout
+                      layoutId={`product-${product._id}`}
                     >
-                      <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-                        {product.image ? (
-                          <Image
-                            src={product.image}
-                            alt={product.name}
-                            fill
-                            className="object-contain p-6 group-hover:scale-110 transition-transform duration-500"
-                            quality={80}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <FiPackage className="w-16 h-16 text-gray-300" />
-                          </div>
-                        )}
+                      <motion.div 
+                        className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden"
+                      >
+                        <motion.div
+                          variants={imageVariants}
+                          initial="initial"
+                          whileHover="hover"
+                          className="w-full h-full"
+                        >
+                          {product.image ? (
+                            <Image
+                              src={product.image}
+                              alt={product.name}
+                              fill
+                              className="object-contain p-6"
+                              quality={80}
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <motion.div
+                                animate={{ rotate: [0, 10, -10, 0] }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                              >
+                                <FiPackage className="w-16 h-16 text-gray-300" />
+                              </motion.div>
+                            </div>
+                          )}
+                        </motion.div>
                         
                         {/* Quick Actions */}
-                        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <motion.div 
+                          className="absolute top-4 right-4 flex flex-col gap-2"
+                          variants={quickActionVariants}
+                          initial="initial"
+                          animate="visible"
+                        >
                           <motion.button
                             onClick={(e) => {
                               e.preventDefault()
                               toggleWishlist(product._id)
                             }}
-                            className={`p-2 rounded-full backdrop-blur-sm transition-colors ${
+                            className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
                               wishlistedItems.has(product._id)
-                                ? 'bg-red-500 text-white'
-                                : 'bg-white/90 text-gray-700 hover:bg-white'
+                                ? 'bg-red-500 text-white shadow-lg'
+                                : 'bg-white/90 text-gray-700 hover:bg-white hover:shadow-md'
                             }`}
-                            whileHover={{ scale: 1.1 }}
+                            variants={quickActionVariants}
+                            whileHover="hover"
                             whileTap={{ scale: 0.9 }}
                           >
-                            <FiHeart className={`w-4 h-4 ${wishlistedItems.has(product._id) ? 'fill-current' : ''}`} />
+                            <motion.div
+                              animate={wishlistedItems.has(product._id) ? { scale: [1, 1.3, 1] } : {}}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <FiHeart className={`w-4 h-4 ${wishlistedItems.has(product._id) ? 'fill-current' : ''}`} />
+                            </motion.div>
                           </motion.button>
                           <motion.button
                             onClick={(e) => {
                               e.preventDefault()
                               handleShare(product)
                             }}
-                            className="p-2 bg-white/90 text-gray-700 rounded-full hover:bg-white backdrop-blur-sm transition-colors"
-                            whileHover={{ scale: 1.1 }}
+                            className="p-2 bg-white/90 text-gray-700 rounded-full hover:bg-white hover:shadow-md backdrop-blur-sm transition-all duration-300"
+                            variants={quickActionVariants}
+                            whileHover="hover"
                             whileTap={{ scale: 0.9 }}
                           >
                             <FiShare2 className="w-4 h-4" />
                           </motion.button>
-                        </div>
+                        </motion.div>
 
                         {/* Category Badge */}
-                        <div className="absolute top-4 left-4">
-                          <span className="inline-block px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full">
+                        <motion.div 
+                          className="absolute top-4 left-4"
+                          variants={badgeVariants}
+                          initial="initial"
+                          whileHover="hover"
+                        >
+                          <span className="inline-block px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full shadow-lg">
                             {product.category}
                           </span>
-                        </div>
-                      </div>
+                        </motion.div>
+                      </motion.div>
 
-                      <div className="p-6">
-                        <div className="mb-3">
-                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full font-medium">
+                      <motion.div 
+                        className="p-6"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 + 0.3 }}
+                      >
+                        <motion.div 
+                          className="mb-4"
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full font-medium">
                             {product.subCategory}
                           </span>
-                        </div>
+                        </motion.div>
                         
-                        <h3 className="font-bold text-gray-900 mb-3 text-lg leading-tight group-hover:text-red-600 transition-colors line-clamp-2">
+                        <h3 className="font-bold text-gray-900 mb-4 text-lg leading-tight line-clamp-2">
                           {product.name}
                         </h3>
-                        
-                        <p className="text-gray-600 mb-4 leading-relaxed line-clamp-2 font-medium">
-                          {product.shortDescription}
-                        </p>
 
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500 font-medium">
-                            Added {formatDate(product.createdAt)}
-                          </span>
-                          <Link
-                            href={`/products/${product._id}`}
-                            className="inline-flex items-center text-red-600 hover:text-red-700 font-semibold transition-colors"
+                        <motion.div 
+                          className="mb-6"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: index * 0.1 + 0.4 }}
+                        >
+                          <p className="text-xs text-gray-500 font-medium">
+                            Added: {formatDate(product.createdAt)}
+                          </p>
+                        </motion.div>
+
+                        <motion.div 
+                          className="flex items-center justify-center"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 + 0.5 }}
+                        >
+                          <motion.div
+                            className="w-full"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                           >
-                            <FiEye className="w-4 h-4 mr-2" />
-                            View Details
-                          </Link>
-                        </div>
-                      </div>
+                            <Link
+                              href={`/products/${product._id}`}
+                              className="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-xl shadow-lg transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-red-300 hover:shadow-xl"
+                            >
+                              {/* Animated background layers */}
+                              <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800"
+                                initial={{ x: "-100%" }}
+                                whileHover={{ x: 0 }}
+                                transition={{ duration: 0.4, ease: "easeInOut" }}
+                              />
+                              
+                              <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
+                                initial={{ x: "-100%" }}
+                                whileHover={{ x: "200%" }}
+                                transition={{ duration: 0.6, ease: "easeOut" }}
+                              />
+                              
+                              {/* Eye icon */}
+                              <motion.div
+                                className="relative z-10 mr-2"
+                                animate={{ rotate: 0 }}
+                                whileHover={{ rotate: 15, scale: 1.1 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                <FiEye className="w-5 h-5" />
+                              </motion.div>
+                              
+                              {/* Text */}
+                              <span className="relative z-10 text-sm font-bold tracking-wide">
+                                View Details
+                              </span>
+                              
+                              {/* Arrow that slides in */}
+                              <motion.div
+                                className="relative z-10 ml-1"
+                                initial={{ x: -10, opacity: 0 }}
+                                whileHover={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                <FiArrowRight className="w-4 h-4" />
+                              </motion.div>
+                              
+                              {/* Glow effect */}
+                              <motion.div 
+                                className="absolute inset-0 rounded-xl bg-red-400 blur-lg"
+                                initial={{ opacity: 0 }}
+                                whileHover={{ opacity: 0.3 }}
+                                transition={{ duration: 0.3 }}
+                              />
+                            </Link>
+                          </motion.div>
+                        </motion.div>
+                      </motion.div>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -730,98 +908,197 @@ const ProductsContent = () => {
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
+                  key="list-view"
                 >
                   {products.map((product, index) => (
                     <motion.div 
                       key={product._id} 
-                      className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100"
+                      className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100"
                       variants={cardVariants}
-                      whileHover="hover"
+                      layout
+                      layoutId={`product-list-${product._id}`}
                     >
                       <div className="flex flex-col lg:flex-row">
-                        <div className="lg:w-80 h-64 lg:h-auto bg-gradient-to-br from-gray-50 to-gray-100 flex-shrink-0 relative overflow-hidden">
-                          {product.image ? (
-                            <Image
-                              src={product.image}
-                              alt={product.name}
-                              fill
-                              className="object-contain p-6 hover:scale-105 transition-transform duration-300"
-                              quality={80}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <FiPackage className="w-16 h-16 text-gray-300" />
-                            </div>
-                          )}
+                        <motion.div 
+                          className="lg:w-80 h-64 lg:h-auto bg-gradient-to-br from-gray-50 to-gray-100 flex-shrink-0 relative overflow-hidden"
+                        >
+                          <motion.div
+                            variants={imageVariants}
+                            initial="initial"
+                            whileHover="hover"
+                            className="w-full h-full"
+                          >
+                            {product.image ? (
+                              <Image
+                                src={product.image}
+                                alt={product.name}
+                                fill
+                                className="object-contain p-6"
+                                quality={80}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <motion.div
+                                  animate={{ rotate: [0, 10, -10, 0] }}
+                                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                >
+                                  <FiPackage className="w-16 h-16 text-gray-300" />
+                                </motion.div>
+                              </div>
+                            )}
+                          </motion.div>
                           
                           {/* Category Badge */}
-                          <div className="absolute top-4 left-4">
-                            <span className="inline-block px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full">
+                          <motion.div 
+                            className="absolute top-4 left-4"
+                            variants={badgeVariants}
+                            initial="initial"
+                            whileHover="hover"
+                          >
+                            <span className="inline-block px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full shadow-lg">
                               {product.category}
                             </span>
-                          </div>
-                        </div>
+                          </motion.div>
+                        </motion.div>
 
-                        <div className="flex-1 p-8">
+                        <motion.div 
+                          className="flex-1 p-8"
+                          initial={{ opacity: 0, x: 30 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 + 0.3 }}
+                        >
                           <div className="flex flex-col lg:flex-row lg:items-start justify-between h-full">
                             <div className="flex-1 lg:mr-6">
-                              <div className="flex items-center gap-3 mb-4">
-                                <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full font-medium">
+                              <motion.div 
+                                className="flex items-center gap-3 mb-6"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 + 0.4 }}
+                              >
+                                <motion.span 
+                                  className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full font-medium"
+                                  whileHover={{ scale: 1.05, backgroundColor: "#e5e7eb" }}
+                                  transition={{ duration: 0.2 }}
+                                >
                                   {product.subCategory}
-                                </span>
+                                </motion.span>
                                 <div className="flex items-center gap-2">
                                   <motion.button
                                     onClick={() => toggleWishlist(product._id)}
-                                    className={`p-1 rounded-full transition-colors ${
+                                    className={`p-2 rounded-full transition-all duration-300 ${
                                       wishlistedItems.has(product._id)
-                                        ? 'text-red-500'
-                                        : 'text-gray-400 hover:text-red-500'
+                                        ? 'text-red-500 bg-red-50'
+                                        : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
                                     }`}
-                                    whileHover={{ scale: 1.1 }}
+                                    whileHover={{ scale: 1.2, rotate: 5 }}
                                     whileTap={{ scale: 0.9 }}
                                   >
-                                    <FiHeart className={`w-4 h-4 ${wishlistedItems.has(product._id) ? 'fill-current' : ''}`} />
+                                    <motion.div
+                                      animate={wishlistedItems.has(product._id) ? { scale: [1, 1.3, 1] } : {}}
+                                      transition={{ duration: 0.3 }}
+                                    >
+                                      <FiHeart className={`w-5 h-5 ${wishlistedItems.has(product._id) ? 'fill-current' : ''}`} />
+                                    </motion.div>
                                   </motion.button>
                                   <motion.button
                                     onClick={() => handleShare(product)}
-                                    className="p-1 text-gray-400 hover:text-gray-600 rounded-full transition-colors"
-                                    whileHover={{ scale: 1.1 }}
+                                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-all duration-300"
+                                    whileHover={{ scale: 1.2, rotate: -5 }}
                                     whileTap={{ scale: 0.9 }}
                                   >
-                                    <FiShare2 className="w-4 h-4" />
+                                    <FiShare2 className="w-5 h-5" />
                                   </motion.button>
                                 </div>
-                              </div>
+                              </motion.div>
                               
-                              <h3 className="text-2xl font-bold text-gray-900 mb-3 hover:text-red-600 transition-colors">
+                              <motion.h3 
+                                className="text-2xl font-bold text-gray-900 mb-4 transition-colors group-hover:text-red-600"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 + 0.5 }}
+                                whileHover={{ x: 5 }}
+                              >
                                 {product.name}
-                              </h3>
-                              
-                              <p className="text-gray-600 mb-4 leading-relaxed line-clamp-3 font-medium">
-                                {product.shortDescription}
-                              </p>
-                              
-                              <p className="text-sm text-gray-500 font-medium">
-                                Added {formatDate(product.createdAt)}
-                              </p>
+                              </motion.h3>
+
+                              <motion.div 
+                                className="mb-8"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 + 0.6 }}
+                              >
+                                <p className="text-sm text-gray-500 font-medium">
+                                  Added: {formatDate(product.createdAt)}
+                                </p>
+                              </motion.div>
                             </div>
                             
-                            <div className="mt-6 lg:mt-0 flex-shrink-0">
+                            <motion.div 
+                              className="mt-6 lg:mt-0 flex-shrink-0"
+                              initial={{ opacity: 0, x: 30 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 + 0.7 }}
+                            >
                               <motion.div
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                               >
                                 <Link
                                   href={`/products/${product._id}`}
-                                  className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-semibold shadow-lg hover:shadow-xl"
+                                  className="group/btn relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-xl shadow-xl transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-red-300 hover:shadow-2xl"
                                 >
-                                  <FiEye className="w-5 h-5 mr-2" />
-                                  View Details
+                                  {/* Multiple animated background layers */}
+                                  <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800"
+                                    initial={{ x: "-100%" }}
+                                    whileHover={{ x: 0 }}
+                                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                                  />
+                                  
+                                  <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -skew-x-12"
+                                    initial={{ x: "-100%" }}
+                                    whileHover={{ x: "200%" }}
+                                    transition={{ duration: 0.8, ease: "easeOut" }}
+                                  />
+                                  
+                                  {/* Eye icon with rotation */}
+                                  <motion.div
+                                    className="relative z-10 mr-3"
+                                    animate={{ rotate: 0 }}
+                                    whileHover={{ rotate: 15, scale: 1.1 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    <FiEye className="w-6 h-6" />
+                                  </motion.div>
+                                  
+                                  {/* Text */}
+                                  <span className="relative z-10 text-lg tracking-wide">
+                                    View Details
+                                  </span>
+                                  
+                                  {/* Arrow animation */}
+                                  <motion.div
+                                    className="relative z-10 ml-2"
+                                    initial={{ x: -15, opacity: 0 }}
+                                    whileHover={{ x: 0, opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
+                                  >
+                                    <FiArrowRight className="w-5 h-5" />
+                                  </motion.div>
+                                  
+                                  {/* Enhanced glow effect */}
+                                  <motion.div 
+                                    className="absolute inset-0 rounded-xl bg-red-400 blur-xl"
+                                    initial={{ opacity: 0 }}
+                                    whileHover={{ opacity: 0.4 }}
+                                    transition={{ duration: 0.3 }}
+                                  />
                                 </Link>
                               </motion.div>
-                            </div>
+                            </motion.div>
                           </div>
-                        </div>
+                        </motion.div>
                       </div>
                     </motion.div>
                   ))}

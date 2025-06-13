@@ -131,6 +131,52 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
     }
   }
 
+  // Enhanced tab content animation variants
+  const tabContentVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20,
+      scale: 0.95
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+        staggerChildren: 0.1,
+        delayChildren: 0.1
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      scale: 0.95,
+      transition: {
+        duration: 0.3,
+        ease: "easeIn"
+      }
+    }
+  }
+
+  const tabItemVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+      scale: 0.95
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    }
+  }
+
   // Memoized calculations
   const averageRating = useMemo(() => {
     if (!productDetail?.reviews?.length) return 0
@@ -263,13 +309,10 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
           <Link href="/products" className="hover:text-red-600 transition-colors font-medium">
             Products
           </Link>
-          <FiBreadcrumbChevron className="w-4 h-4 text-gray-400" />
-          <Link 
-            href={`/products/category/${encodeURIComponent(product.category.toLowerCase())}`}
-            className="hover:text-red-600 transition-colors font-medium"
-          >
-            {product.category}
-          </Link>
+          
+         
+           
+         
           <FiBreadcrumbChevron className="w-4 h-4 text-gray-400" />
           <span className="text-gray-900 font-semibold truncate">
             {product.name}
@@ -598,13 +641,14 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
               <motion.div 
                 key={activeTab}
                 className="p-8 lg:p-12"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                variants={tabContentVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
               >
                 {activeTab === 'description' && (
-                  <div
+                  <motion.div
+                    variants={tabItemVariants}
                     className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html: productDetail.longDescription?.replace(/\n/g, '<br>') || '<p class="text-gray-500 text-center py-8">Detailed product description will be available soon.</p>'
@@ -613,42 +657,70 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
                 )}
 
                 {activeTab === 'specifications' && (
-                  <div>
+                  <motion.div variants={tabItemVariants}>
                     {productDetail.specifications?.length > 0 ? (
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <motion.div 
+                        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                      >
                         {productDetail.specifications.map((spec, index) => (
                           <motion.div 
                             key={index} 
-                            className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-200"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
+                            className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors duration-300"
+                            variants={itemVariants}
+                            whileHover={{ 
+                              scale: 1.02,
+                              transition: { duration: 0.2 }
+                            }}
+                            custom={index}
                           >
                             <span className="font-semibold text-gray-900">{spec.key}</span>
                             <span className="text-gray-700 font-medium">{spec.value}</span>
                           </motion.div>
                         ))}
-                      </div>
+                      </motion.div>
                     ) : (
-                      <div className="text-center py-12">
-                        <FiTag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500 text-lg">Technical specifications will be available soon.</p>
-                      </div>
+                      <motion.div 
+                        className="text-center py-12"
+                        variants={tabItemVariants}
+                      >
+                        <motion.div
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        >
+                          <FiTag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        </motion.div>
+                        <motion.p 
+                          className="text-gray-500 text-lg"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2, duration: 0.5 }}
+                        >
+                          Technical specifications will be available soon.
+                        </motion.p>
+                      </motion.div>
                     )}
-                  </div>
+                  </motion.div>
                 )}
 
                 {activeTab === 'reviews' && (
-                  <div>
+                  <motion.div variants={tabItemVariants}>
                     {productDetail.reviews?.length > 0 ? (
-                      <div className="space-y-8">
+                      <motion.div 
+                        className="space-y-8"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                      >
                         {productDetail.reviews.map((review, index) => (
                           <motion.div 
                             key={index} 
                             className="border-b border-gray-200 pb-6 last:border-b-0"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
+                            variants={itemVariants}
+                            custom={index}
                           >
                             <div className="flex items-start gap-4">
                               <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg">
@@ -678,22 +750,48 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
                             </div>
                           </motion.div>
                         ))}
-                      </div>
+                      </motion.div>
                     ) : (
-                      <div className="text-center py-16">
-                        <FiStar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">No Reviews Yet</h3>
-                        <p className="text-gray-500 text-lg">Be the first to share your experience with this product!</p>
+                      <motion.div 
+                        className="text-center py-16"
+                        variants={tabItemVariants}
+                      >
+                        <motion.div
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        >
+                          <FiStar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        </motion.div>
+                        <motion.h3 
+                          className="text-2xl font-bold text-gray-900 mb-2"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2, duration: 0.5 }}
+                        >
+                          No Reviews Yet
+                        </motion.h3>
+                        <motion.p 
+                          className="text-gray-500 text-lg"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3, duration: 0.5 }}
+                        >
+                          Be the first to share your experience with this product!
+                        </motion.p>
                         <motion.button
                           className="mt-6 bg-red-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-red-700 transition-colors"
+                          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{ delay: 0.4, duration: 0.5 }}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
                           Write a Review
                         </motion.button>
-                      </div>
+                      </motion.div>
                     )}
-                  </div>
+                  </motion.div>
                 )}
               </motion.div>
             </AnimatePresence>
