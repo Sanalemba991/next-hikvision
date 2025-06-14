@@ -836,64 +836,29 @@ const ProductsContent = () => {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1 + 0.5 }}
                         >
-                          <motion.div
-                            className="w-full"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
+                          <div className="w-full">
                             <Link
                               href={`/products/${product._id}`}
-                              className="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-xl shadow-lg transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-red-300 hover:shadow-xl"
+                              className="group w-full inline-flex items-center justify-center px-6 py-3 text-red-600 font-bold text-sm transition-all duration-300"
                             >
-                              {/* Animated background layers */}
-                              <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800"
-                                initial={{ x: "-100%" }}
-                                whileHover={{ x: 0 }}
-                                transition={{ duration: 0.4, ease: "easeInOut" }}
-                              />
-                              
-                              <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
-                                initial={{ x: "-100%" }}
-                                whileHover={{ x: "200%" }}
-                                transition={{ duration: 0.6, ease: "easeOut" }}
-                              />
-                              
-                              {/* Eye icon */}
-                              <motion.div
-                                className="relative z-10 mr-2"
-                                animate={{ rotate: 0 }}
-                                whileHover={{ rotate: 15, scale: 1.1 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <FiEye className="w-5 h-5" />
-                              </motion.div>
-                              
-                              {/* Text */}
-                              <span className="relative z-10 text-sm font-bold tracking-wide">
-                                View Details
+                              {/* Text with hover effect only on "Details" */}
+                              <span className="tracking-wide">
+                                View <span className="group-hover:text-red-700 transition-colors duration-300">Details</span>
                               </span>
                               
-                              {/* Arrow that slides in */}
+                              {/* Arrow with slow smooth transition */}
                               <motion.div
-                                className="relative z-10 ml-1"
-                                initial={{ x: -10, opacity: 0 }}
-                                whileHover={{ x: 0, opacity: 1 }}
-                                transition={{ duration: 0.3 }}
+                                className="ml-2"
+                                animate={{ x: 0 }}
+                                transition={{ 
+                                  duration: 0.6, 
+                                  ease: [0.25, 0.46, 0.45, 0.94] 
+                                }}
                               >
-                                <FiArrowRight className="w-4 h-4" />
+                                <FiChevronRight className="w-4 h-4 group-hover:text-red-700 group-hover:translate-x-1 transition-all duration-500 ease-out" />
                               </motion.div>
-                              
-                              {/* Glow effect */}
-                              <motion.div 
-                                className="absolute inset-0 rounded-xl bg-red-400 blur-lg"
-                                initial={{ opacity: 0 }}
-                                whileHover={{ opacity: 0.3 }}
-                                transition={{ duration: 0.3 }}
-                              />
                             </Link>
-                          </motion.div>
+                          </div>
                         </motion.div>
                       </motion.div>
                     </motion.div>
@@ -1039,63 +1004,29 @@ const ProductsContent = () => {
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: index * 0.1 + 0.7 }}
                             >
-                              <motion.div
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
+                              <div>
                                 <Link
                                   href={`/products/${product._id}`}
-                                  className="group/btn relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-xl shadow-xl transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-red-300 hover:shadow-2xl"
+                                  className="group inline-flex items-center px-8 py-4 text-red-600 font-bold text-lg transition-all duration-300"
                                 >
-                                  {/* Multiple animated background layers */}
-                                  <motion.div
-                                    className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800"
-                                    initial={{ x: "-100%" }}
-                                    whileHover={{ x: 0 }}
-                                    transition={{ duration: 0.4, ease: "easeInOut" }}
-                                  />
-                                  
-                                  <motion.div
-                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -skew-x-12"
-                                    initial={{ x: "-100%" }}
-                                    whileHover={{ x: "200%" }}
-                                    transition={{ duration: 0.8, ease: "easeOut" }}
-                                  />
-                                  
-                                  {/* Eye icon with rotation */}
-                                  <motion.div
-                                    className="relative z-10 mr-3"
-                                    animate={{ rotate: 0 }}
-                                    whileHover={{ rotate: 15, scale: 1.1 }}
-                                    transition={{ duration: 0.2 }}
-                                  >
-                                    <FiEye className="w-6 h-6" />
-                                  </motion.div>
-                                  
-                                  {/* Text */}
-                                  <span className="relative z-10 text-lg tracking-wide">
-                                    View Details
+                                  {/* Text with hover effect only on "Details" */}
+                                  <span className="tracking-wide">
+                                    View <span className="group-hover:text-red-700 transition-colors duration-300">Details</span>
                                   </span>
                                   
-                                  {/* Arrow animation */}
+                                  {/* Arrow with slow smooth transition */}
                                   <motion.div
-                                    className="relative z-10 ml-2"
-                                    initial={{ x: -15, opacity: 0 }}
-                                    whileHover={{ x: 0, opacity: 1 }}
-                                    transition={{ duration: 0.3 }}
+                                    className="ml-3"
+                                    animate={{ x: 0 }}
+                                    transition={{ 
+                                      duration: 0.6, 
+                                      ease: [0.25, 0.46, 0.45, 0.94] 
+                                    }}
                                   >
-                                    <FiArrowRight className="w-5 h-5" />
+                                    <FiChevronRight className="w-5 h-5 group-hover:text-red-700 group-hover:translate-x-2 transition-all duration-500 ease-out" />
                                   </motion.div>
-                                  
-                                  {/* Enhanced glow effect */}
-                                  <motion.div 
-                                    className="absolute inset-0 rounded-xl bg-red-400 blur-xl"
-                                    initial={{ opacity: 0 }}
-                                    whileHover={{ opacity: 0.4 }}
-                                    transition={{ duration: 0.3 }}
-                                  />
                                 </Link>
-                              </motion.div>
+                              </div>
                             </motion.div>
                           </div>
                         </motion.div>

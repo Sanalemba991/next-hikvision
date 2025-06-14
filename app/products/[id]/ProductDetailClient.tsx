@@ -25,8 +25,7 @@ import {
   FiChevronRight as FiBreadcrumbChevron,
   FiAward,
   FiTruck,
-  FiHeadphones,
-  FiDownload
+  FiHeadphones
 } from 'react-icons/fi'
 
 // Import your existing QuoteModal
@@ -309,10 +308,6 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
           <Link href="/products" className="hover:text-red-600 transition-colors font-medium">
             Products
           </Link>
-          
-         
-           
-         
           <FiBreadcrumbChevron className="w-4 h-4 text-gray-400" />
           <span className="text-gray-900 font-semibold truncate">
             {product.name}
@@ -579,28 +574,17 @@ const ProductDetailClient = ({ product, productDetail, relatedProducts }: Produc
                   </motion.div>
                 </div>
                 
-                {/* Additional Actions */}
-                <div className="grid grid-cols-2 gap-4">
-                  <motion.button
-                    onClick={handleShare}
-                    className="bg-white border-2 border-gray-200 px-6 py-3 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 font-semibold flex items-center justify-center"
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                  >
-                    <FiShare2 className="w-4 h-4 mr-2" />
-                    Share
-                  </motion.button>
-                  <motion.button
-                    className="bg-white border-2 border-gray-200 px-6 py-3 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 font-semibold flex items-center justify-center"
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                  >
-                    <FiDownload className="w-4 h-4 mr-2" />
-                    Brochure
-                  </motion.button>
-                </div>
+                {/* Share Action */}
+                <motion.button
+                  onClick={handleShare}
+                  className="w-full bg-white border-2 border-gray-200 px-6 py-3 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 font-semibold flex items-center justify-center"
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  <FiShare2 className="w-4 h-4 mr-2" />
+                  Share Product
+                </motion.button>
               </motion.div>
             </motion.div>
           </div>

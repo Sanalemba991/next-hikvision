@@ -445,7 +445,7 @@ export default function Navbar() {
               </div>
             ) : (
               <Link 
-                href="/signin" 
+                href="/signup" 
                 className="hidden sm:flex relative items-center gap-2 px-6 py-2 bg-white/10 backdrop-blur-sm text-white rounded-full border border-white/20 hover:bg-white/20 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-white/30 group"
               >
                 <FiUser className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
