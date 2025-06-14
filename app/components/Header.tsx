@@ -191,14 +191,14 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Navigation Dots */}
-        <div className="absolute bottom-3 left-4 lg:bottom-6 lg:left-12 md:bottom-4 md:left-6 sm:bottom-2 sm:left-1/2 sm:transform sm:-translate-x-1/2 z-20">
-          <div className="flex space-x-2 lg:space-x-2 md:space-x-1.5 sm:space-x-1.5">
+        {/* Simple Navigation Dots - Left Side (All Devices) */}
+        <div className="absolute bottom-6 left-4 z-20 lg:bottom-8 lg:left-12 md:bottom-6 md:left-6 sm:bottom-4 sm:left-4">
+          <div className="flex space-x-1.5 lg:space-x-2 md:space-x-1.5 sm:space-x-1">
             {contentSlides.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 lg:w-2 lg:h-2 md:w-2 md:h-2 sm:w-2 sm:h-2 rounded-full transition-all duration-300 ${
+                className={`w-1.5 h-1.5 lg:w-1.5 lg:h-1.5 md:w-1.5 md:h-1.5 sm:w-1 sm:h-1 rounded-full transition-all duration-300 ${
                   index === currentSlide 
                     ? 'bg-white scale-125' 
                     : 'bg-white/50 hover:bg-white/75'
@@ -244,7 +244,7 @@ const Header = () => {
         </div>
 
         {/* Mobile & Tablet Badge Navigation */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 block lg:hidden md:bottom-12 sm:bottom-8">
+        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-20 block lg:hidden md:bottom-16 sm:bottom-10">
           <div className="flex space-x-2.5 lg:space-x-3 md:space-x-2.5 sm:space-x-2 bg-black/20 backdrop-blur-sm rounded-full p-1.5 lg:p-2 md:p-1.5 sm:p-1.5 border border-white/20">
             <Link
               href="/products"
