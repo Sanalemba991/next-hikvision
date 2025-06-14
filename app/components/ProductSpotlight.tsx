@@ -80,7 +80,7 @@ const ProductSpotlight = () => {
     setTimeout(() => {
       setActiveProduct((prev) => (prev + 1) % spotlightProducts.length)
       setIsTransitioning(false)
-    }, 300)
+    }, 200)
   }
 
   const prevProduct = () => {
@@ -89,7 +89,7 @@ const ProductSpotlight = () => {
     setTimeout(() => {
       setActiveProduct((prev) => (prev - 1 + spotlightProducts.length) % spotlightProducts.length)
       setIsTransitioning(false)
-    }, 300)
+    }, 200)
   }
 
   const selectProduct = (index: number) => {
@@ -98,7 +98,7 @@ const ProductSpotlight = () => {
     setTimeout(() => {
       setActiveProduct(index)
       setIsTransitioning(false)
-    }, 300)
+    }, 200)
   }
 
   // Auto-play functionality
@@ -118,13 +118,13 @@ const ProductSpotlight = () => {
   const handleMouseEnter = () => setAutoPlay(false)
   const handleMouseLeave = () => setAutoPlay(true)
 
-  // Animation variants
+  // Animation variants - Optimized for smoothness
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: 0.15,
         delayChildren: 0.1
       }
     }
@@ -133,16 +133,16 @@ const ProductSpotlight = () => {
   const itemVariants = {
     hidden: { 
       opacity: 0, 
-      y: 30,
-      scale: 0.95
+      y: 20,
+      scale: 0.98
     },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.6,
-        ease: "easeOut"
+        duration: 0.5,
+        ease: [0.25, 0.46, 0.45, 0.94]
       }
     }
   }
@@ -207,10 +207,13 @@ const ProductSpotlight = () => {
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeProduct}
-                    initial={{ opacity: 0, scale: 0.9 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.2 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ 
+                      duration: 0.3,
+                      ease: [0.25, 0.46, 0.45, 0.94]
+                    }}
                     className="relative z-10 w-full max-w-sm md:max-w-md lg:max-w-lg"
                   >
                     <div className="relative aspect-square rounded-xl overflow-hidden bg-white/10 backdrop-blur-sm">
@@ -238,9 +241,9 @@ const ProductSpotlight = () => {
                   <button
                     onClick={prevProduct}
                     disabled={isTransitioning}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-300 disabled:cursor-not-allowed active:bg-red-100"
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 disabled:cursor-not-allowed active:bg-red-100"
                   >
-                    <svg className="w-5 h-5 text-gray-500 hover:text-gray-700 active:text-red-600 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-5 h-5 text-gray-500 hover:text-gray-700 active:text-red-600 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
@@ -263,9 +266,9 @@ const ProductSpotlight = () => {
                   <button
                     onClick={nextProduct}
                     disabled={isTransitioning}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-300 disabled:cursor-not-allowed active:bg-red-100"
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 disabled:cursor-not-allowed active:bg-red-100"
                   >
-                    <svg className="w-5 h-5 text-gray-500 hover:text-gray-700 active:text-red-600 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-5 h-5 text-gray-500 hover:text-gray-700 active:text-red-600 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
@@ -277,10 +280,13 @@ const ProductSpotlight = () => {
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeProduct}
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 15 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.2 }}
+                    exit={{ opacity: 0, x: -15 }}
+                    transition={{ 
+                      duration: 0.3,
+                      ease: [0.25, 0.46, 0.45, 0.94]
+                    }}
                   >
                     {/* Badge and Category */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
@@ -323,20 +329,20 @@ const ProductSpotlight = () => {
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                       <Link
                         href="/products"
-                        className="inline-flex items-center justify-center px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 group"
+                        className="inline-flex items-center justify-center px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-105 group"
                       >
                         Learn More
-                        <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </Link>
 
                       <Link
                         href="/contact"
-                        className="inline-flex items-center justify-center px-6 md:px-8 py-3 md:py-4 border-2 border-gray-300 hover:border-red-500 text-gray-700 hover:text-red-600 font-semibold rounded-xl transition-all duration-300 hover:bg-red-50 group"
+                        className="inline-flex items-center justify-center px-6 md:px-8 py-3 md:py-4 border-2 border-gray-300 hover:border-red-500 text-gray-700 hover:text-red-600 font-semibold rounded-xl transition-all duration-200 hover:bg-red-50 group"
                       >
                         Request Demo
-                        <svg className="ml-2 w-4 h-4 group-hover:rotate-12 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="ml-2 w-4 h-4 group-hover:rotate-12 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                       </Link>
@@ -352,7 +358,7 @@ const ProductSpotlight = () => {
             <button
               onClick={prevProduct}
               disabled={isTransitioning}
-              className="absolute top-1/2 -translate-y-1/2 -left-6 xl:-left-8 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 disabled:cursor-not-allowed"
+              className="absolute top-1/2 -translate-y-1/2 -left-6 xl:-left-8 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 disabled:cursor-not-allowed"
             >
               <svg className="w-6 h-6 lg:w-7 lg:h-7 text-gray-400 hover:text-red-800 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -362,7 +368,7 @@ const ProductSpotlight = () => {
             <button
               onClick={nextProduct}
               disabled={isTransitioning}
-              className="absolute top-1/2 -translate-y-1/2 -right-6 xl:-right-8 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 disabled:cursor-not-allowed"
+              className="absolute top-1/2 -translate-y-1/2 -right-6 xl:-right-8 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 disabled:cursor-not-allowed"
             >
               <svg className="w-6 h-6 lg:w-7 lg:h-7 text-gray-400 hover:text-red-800 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
