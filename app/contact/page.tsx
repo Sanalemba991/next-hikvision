@@ -193,7 +193,7 @@ const ContactPage = () => {
           >
             We're here to help with all your security and surveillance needs
           </motion.p>
-          {/* Banner Buttons - Small Row Layout */}
+          {/* Banner Buttons - Row Layout without Glow */}
           <motion.div
             variants={mobileStaggerContainer}
             className="flex flex-row justify-center gap-2 xs:gap-2.5 sm:gap-3 md:gap-4 px-2 xs:px-4 sm:px-0 max-w-4xl mx-auto"
@@ -203,7 +203,6 @@ const ContactPage = () => {
               variants={mobileVariants}
               className="group relative flex-1 xs:flex-none"
             >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full blur opacity-60 group-hover:opacity-100 transition duration-300"></div>
               <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 sm:py-2.5 flex items-center gap-1.5 xs:gap-2 sm:gap-2.5 hover:bg-white/20 transition-all duration-300 cursor-pointer justify-center">
                 <div className="w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <FiHeadphones className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 text-white" />
@@ -217,7 +216,6 @@ const ContactPage = () => {
               variants={mobileVariants}
               className="group relative flex-1 xs:flex-none"
             >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full blur opacity-60 group-hover:opacity-100 transition duration-300"></div>
               <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 sm:py-2.5 flex items-center gap-1.5 xs:gap-2 sm:gap-2.5 hover:bg-white/20 transition-all duration-300 cursor-pointer justify-center">
                 <div className="w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <FiZap className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 text-white" />
@@ -231,7 +229,6 @@ const ContactPage = () => {
               variants={mobileVariants}
               className="group relative flex-1 xs:flex-none"
             >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full blur opacity-60 group-hover:opacity-100 transition duration-300"></div>
               <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 sm:py-2.5 flex items-center gap-1.5 xs:gap-2 sm:gap-2.5 hover:bg-white/20 transition-all duration-300 cursor-pointer justify-center">
                 <div className="w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <FiGlobe className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 text-white" />

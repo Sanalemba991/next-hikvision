@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { motion, useInView, useAnimation } from 'framer-motion';
-import { ChevronRight, Shield, Users, Globe, Award, Eye, Target, Zap, Building, Camera, Monitor, Server } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Shield, Users, Globe, Award, Eye, Target, Zap, Building, Camera, Monitor, Server } from 'lucide-react';
 
 const AboutUs = () => {
   const [isVisible, setIsVisible] = useState<{ [key: string]: boolean }>({});
@@ -162,38 +162,37 @@ const AboutUs = () => {
     if (isMobile) {
       return 'opacity-100 translate-y-0 translate-x-0'; // Static positioning for mobile/tablet
     }
-    return `transform transition-all duration-1000 ${defaultClass} ${isVisible[elementId] ? 'translate-y-0 opacity-100 translate-x-0' : 'translate-y-10 opacity-0'
-      }`;
-  };
-
-  // Mobile/Tablet specific transition classes
-  const getMobileTransition = (baseClass: string = '') => {
-    if (isMobile) {
-      return `${baseClass} transition-all duration-200 ease-out`; // Faster, smoother transitions for mobile
-    }
-    return baseClass;
+    return `transform transition-all duration-1000 ${defaultClass} ${
+      isVisible[elementId] ? 'translate-y-0 opacity-100 translate-x-0' : 'translate-y-10 opacity-0'
+    }`;
   };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Professional Hero Section - Mobile/Tablet smaller, PC unchanged */}
-      <section className="relative overflow-hidden text-white h-[85vh] md:h-[75vh] lg:min-h-screen flex items-center" style={{
-        backgroundImage: "url('https://www.f6s.com/content-resource/media/5551605_6553c4e253a0d69874dbf750d0371658ede130ca.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: isMobile ? "scroll" : "fixed"
-      }}>
+      {/* Professional Hero Section */}
+      <section 
+        className="relative overflow-hidden text-white h-[85vh] md:h-[75vh] lg:min-h-screen flex items-center" 
+        style={{
+          backgroundImage: "url('https://www.f6s.com/content-resource/media/5551605_6553c4e253a0d69874dbf750d0371658ede130ca.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: isMobile ? "scroll" : "fixed"
+        }}
+      >
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-black/40"></div>
 
         {/* Subtle Grid Overlay */}
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px'
-        }}></div>
+        <div 
+          className="absolute inset-0 opacity-5" 
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px'
+          }}
+        ></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16 xl:py-24 z-10">
           {isMobile ? (
@@ -301,31 +300,33 @@ const AboutUs = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-transparent">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section className="py-10 sm:py-12 lg:py-16 bg-transparent">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {isMobile ? (
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={mobileStaggerContainer}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
             >
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
                   variants={mobileCardVariants}
                   whileTap="tap"
-                  className="text-center rounded-xl p-2 transition-all duration-300 ease-out hover:bg-gray-50/50"
+                  whileHover={{ y: -4, scale: 1.02 }}
+                  className="text-center rounded-lg p-2 transition-all duration-300 ease-out hover:bg-gray-50/50"
                 >
                   <motion.div
                     whileTap={{ scale: 0.9 }}
-                    className="inline-flex items-center justify-center w-12 sm:w-14 lg:w-16 h-12 sm:h-14 lg:h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-lg sm:rounded-xl mb-3 sm:mb-4 transition-all duration-300 ease-out hover:shadow-xl hover:from-red-600 hover:to-red-700"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    className="inline-flex items-center justify-center w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg mb-2 sm:mb-3 shadow-md transition-all duration-300 ease-out"
                   >
-                    <stat.icon className="w-6 sm:w-7 lg:w-8 h-6 sm:h-7 lg:h-8 text-white" />
+                    <stat.icon className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                   </motion.div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 mb-1 sm:mb-2">{stat.number}</div>
-                  <div className="text-sm sm:text-base text-slate-600 font-medium">{stat.text}</div>
+                  <div className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-1 transition-colors duration-300">{stat.number}</div>
+                  <div className="text-xs sm:text-sm text-slate-600 font-medium">{stat.text}</div>
                 </motion.div>
               ))}
             </motion.div>
@@ -333,15 +334,15 @@ const AboutUs = () => {
             <div
               id="stats"
               data-animate
-              className={`grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 ${getAnimationClass('stats', 'delay-200')}`}
+              className={`grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 ${getAnimationClass('stats', 'delay-200')}`}
             >
               {stats.map((stat, index) => (
-                <div key={index} className="text-center group rounded-xl p-2 transition-all duration-300 ease-out hover:bg-gray-50/50 hover:scale-105 cursor-pointer">
-                  <div className="inline-flex items-center justify-center w-12 sm:w-14 lg:w-16 h-12 sm:h-14 lg:h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-lg sm:rounded-xl mb-3 sm:mb-4 transition-all duration-300 ease-out group-hover:shadow-xl group-hover:from-red-600 group-hover:to-red-700 group-hover:scale-110 active:scale-95">
-                    <stat.icon className="w-6 sm:w-7 lg:w-8 h-6 sm:h-7 lg:h-8 text-white" />
+                <div key={index} className="text-center group rounded-lg p-2 transition-all duration-300 ease-out cursor-pointer hover:bg-gray-50/50 hover:-translate-y-1 hover:scale-105">
+                  <div className="inline-flex items-center justify-center w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg mb-2 sm:mb-3 shadow-md transition-all duration-300 ease-out group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-lg">
+                    <stat.icon className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                   </div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 mb-1 sm:mb-2 transition-colors duration-300 group-hover:text-red-600">{stat.number}</div>
-                  <div className="text-sm sm:text-base text-slate-600 font-medium transition-colors duration-300 group-hover:text-slate-700">{stat.text}</div>
+                  <div className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-1 transition-colors duration-300 group-hover:text-red-600">{stat.number}</div>
+                  <div className="text-xs sm:text-sm text-slate-600 font-medium transition-colors duration-300 group-hover:text-slate-700">{stat.text}</div>
                 </div>
               ))}
             </div>
@@ -426,6 +427,7 @@ const AboutUs = () => {
                       </motion.li>
                     </motion.ul>
                   </motion.div>
+                  <div className="absolute -top-2 sm:-top-4 -right-2 sm:-right-4 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-br from-red-400/20 to-red-600/20 rounded-full blur-xl z-0"></div>
                 </motion.div>
               </>
             ) : (
@@ -462,11 +464,11 @@ const AboutUs = () => {
 
                 <div
                   id="overview-visual"
-                  data-animateSS
+                  data-animate
                   className={getAnimationClass('overview-visual', 'delay-500 lg:translate-x-10')}
                 >
-                  <div className="relative">
-                    <div className="bg-gradient-to-br from-red-700/90 to-red-900/95 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 text-white shadow-2xl border border-red-600/20 transition-all duration-300 ease-out hover:shadow-3xl  cursor-pointer">
+                  <div className="relative z-10">
+                    <div className="bg-gradient-to-br from-red-700/90 to-red-900/95 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 text-white shadow-2xl border border-red-600/20 transition-all duration-300 ease-out hover:shadow-3xl cursor-pointer">
                       <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white">Our Expertise</h3>
                       <ul className="space-y-3 sm:space-y-4">
                         <li className="flex items-center group rounded-lg p-1 transition-all duration-300 ease-out hover:bg-white/5 cursor-pointer">
@@ -487,7 +489,7 @@ const AboutUs = () => {
                         </li>
                       </ul>
                     </div>
-                    <div className="absolute -top-2 sm:-top-4 -right-2 sm:-right-4 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-br from-red-400/20 to-red-600/20 rounded-full blur-xl hidden lg:block"></div>
+                    <div className="absolute -top-2 sm:-top-4 -right-2 sm:-right-4 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-br from-red-400/20 to-red-600/20 rounded-full blur-xl z-0"></div>
                   </div>
                 </div>
               </>
@@ -496,12 +498,12 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* Vision, Mission, Values */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-slate-50/80 to-white/90 backdrop-blur-sm relative">
+      {/* Vision, Mission, Values - Professional & Compact */}
+      <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-b from-slate-50/80 to-white/90 backdrop-blur-sm relative">
         {/* Subtle professional overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50/40 via-white/20 to-red-50/30"></div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           {isMobile ? (
             <>
               <motion.div
@@ -509,16 +511,16 @@ const AboutUs = () => {
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.3 }}
                 variants={mobileSlideUp}
-                className="text-center mb-12 sm:mb-16"
+                className="text-center mb-8 sm:mb-12"
               >
                 <motion.span
                   whileTap={{ scale: 0.95 }}
-                  className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-red-100/80 backdrop-blur-sm text-red-700 text-xs sm:text-sm font-semibold rounded-full mb-3 sm:mb-4 border border-red-200/60 shadow-sm transition-all duration-300 ease-out hover:bg-red-200/80 hover:border-red-300/60"
+                  className="inline-block px-4 py-2 bg-red-50/80 backdrop-blur-sm text-red-700 text-sm font-semibold rounded-full mb-4 border border-red-200/60 shadow-sm transition-all duration-300 ease-out hover:bg-red-100/80 hover:border-red-300/60"
                 >
                   Our Foundation
                 </motion.span>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-4 sm:mb-6 leading-tight">Vision, Mission & Values</h2>
-                <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-4 leading-tight">Vision, Mission & Values</h2>
+                <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
                   Built on principles of excellence, innovation, and unwavering commitment to security
                 </p>
               </motion.div>
@@ -529,8 +531,8 @@ const AboutUs = () => {
                 viewport={{ once: true, amount: 0.2 }}
                 variants={mobileStaggerContainer}
               >
-                <motion.div variants={mobileVariants} className="flex justify-center mb-12 sm:mb-16">
-                  <div className="flex flex-col sm:flex-row bg-white/90 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200/50 p-1 sm:p-2 w-full sm:w-auto">
+                <motion.div variants={mobileVariants} className="flex justify-center mb-8">
+                  <div className="flex flex-col sm:flex-row bg-white/90 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 p-1">
                     {values.map((value, index) => (
                       <motion.button
                         key={index}
@@ -539,10 +541,11 @@ const AboutUs = () => {
                         animate={activeTab === value.title.toLowerCase() ? "active" : "inactive"}
                         whileTap="tap"
                         onClick={() => setActiveTab(value.title.toLowerCase())}
-                        className={`px-4 sm:px-6 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base mb-1 sm:mb-0 transition-all duration-300 ease-out ${activeTab === value.title.toLowerCase()
-                            ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg'
+                        className={`px-6 py-3 rounded-lg font-semibold text-sm mb-1 sm:mb-0 transition-all duration-300 ease-out ${
+                          activeTab === value.title.toLowerCase()
+                            ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md'
                             : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100/80'
-                          }`}
+                        }`}
                       >
                         {value.title}
                       </motion.button>
@@ -550,7 +553,7 @@ const AboutUs = () => {
                   </div>
                 </motion.div>
 
-                <div className="max-w-5xl mx-auto">
+                <div className="max-w-4xl mx-auto">
                   {values.map((value, index) => (
                     <motion.div
                       key={index}
@@ -564,16 +567,16 @@ const AboutUs = () => {
                     >
                       <motion.div
                         whileTap={{ scale: 0.98 }}
-                        className="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 text-center shadow-2xl border border-gray-200/30 transition-all duration-300 ease-out hover:shadow-3xl"
+                        className="bg-white/95 backdrop-blur-md rounded-xl p-6 sm:p-8 text-center shadow-xl border border-gray-200/30 transition-all duration-300 ease-out hover:shadow-2xl"
                       >
                         <motion.div
                           whileTap={{ scale: 0.9 }}
-                          className="inline-flex items-center justify-center w-16 sm:w-20 lg:w-24 h-16 sm:h-20 lg:h-24 bg-gradient-to-br from-red-500 to-red-600 rounded-xl sm:rounded-2xl mb-6 sm:mb-8 shadow-xl transition-all duration-300 ease-out hover:from-red-600 hover:to-red-700 hover:shadow-2xl"
+                          className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-xl mb-6 shadow-lg transition-all duration-300 ease-out hover:from-red-600 hover:to-red-700 hover:shadow-xl"
                         >
-                          <value.icon className="w-8 sm:w-10 lg:w-12 h-8 sm:h-10 lg:h-12 text-white" />
+                          <value.icon className="w-8 h-8 text-white" />
                         </motion.div>
-                        <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-6 sm:mb-8 leading-tight">{value.title}</h3>
-                        <p className="text-base sm:text-lg lg:text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">{value.content}</p>
+                        <h3 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4 leading-tight">{value.title}</h3>
+                        <p className="text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">{value.content}</p>
                       </motion.div>
                     </motion.div>
                   ))}
@@ -585,13 +588,13 @@ const AboutUs = () => {
               <div
                 id="values-header"
                 data-animate
-                className={`text-center mb-12 sm:mb-16 ${getAnimationClass('values-header')}`}
+                className={`text-center mb-12 ${getAnimationClass('values-header')}`}
               >
-                <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-red-100/80 backdrop-blur-sm text-red-700 text-xs sm:text-sm font-semibold rounded-full mb-3 sm:mb-4 border border-red-200/60 shadow-sm transition-all duration-300 ease-out hover:bg-red-200/80 hover:border-red-300/60 cursor-pointer">
+                <span className="inline-block px-4 py-2 bg-red-50/80 backdrop-blur-sm text-red-700 text-sm font-semibold rounded-full mb-4 border border-red-200/60 shadow-sm transition-all duration-300 ease-out hover:bg-red-100/80 hover:border-red-300/60 cursor-pointer">
                   Our Foundation
                 </span>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-4 sm:mb-6 leading-tight">Vision, Mission & Values</h2>
-                <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4 leading-tight">Vision, Mission & Values</h2>
+                <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
                   Built on principles of excellence, innovation, and unwavering commitment to security
                 </p>
               </div>
@@ -601,16 +604,17 @@ const AboutUs = () => {
                 data-animate
                 className={getAnimationClass('values-tabs', 'delay-200')}
               >
-                <div className="flex justify-center mb-12 sm:mb-16">
-                  <div className="flex flex-col sm:flex-row bg-white/90 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200/50 p-1 sm:p-2 w-full sm:w-auto">
+                <div className="flex justify-center mb-10">
+                  <div className="flex bg-white/90 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 p-1">
                     {values.map((value, index) => (
                       <button
                         key={index}
                         onClick={() => setActiveTab(value.title.toLowerCase())}
-                        className={`px-4 sm:px-6 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base mb-1 sm:mb-0 transition-all duration-300 ease-out ${activeTab === value.title.toLowerCase()
-                            ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg lg:transform lg:scale-105'
+                        className={`px-8 py-4 rounded-lg font-semibold text-base transition-all duration-300 ease-out ${
+                          activeTab === value.title.toLowerCase()
+                            ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md transform scale-105'
                             : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100/80'
-                          }`}
+                        }`}
                       >
                         {value.title}
                       </button>
@@ -618,21 +622,22 @@ const AboutUs = () => {
                   </div>
                 </div>
 
-                <div className="max-w-5xl mx-auto">
+                <div className="max-w-4xl mx-auto">
                   {values.map((value, index) => (
                     <div
                       key={index}
-                      className={`transition-all duration-300 ease-out ${activeTab === value.title.toLowerCase()
+                      className={`transition-all duration-300 ease-out ${
+                        activeTab === value.title.toLowerCase()
                           ? 'opacity-100 translate-y-0'
                           : 'opacity-0 absolute translate-y-4 pointer-events-none'
-                        }`}
+                      }`}
                     >
-                      <div className="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 text-center shadow-2xl border border-gray-200/30 transition-all duration-300 ease-out hover:shadow-3xl cursor-pointer">
-                        <div className="inline-flex items-center justify-center w-16 sm:w-20 lg:w-24 h-16 sm:h-20 lg:h-24 bg-gradient-to-br from-red-500 to-red-600 rounded-xl sm:rounded-2xl mb-6 sm:mb-8 shadow-xl transition-all duration-300 ease-out hover:from-red-600 hover:to-red-700 hover:shadow-2xl hover:scale-110">
-                          <value.icon className="w-8 sm:w-10 lg:w-12 h-8 sm:h-10 lg:h-12 text-white" />
+                      <div className="bg-white/95 backdrop-blur-md rounded-xl p-8 lg:p-10 text-center shadow-xl border border-gray-200/30 transition-all duration-300 ease-out hover:shadow-2xl cursor-pointer">
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-xl mb-6 shadow-lg transition-all duration-300 ease-out hover:from-red-600 hover:to-red-700 hover:shadow-xl hover:scale-110">
+                          <value.icon className="w-10 h-10 text-white" />
                         </div>
-                        <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-6 sm:mb-8 leading-tight">{value.title}</h3>
-                        <p className="text-base sm:text-lg lg:text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">{value.content}</p>
+                        <h3 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-6 leading-tight">{value.title}</h3>
+                        <p className="text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">{value.content}</p>
                       </div>
                     </div>
                   ))}
@@ -644,8 +649,8 @@ const AboutUs = () => {
       </section>
 
       {/* Products & Solutions */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-transparent">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section className="py-10 sm:py-12 lg:py-16 bg-transparent">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {isMobile ? (
             <>
               <motion.div
@@ -653,16 +658,16 @@ const AboutUs = () => {
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.3 }}
                 variants={mobileSlideUp}
-                className="text-center mb-12 sm:mb-16"
+                className="text-center mb-8 sm:mb-10"
               >
                 <motion.span
                   whileTap={{ scale: 0.95 }}
-                  className="inline-block px-3 py-1 bg-red-50 text-red-700 text-xs sm:text-sm font-medium rounded-full mb-3 sm:mb-4 border border-red-200 transition-all duration-300 ease-out hover:bg-red-100 hover:border-red-300"
+                  className="inline-block px-3 py-1 bg-red-50 text-red-700 text-xs sm:text-sm font-medium rounded-full mb-3 border border-red-200 transition-all duration-300 ease-out"
                 >
                   Our Solutions
                 </motion.span>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-slate-800">Comprehensive Security Products</h2>
-                <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 text-slate-800">Comprehensive Security Products</h2>
+                <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
                   Advanced security solutions designed for the modern world
                 </p>
               </motion.div>
@@ -672,22 +677,22 @@ const AboutUs = () => {
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.2 }}
                 variants={mobileStaggerContainer}
-                className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+                className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5"
               >
                 {products.map((product, index) => (
                   <motion.div key={index} variants={mobileCardVariants} className="group">
                     <motion.div
                       whileTap="tap"
-                      className="bg-white/70 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-center border border-gray-200/50 transition-all duration-300 ease-out hover:bg-white/90 hover:shadow-xl"
+                      className="bg-white/70 backdrop-blur-sm rounded-lg p-3 sm:p-4 text-center border border-gray-200/50 transition-all duration-300 ease-out"
                     >
                       <motion.div
                         whileTap={{ scale: 0.9 }}
-                        className="inline-flex items-center justify-center w-12 sm:w-14 lg:w-16 h-12 sm:h-14 lg:h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-lg sm:rounded-xl mb-3 sm:mb-4 shadow-lg transition-all duration-300 ease-out hover:from-red-600 hover:to-red-700 hover:shadow-xl hover:scale-110"
+                        className="inline-flex items-center justify-center w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg mb-2 sm:mb-3 shadow-md transition-all duration-300 ease-out"
                       >
-                        <product.icon className="w-6 sm:w-7 lg:w-8 h-6 sm:h-7 lg:h-8 text-white" />
+                        <product.icon className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                       </motion.div>
-                      <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-slate-800 transition-colors duration-300 group-hover:text-red-600">{product.name}</h3>
-                      <p className="text-sm sm:text-base text-slate-600 leading-relaxed">{product.desc}</p>
+                      <h3 className="text-base sm:text-lg font-bold mb-1 sm:mb-2 text-slate-800">{product.name}</h3>
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{product.desc}</p>
                     </motion.div>
                   </motion.div>
                 ))}
@@ -698,13 +703,13 @@ const AboutUs = () => {
               <div
                 id="products-header"
                 data-animate
-                className={`text-center mb-12 sm:mb-16 ${getAnimationClass('products-header')}`}
+                className={`text-center mb-8 sm:mb-10 ${getAnimationClass('products-header')}`}
               >
-                <span className="inline-block px-3 py-1 bg-red-50 text-red-700 text-xs sm:text-sm font-medium rounded-full mb-3 sm:mb-4 border border-red-200 transition-all duration-300 ease-out hover:bg-red-100 hover:border-red-300 cursor-pointer">
+                <span className="inline-block px-3 py-1 bg-red-50 text-red-700 text-xs sm:text-sm font-medium rounded-full mb-3 border border-red-200 transition-all duration-300 ease-out cursor-pointer">
                   Our Solutions
                 </span>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-slate-800">Comprehensive Security Products</h2>
-                <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 text-slate-800">Comprehensive Security Products</h2>
+                <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
                   Advanced security solutions designed for the modern world
                 </p>
               </div>
@@ -712,16 +717,16 @@ const AboutUs = () => {
               <div
                 id="products-grid"
                 data-animate
-                className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 ${getAnimationClass('products-grid', 'delay-300')}`}
+                className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 ${getAnimationClass('products-grid', 'delay-300')}`}
               >
                 {products.map((product, index) => (
                   <div key={index} className="group cursor-pointer">
-                    <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-center border border-gray-200/50 transition-all duration-300 ease-out hover:bg-white/90 hover:shadow-xl hover:scale-105">
-                      <div className="inline-flex items-center justify-center w-12 sm:w-14 lg:w-16 h-12 sm:h-14 lg:h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-lg sm:rounded-xl mb-3 sm:mb-4 shadow-lg transition-all duration-300 ease-out group-hover:from-red-600 group-hover:to-red-700 group-hover:shadow-xl group-hover:scale-110 active:scale-95">
-                        <product.icon className="w-6 sm:w-7 lg:w-8 h-6 sm:h-7 lg:h-8 text-white" />
+                    <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3 sm:p-4 text-center border border-gray-200/50 transition-all duration-300 ease-out">
+                      <div className="inline-flex items-center justify-center w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg mb-2 sm:mb-3 shadow-md transition-all duration-300 ease-out group-hover:from-red-600 group-hover:to-red-700 group-hover:shadow-xl group-hover:scale-110 active:scale-95">
+                        <product.icon className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                       </div>
-                      <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-slate-800 transition-colors duration-300 group-hover:text-red-600">{product.name}</h3>
-                      <p className="text-sm sm:text-base text-slate-600 leading-relaxed transition-colors duration-300 group-hover:text-slate-700">{product.desc}</p>
+                      <h3 className="text-base sm:text-lg font-bold mb-1 sm:mb-2 text-slate-800">{product.name}</h3>
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{product.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -746,13 +751,16 @@ const AboutUs = () => {
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
 
         {/* Professional pattern overlay */}
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)
-          `,
-          backgroundSize: '30px 30px'
-        }}></div>
+        <div 
+          className="absolute inset-0 opacity-5" 
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)
+            `,
+            backgroundSize: '30px 30px'
+          }}
+        ></div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
           {isMobile ? (
