@@ -51,6 +51,18 @@ export default function Navbar() {
     fetchCategories()
   }, [])
 
+  // Reset mobile menu when route changes
+  useEffect(() => {
+    resetMobileMenu()
+  }, [pathname])
+
+  // Function to reset mobile menu state
+  const resetMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+    setShowMobileProducts(false)
+    setShowMobileSolutions(false)
+  }
+
   // Fetch categories from API
   const fetchCategories = async () => {
     try {
@@ -159,6 +171,11 @@ export default function Navbar() {
     return pathname === href || pathname.startsWith(href + '/')
   }
 
+  // Enhanced mobile link click handler
+  const handleMobileLinkClick = () => {
+    resetMobileMenu()
+  }
+
   const NavLink = ({ href, children, className = "" }: { href: string, children: React.ReactNode, className?: string }) => (
     <Link 
       href={href} 
@@ -181,7 +198,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
+            <Link href="/" className="flex-shrink-0" onClick={handleMobileLinkClick}>
               <img 
                 src="/hikvision-logo.png" 
                 alt="Hikvision" 
@@ -384,6 +401,7 @@ export default function Navbar() {
             <NavLink href="/support">Support</NavLink>
             <NavLink href="/about">About Us</NavLink>
             <NavLink href="/contact">Contact Us</NavLink>
+            <NavLink href="/partners">Partners</NavLink>
           </div>
 
           {/* Right side */}
@@ -482,7 +500,7 @@ export default function Navbar() {
               className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
                 isActiveLink('/') ? 'text-red-500 bg-gray-700' : ''
               }`}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={handleMobileLinkClick}
             >
               Home
             </Link>
@@ -507,7 +525,7 @@ export default function Navbar() {
                       key={category}
                       href={`/products?category=${encodeURIComponent(category)}`}
                       className="block px-3 py-2 text-sm text-gray-300 hover:text-red-400 hover:bg-gray-700 rounded-md transition-colors duration-200"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      onClick={handleMobileLinkClick}
                     >
                       {category}
                     </Link>
@@ -536,7 +554,7 @@ export default function Navbar() {
                       key={solution}
                       href={`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`}
                       className="block px-3 py-2 text-sm text-gray-300 hover:text-red-400 hover:bg-gray-700 rounded-md transition-colors duration-200"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      onClick={handleMobileLinkClick}
                     >
                       {solution}
                     </Link>
@@ -551,7 +569,7 @@ export default function Navbar() {
               className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
                 isActiveLink('/support') ? 'text-red-500 bg-gray-700' : ''
               }`}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={handleMobileLinkClick}
             >
               Support
             </Link>
@@ -560,7 +578,7 @@ export default function Navbar() {
               className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
                 isActiveLink('/about') ? 'text-red-500 bg-gray-700' : ''
               }`}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={handleMobileLinkClick}
             >
               About
             </Link>
@@ -569,9 +587,18 @@ export default function Navbar() {
               className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
                 isActiveLink('/contact') ? 'text-red-500 bg-gray-700' : ''
               }`}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={handleMobileLinkClick}
             >
               Contact Us
+            </Link>
+            <Link 
+              href="/partners" 
+              className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
+                isActiveLink('/partners') ? 'text-red-500 bg-gray-700' : ''
+              }`}
+              onClick={handleMobileLinkClick}
+            >
+              Partners
             </Link>
 
             {/* Sign In/Profile Section */}
@@ -581,7 +608,7 @@ export default function Navbar() {
                 className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
                   isActiveLink('/signin') ? 'text-red-500 bg-gray-700' : ''
                 }`}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={handleMobileLinkClick}
               >
                 Sign In
               </Link>
@@ -592,14 +619,14 @@ export default function Navbar() {
                   className={`block px-3 py-2 text-gray-200 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300 ${
                     isActiveLink('/profile') ? 'text-red-500 bg-gray-700' : ''
                   }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={handleMobileLinkClick}
                 >
                   Profile
                 </Link>
                 <button
                   onClick={() => {
                     handleLogout()
-                    setIsMobileMenuOpen(false)
+                    resetMobileMenu()
                   }}
                   className="w-full text-left px-3 py-2 text-red-400 hover:text-red-500 hover:bg-gray-700 rounded-md font-medium transition-colors duration-300"
                 >

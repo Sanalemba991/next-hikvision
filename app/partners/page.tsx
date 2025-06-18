@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiSearch, FiChevronDown, FiMail, FiPhone, FiMapPin, FiExternalLink, FiUsers, FiGlobe, FiAward, FiTrendingUp } from "react-icons/fi";
 
@@ -150,6 +150,17 @@ export default function PartnersPage() {
   const [selectedRegion, setSelectedRegion] = useState("All Regions");
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
   const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const getCurrentPartners = () => {
     switch (activeTab) {
@@ -247,7 +258,14 @@ export default function PartnersPage() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      style={{ fontFamily: "Inter, -apple-system, sans-serif", background: "#fafafa", color: "#1f2937", minHeight: "100vh" }}
+      style={{ 
+        fontFamily: "Inter, -apple-system, sans-serif", 
+        background: "#fafafa", 
+        color: "#1f2937", 
+        minHeight: "100vh",
+        overflowX: "hidden",
+        width: "100%"
+      }}
     >
       {/* Hero Banner Section with Hikvision Banner Image */}
       <motion.section
@@ -256,12 +274,13 @@ export default function PartnersPage() {
         transition={{ duration: 1.5, ease: "easeOut" }}
         style={{
           position: "relative",
-          height: "70vh",
-          minHeight: "500px",
+          height: isMobile ? "60vh" : "70vh",
+          minHeight: isMobile ? "300px" : "400px",
           overflow: "hidden",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
+          width: "100%"
         }}
       >
         {/* Background Banner Image */}
@@ -358,8 +377,8 @@ export default function PartnersPage() {
           zIndex: 5,
           textAlign: "center",
           color: "#ffffff",
-          maxWidth: "800px",
-          padding: "0 2rem"
+          maxWidth: "90%",
+          padding: "0 1rem"
         }}>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -374,7 +393,7 @@ export default function PartnersPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
               style={{
-                fontSize: "4rem",
+                fontSize: "clamp(2.5rem, 8vw, 4rem)",
                 fontWeight: "800",
                 marginBottom: "1rem",
                 textShadow: "0 4px 20px rgba(0,0,0,0.5)",
@@ -393,7 +412,7 @@ export default function PartnersPage() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
             style={{
-              fontSize: "1.25rem",
+              fontSize: "clamp(1rem, 3vw, 1.25rem)",
               marginBottom: "2rem",
               opacity: 0.95,
               maxWidth: "600px",
@@ -411,7 +430,7 @@ export default function PartnersPage() {
             transition={{ duration: 1.5, ease: "easeOut", delay: 1.1 }}
             style={{
               display: "flex",
-              gap: "1rem",
+              gap: "0.5rem",
               justifyContent: "center",
               flexWrap: "wrap"
             }}
@@ -420,11 +439,11 @@ export default function PartnersPage() {
               whileHover={{ scale: 1.05, y: -2 }}
               transition={{ duration: 0.3 }}
               style={{
-                padding: "0.75rem 2rem",
+                padding: "clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 4vw, 2rem)",
                 background: "rgba(220, 38, 38, 0.9)",
                 color: "#ffffff",
                 borderRadius: "50px",
-                fontSize: "1rem",
+                fontSize: "clamp(0.8rem, 2.5vw, 1rem)",
                 fontWeight: "600",
                 backdropFilter: "blur(10px)",
                 border: "1px solid rgba(255,255,255,0.2)",
@@ -437,11 +456,11 @@ export default function PartnersPage() {
               whileHover={{ scale: 1.05, y: -2 }}
               transition={{ duration: 0.3 }}
               style={{
-                padding: "0.75rem 2rem",
+                padding: "clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 4vw, 2rem)",
                 background: "rgba(255, 255, 255, 0.15)",
                 color: "#ffffff",
                 borderRadius: "50px",
-                fontSize: "1rem",
+                fontSize: "clamp(0.8rem, 2.5vw, 1rem)",
                 fontWeight: "600",
                 backdropFilter: "blur(10px)",
                 border: "1px solid rgba(255,255,255,0.3)",
@@ -481,19 +500,22 @@ export default function PartnersPage() {
         variants={itemVariants}
         style={{
           background: "#fafafa",
-          padding: "2rem 2rem 2rem 2rem",
-          borderBottom: "1px solid #e5e7eb"
+          padding: "2rem 1rem",
+          borderBottom: "1px solid #e5e7eb",
+          width: "100%",
+          overflowX: "hidden"
         }}
       >
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%" }}>
           {/* Tab Navigation */}
           <motion.div
             variants={itemVariants}
             style={{
               display: "flex",
-              gap: "2rem",
+              gap: "clamp(1rem, 4vw, 2rem)",
               justifyContent: "center",
-              borderBottom: "1px solid #e5e7eb"
+              borderBottom: "1px solid #e5e7eb",
+              flexWrap: "wrap"
             }}
           >
             {partnerTabs.map((tab) => (
@@ -503,15 +525,16 @@ export default function PartnersPage() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab(tab.id)}
                 style={{
-                  padding: "1rem 2rem",
+                  padding: "clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem)",
                   background: "transparent",
                   border: "none",
-                  fontSize: "1rem",
+                  fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
                   fontWeight: "600",
                   color: activeTab === tab.id ? "#dc2626" : "#6b7280",
                   cursor: "pointer",
                   borderBottom: activeTab === tab.id ? "3px solid #dc2626" : "3px solid transparent",
-                  transition: "all 0.2s ease"
+                  transition: "all 0.2s ease",
+                  whiteSpace: "nowrap"
                 }}
               >
                 {tab.label}
@@ -527,7 +550,13 @@ export default function PartnersPage() {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}
+        style={{ 
+          maxWidth: 1200, 
+          margin: "0 auto", 
+          padding: "0 1rem",
+          width: "100%",
+          overflowX: "hidden"
+        }}
       >
         {/* Channel Program Tab */}
         {activeTab === "channel" && (
@@ -536,22 +565,33 @@ export default function PartnersPage() {
             style={{
               background: "#ffffff",
               margin: "1rem 0",
-              padding: "4rem 3rem",
+              padding: "clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem)",
               borderRadius: "12px",
               boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-              border: "1px solid #f1f5f9"
+              border: "1px solid #f1f5f9",
+              width: "100%",
+              overflowX: "hidden"
             }}
           >
-            <div style={{ display: "flex", gap: "4rem", alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ 
+              display: "flex", 
+              gap: "clamp(2rem, 5vw, 4rem)", 
+              alignItems: "flex-start", 
+              flexDirection: isMobile ? "column" : "row",
+              width: "100%"
+            }}>
               {/* Left side - Description */}
               <motion.div 
                 variants={slideInLeft}
-                style={{ flex: "1", minWidth: "350px" }}
+                style={{ 
+                  flex: isMobile ? "1" : "1 1 55%",
+                  width: "100%"
+                }}
               >
                 <motion.h2
                   variants={itemVariants}
                   style={{
-                    fontSize: "2.5rem",
+                    fontSize: "clamp(1.8rem, 5vw, 2.5rem)",
                     fontWeight: "800",
                     color: "#1f2937",
                     marginBottom: "2rem",
@@ -564,7 +604,7 @@ export default function PartnersPage() {
                 <motion.p
                   variants={itemVariants}
                   style={{
-                    fontSize: "1.1rem",
+                    fontSize: "clamp(1rem, 2.5vw, 1.1rem)",
                     color: "#6b7280",
                     marginBottom: "2.5rem",
                     lineHeight: 1.7
@@ -580,7 +620,7 @@ export default function PartnersPage() {
                   <motion.h3
                     variants={itemVariants}
                     style={{
-                      fontSize: "1.3rem",
+                      fontSize: "clamp(1.1rem, 3vw, 1.3rem)",
                       fontWeight: "700",
                       color: "#1f2937",
                       marginBottom: "1.5rem"
@@ -590,20 +630,44 @@ export default function PartnersPage() {
                   </motion.h3>
                   
                   <motion.ul
-                    variants={containerVariants}
+                    variants={{
+                      hidden: { opacity: 0 },
+                      visible: {
+                        opacity: 1,
+                        transition: {
+                          staggerChildren: 0.15,
+                          delayChildren: 0.2
+                        }
+                      }
+                    }}
+                    initial="hidden"
+                    animate="visible"
                     style={{ listStyle: "none", padding: 0 }}
                   >
                     {channelPartnerBenefits.map((benefit, idx) => (
                       <motion.li
                         key={idx}
-                        variants={itemVariants}
+                        variants={{
+                          hidden: { 
+                            opacity: 0, 
+                            x: -20
+                          },
+                          visible: {
+                            opacity: 1,
+                            x: 0,
+                            transition: {
+                              duration: 0.6,
+                              ease: [0.22, 1, 0.36, 1]
+                            }
+                          }
+                        }}
                         whileHover={{ scale: 1.02, x: 10 }}
                         style={{
                           display: "flex",
                           alignItems: "center",
                           gap: "1rem",
                           marginBottom: "1rem",
-                          fontSize: "1rem",
+                          fontSize: "clamp(0.9rem, 2.2vw, 1rem)",
                           color: "#374151",
                           padding: "0.75rem",
                           borderRadius: "8px",
@@ -633,12 +697,12 @@ export default function PartnersPage() {
                     whileTap={{ scale: 0.95 }}
                     onClick={handleContactUs}
                     style={{
-                      padding: "1rem 2rem",
+                      padding: "clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem)",
                       background: "#dc2626",
                       color: "#ffffff",
                       border: "none",
                       borderRadius: "8px",
-                      fontSize: "1rem",
+                      fontSize: "clamp(0.9rem, 2.2vw, 1rem)",
                       fontWeight: "600",
                       cursor: "pointer",
                       transition: "all 0.3s ease"
@@ -652,7 +716,11 @@ export default function PartnersPage() {
               {/* Right side - Channel Program Visual */}
               <motion.div 
                 variants={slideInRight}
-                style={{ flex: "0 0 450px", minWidth: "350px" }}
+                style={{ 
+                  flex: isMobile ? "1" : "1 1 45%",
+                  width: "100%",
+                  maxWidth: "100%"
+                }}
               >
                 <motion.div
                   variants={cardVariants}
@@ -661,7 +729,9 @@ export default function PartnersPage() {
                     position: "relative",
                     borderRadius: "16px",
                     overflow: "hidden",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.12)"
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+                    width: "100%",
+                    marginBottom: "1.5rem"
                   }}
                 >
                   <img
@@ -669,8 +739,9 @@ export default function PartnersPage() {
                     alt="Channel Partner Program"
                     style={{
                       width: "100%",
-                      height: "320px",
-                      objectFit: "cover"
+                      height: isMobile ? "clamp(250px, 50vw, 300px)" : "clamp(300px, 25vw, 400px)",
+                      objectFit: "cover",
+                      display: "block"
                     }}
                   />
                   <motion.div
@@ -681,14 +752,22 @@ export default function PartnersPage() {
                       right: 0,
                       background: "linear-gradient(transparent, rgba(0,0,0,0.8))",
                       color: "#ffffff",
-                      padding: "2rem",
+                      padding: "clamp(1.5rem, 3vw, 2.5rem)",
                       textAlign: "center"
                     }}
                   >
-                    <h4 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "0.5rem" }}>
+                    <h4 style={{ 
+                      fontSize: "clamp(1.1rem, 2.8vw, 1.4rem)", 
+                      fontWeight: "700", 
+                      marginBottom: "0.75rem" 
+                    }}>
                       Global Partner Network
                     </h4>
-                    <p style={{ fontSize: "0.9rem", opacity: 0.9 }}>
+                    <p style={{ 
+                      fontSize: "clamp(0.9rem, 2.2vw, 1rem)", 
+                      opacity: 0.9,
+                      lineHeight: 1.4
+                    }}>
                       Join thousands of certified partners worldwide
                     </p>
                   </motion.div>
@@ -700,14 +779,23 @@ export default function PartnersPage() {
                   style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "1rem",
-                    marginTop: "1.5rem"
+                    gap: "clamp(0.75rem, 2vw, 1.25rem)",
+                    width: "100%"
                   }}
                 >
                   {[
-                    { number: "10,000+", label: "Partners" },
-                    { number: "150+", label: "Countries" },
-                    { number: "24/7", label: "Support" }
+                    {
+                      number: "10,000+",
+                      label: "Partners"
+                    },
+                    {
+                      number: "150+",
+                      label: "Countries"
+                    },
+                    {
+                      number: "24/7",
+                      label: "Support"
+                    }
                   ].map((stat, idx) => (
                     <motion.div
                       key={idx}
@@ -715,16 +803,26 @@ export default function PartnersPage() {
                       whileHover={{ scale: 1.05 }}
                       style={{
                         textAlign: "center",
-                        padding: "1rem",
+                        padding: "clamp(1rem, 2.5vw, 1.5rem)",
                         background: "#f8f9fa",
-                        borderRadius: "8px",
-                        border: "1px solid #f1f5f9"
+                        borderRadius: "12px",
+                        border: "1px solid #f1f5f9",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
                       }}
                     >
-                      <div style={{ fontSize: "1.5rem", fontWeight: "800", color: "#dc2626" }}>
+                      <div style={{ 
+                        fontSize: "clamp(1.4rem, 3.5vw, 1.8rem)", 
+                        fontWeight: "800", 
+                        color: "#dc2626",
+                        marginBottom: "0.25rem"
+                      }}>
                         {stat.number}
                       </div>
-                      <div style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+                      <div style={{ 
+                        fontSize: "clamp(0.85rem, 2.2vw, 0.95rem)", 
+                        color: "#6b7280",
+                        fontWeight: "600"
+                      }}>
                         {stat.label}
                       </div>
                     </motion.div>
@@ -742,22 +840,33 @@ export default function PartnersPage() {
             style={{
               background: "#ffffff",
               margin: "1rem 0",
-              padding: "4rem 3rem",
+              padding: "clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem)",
               borderRadius: "12px",
               boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-              border: "1px solid #f1f5f9"
+              border: "1px solid #f1f5f9",
+              width: "100%",
+              overflowX: "hidden"
             }}
           >
-            <div style={{ display: "flex", gap: "4rem", alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ 
+              display: "flex", 
+              gap: "clamp(2rem, 5vw, 4rem)", 
+              alignItems: "flex-start", 
+              flexDirection: isMobile ? "column" : "row",
+              width: "100%"
+            }}>
               {/* Left side - Description */}
               <motion.div 
                 variants={slideInLeft}
-                style={{ flex: "1", minWidth: "350px" }}
+                style={{ 
+                  flex: isMobile ? "1" : "1 1 55%",
+                  width: "100%"
+                }}
               >
                 <motion.h2
                   variants={itemVariants}
                   style={{
-                    fontSize: "2.5rem",
+                    fontSize: "clamp(1.8rem, 5vw, 2.5rem)",
                     fontWeight: "800",
                     color: "#1f2937",
                     marginBottom: "2rem",
@@ -770,7 +879,7 @@ export default function PartnersPage() {
                 <motion.p
                   variants={itemVariants}
                   style={{
-                    fontSize: "1.1rem",
+                    fontSize: "clamp(1rem, 2.5vw, 1.1rem)",
                     color: "#6b7280",
                     marginBottom: "2.5rem",
                     lineHeight: 1.7
@@ -786,7 +895,7 @@ export default function PartnersPage() {
                   <motion.h3
                     variants={itemVariants}
                     style={{
-                      fontSize: "1.3rem",
+                      fontSize: "clamp(1.1rem, 3vw, 1.3rem)",
                       fontWeight: "700",
                       color: "#1f2937",
                       marginBottom: "1.5rem"
@@ -796,20 +905,44 @@ export default function PartnersPage() {
                   </motion.h3>
                   
                   <motion.ul
-                    variants={containerVariants}
+                    variants={{
+                      hidden: { opacity: 0 },
+                      visible: {
+                        opacity: 1,
+                        transition: {
+                          staggerChildren: 0.15,
+                          delayChildren: 0.2
+                        }
+                      }
+                    }}
+                    initial="hidden"
+                    animate="visible"
                     style={{ listStyle: "none", padding: 0 }}
                   >
                     {technologyPartnerBenefits.map((benefit, idx) => (
                       <motion.li
                         key={idx}
-                        variants={itemVariants}
+                        variants={{
+                          hidden: { 
+                            opacity: 0, 
+                            x: -20
+                          },
+                          visible: {
+                            opacity: 1,
+                            x: 0,
+                            transition: {
+                              duration: 0.6,
+                              ease: [0.22, 1, 0.36, 1]
+                            }
+                          }
+                        }}
                         whileHover={{ scale: 1.02, x: 10 }}
                         style={{
                           display: "flex",
                           alignItems: "center",
                           gap: "1rem",
                           marginBottom: "1rem",
-                          fontSize: "1rem",
+                          fontSize: "clamp(0.9rem, 2.2vw, 1rem)",
                           color: "#374151",
                           padding: "0.75rem",
                           borderRadius: "8px",
@@ -833,7 +966,7 @@ export default function PartnersPage() {
                 <motion.p
                   variants={itemVariants}
                   style={{
-                    fontSize: "1rem",
+                    fontSize: "clamp(0.9rem, 2.2vw, 1rem)",
                     color: "#6b7280",
                     lineHeight: 1.6,
                     marginBottom: "2rem"
@@ -851,12 +984,12 @@ export default function PartnersPage() {
                     whileTap={{ scale: 0.95 }}
                     onClick={handleContactUs}
                     style={{
-                      padding: "1rem 2rem",
+                      padding: "clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem)",
                       background: "#dc2626",
                       color: "#ffffff",
                       border: "none",
                       borderRadius: "8px",
-                      fontSize: "1rem",
+                      fontSize: "clamp(0.9rem, 2.2vw, 1rem)",
                       fontWeight: "600",
                       cursor: "pointer",
                       transition: "all 0.3s ease"
@@ -870,7 +1003,11 @@ export default function PartnersPage() {
               {/* Right side - Technology Program Visual */}
               <motion.div 
                 variants={slideInRight}
-                style={{ flex: "0 0 450px", minWidth: "350px" }}
+                style={{ 
+                  flex: isMobile ? "1" : "1 1 45%",
+                  width: "100%",
+                  maxWidth: "100%"
+                }}
               >
                 <motion.div
                   variants={cardVariants}
@@ -879,7 +1016,9 @@ export default function PartnersPage() {
                     position: "relative",
                     borderRadius: "16px",
                     overflow: "hidden",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.12)"
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+                    width: "100%",
+                    marginBottom: "1.5rem"
                   }}
                 >
                   <img
@@ -887,8 +1026,9 @@ export default function PartnersPage() {
                     alt="Technology Partner Program"
                     style={{
                       width: "100%",
-                      height: "320px",
-                      objectFit: "cover"
+                      height: isMobile ? "clamp(250px, 50vw, 300px)" : "clamp(300px, 25vw, 400px)",
+                      objectFit: "cover",
+                      display: "block"
                     }}
                   />
                   <motion.div
@@ -899,33 +1039,49 @@ export default function PartnersPage() {
                       right: 0,
                       background: "linear-gradient(transparent, rgba(0,0,0,0.8))",
                       color: "#ffffff",
-                      padding: "2rem",
+                      padding: "clamp(1.5rem, 3vw, 2.5rem)",
                       textAlign: "center"
                     }}
                   >
-                    <h4 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "0.5rem" }}>
+                    <h4 style={{ 
+                      fontSize: "clamp(1.1rem, 2.8vw, 1.4rem)", 
+                      fontWeight: "700", 
+                      marginBottom: "0.75rem" 
+                    }}>
                       Innovation Ecosystem
                     </h4>
-                    <p style={{ fontSize: "0.9rem", opacity: 0.9 }}>
+                    <p style={{ 
+                      fontSize: "clamp(0.9rem, 2.2vw, 1rem)", 
+                      opacity: 0.9,
+                      lineHeight: 1.4
+                    }}>
                       Cutting-edge technology integration platform
                     </p>
                   </motion.div>
                 </motion.div>
-
                 {/* Technology Stats */}
                 <motion.div
                   variants={containerVariants}
                   style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "1rem",
-                    marginTop: "1.5rem"
+                    gap: "clamp(0.75rem, 2vw, 1.25rem)",
+                    width: "100%"
                   }}
                 >
                   {[
-                    { number: "500+", label: "Tech Partners" },
-                    { number: "50+", label: "Integrations" },
-                    { number: "99.9%", label: "Uptime" }
+                    {
+                      number: "500+",
+                      label: "Tech Partners"
+                    },
+                    {
+                      number: "50+",
+                      label: "Integrations"
+                    },
+                    {
+                      number: "99.9%",
+                      label: "Uptime"
+                    }
                   ].map((stat, idx) => (
                     <motion.div
                       key={idx}
@@ -933,16 +1089,26 @@ export default function PartnersPage() {
                       whileHover={{ scale: 1.05 }}
                       style={{
                         textAlign: "center",
-                        padding: "1rem",
+                        padding: "clamp(1rem, 2.5vw, 1.5rem)",
                         background: "#f8f9fa",
-                        borderRadius: "8px",
-                        border: "1px solid #f1f5f9"
+                        borderRadius: "12px",
+                        border: "1px solid #f1f5f9",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
                       }}
                     >
-                      <div style={{ fontSize: "1.5rem", fontWeight: "800", color: "#dc2626" }}>
+                      <div style={{ 
+                        fontSize: "clamp(1.4rem, 3.5vw, 1.8rem)", 
+                        fontWeight: "800", 
+                        color: "#dc2626",
+                        marginBottom: "0.25rem"
+                      }}>
                         {stat.number}
                       </div>
-                      <div style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+                      <div style={{ 
+                        fontSize: "clamp(0.85rem, 2.2vw, 0.95rem)", 
+                        color: "#6b7280",
+                        fontWeight: "600"
+                      }}>
                         {stat.label}
                       </div>
                     </motion.div>
