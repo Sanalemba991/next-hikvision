@@ -5,6 +5,20 @@ import { useSession, signOut } from 'next-auth/react'
 import { FiUser, FiLock, FiLogOut, FiChevronRight, FiX, FiHome, FiShoppingBag, FiSettings } from 'react-icons/fi'
 import { usePathname } from 'next/navigation'
 
+// Custom Support Icon
+const SupportIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  </svg>
+);
+
+// Custom Contact Icon
+const ContactIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+);
+
 // Simple icons
 const ChevronDownIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,9 +39,8 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [showProductsSubmenu, setShowProductsSubmenu] = useState(false)
-  const [showSolutionsSubmenu, setShowSolutionsSubmenu] = useState(false)
-  const [showMainMobileMenu, setShowMainMobileMenu] = useState(true)
+  const [mobileView, setMobileView] = useState<'main' | 'products' | 'solutions'>('main');
+  const [showMobileItems, setShowMobileItems] = useState(false);
   
   // Dynamic categories from API
   const [categories, setCategories] = useState<string[]>([])
@@ -36,6 +49,15 @@ export default function Navbar() {
   const [loadingSubCategories, setLoadingSubCategories] = useState(false)
   
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Main nav items for mobile menu
+  const mainNavItems = [
+    { href: '/', icon: FiHome, name: 'Home' },
+    { href: '/about', icon: FiUser, name: 'About Us' },
+    { href: '/support', icon: SupportIcon, name: 'Support' },
+    { href: '/contact', icon: ContactIcon, name: 'Contact Us' },
+    { href: '/partners', icon: FiSettings, name: 'Partners' },
+  ];
 
   // Solutions data
   const solutionsData = [
@@ -57,12 +79,24 @@ export default function Navbar() {
     resetMobileMenu()
   }, [pathname])
 
+  // Handle mobile menu animation trigger - only for initial opening
+  useEffect(() => {
+    if (isMobileMenuOpen && mobileView === 'main') {
+      // Small delay before starting animations for initial opening only
+      const timer = setTimeout(() => {
+        setShowMobileItems(true);
+      }, 200);
+      return () => clearTimeout(timer);
+    } else {
+      setShowMobileItems(false);
+    }
+  }, [isMobileMenuOpen, mobileView]);
+
   // Function to reset mobile menu state
   const resetMobileMenu = () => {
     setIsMobileMenuOpen(false)
-    setShowProductsSubmenu(false)
-    setShowSolutionsSubmenu(false)
-    setShowMainMobileMenu(true)
+    setMobileView('main');
+    setShowMobileItems(false);
   }
 
   // Fetch categories from API
@@ -104,23 +138,21 @@ export default function Navbar() {
 
   // Handle mobile products menu
   const handleShowProductsMenu = () => {
-    setShowMainMobileMenu(false)
-    setShowProductsSubmenu(true)
-    setShowSolutionsSubmenu(false)
+    setMobileView('products');
+    setShowMobileItems(false);
   }
 
   // Handle mobile solutions menu
   const handleShowSolutionsMenu = () => {
-    setShowMainMobileMenu(false)
-    setShowSolutionsSubmenu(true)
-    setShowProductsSubmenu(false)
+    setMobileView('solutions');
+    setShowMobileItems(false);
   }
 
-  // Handle back to main menu
+  // Handle back to main menu - smooth transition
   const handleBackToMainMenu = () => {
-    setShowMainMobileMenu(true)
-    setShowProductsSubmenu(false)
-    setShowSolutionsSubmenu(false)
+    setMobileView('main');
+    // Immediate show for smooth transition
+    setShowMobileItems(true);
   }
 
   // Desktop handlers with enhanced animations
@@ -186,7 +218,8 @@ export default function Navbar() {
   }
 
   const isActiveLink = (href: string) => {
-    return pathname === href || pathname.startsWith(href + '/')
+    if (href === '/') return pathname === href;
+    return pathname.startsWith(href)
   }
 
   const handleMobileLinkClick = () => {
@@ -203,9 +236,6 @@ export default function Navbar() {
       } ${className}`}
     >
       {children}
-      {isActiveLink(href) && (
-        <span className="absolute bottom-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-      )}
     </Link>
   )
 
@@ -247,9 +277,6 @@ export default function Navbar() {
                       activeDropdown === 'products' ? 'rotate-180' : ''
                     }`}
                   />
-                  {isActiveLink('/products') && (
-                    <span className="absolute bottom-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                  )}
                 </Link>
 
                 {/* Enhanced Desktop Mega Menu */}
@@ -271,7 +298,7 @@ export default function Navbar() {
                             categories.map((category, index) => (
                               <li
                                 key={category}
-                                className={`relative py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-300 animate-fadeIn ${
+                                className={`relative py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-300 ${
                                   activeSubmenu === category 
                                     ? 'bg-gray-800 text-red-500' 
                                     : 'text-gray-200 hover:text-red-500 hover:bg-gray-800'
@@ -286,9 +313,6 @@ export default function Navbar() {
                                 >
                                   {category}
                                 </Link>
-                                {activeSubmenu === category && (
-                                  <span className="absolute top-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                                )}
                               </li>
                             ))
                           )}
@@ -317,7 +341,7 @@ export default function Navbar() {
                                 <Link
                                   key={idx}
                                   href={`/products?category=${encodeURIComponent(activeSubmenu)}&subCategory=${encodeURIComponent(subCategory)}`}
-                                  className="block text-sm text-gray-300 hover:text-red-400 hover:bg-gray-800 px-3 py-2 rounded transition-all duration-300 border border-transparent hover:border-gray-600 transform hover:scale-105 animate-fadeIn"
+                                  className="block text-sm text-gray-300 hover:text-red-400 hover:bg-gray-800 px-3 py-2 rounded transition-all duration-300 border border-transparent hover:border-gray-600 transform hover:scale-105"
                                   style={{ animationDelay: `${idx * 30}ms` }}
                                   onClick={() => handleSubCategoryClick(activeSubmenu || '', subCategory)}
                                 >
@@ -361,9 +385,6 @@ export default function Navbar() {
                       activeDropdown === 'solutions' ? 'rotate-180' : ''
                     }`}
                   />
-                  {(isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`))) && (
-                    <span className="absolute bottom-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                  )}
                 </Link>
 
                 {/* Enhanced Desktop Solutions Menu */}
@@ -382,7 +403,7 @@ export default function Navbar() {
                           {solutionsData.map((solution, index) => (
                             <li
                               key={solution}
-                              className="py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-300 text-gray-200 hover:text-red-500 hover:bg-gray-800 transform hover:scale-105 animate-fadeIn"
+                              className="py-2 px-4 rounded cursor-pointer font-semibold transition-all duration-300 text-gray-200 hover:text-red-500 hover:bg-gray-800 transform hover:scale-105"
                               style={{ animationDelay: `${index * 50}ms` }}
                             >
                               <Link
@@ -414,11 +435,11 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* Other Menu Items */}
+              {/* Reordered Menu Items - Support, Partners, About Us (second last), Contact Us (last) */}
               <NavLink href="/support">Support</NavLink>
+              <NavLink href="/partners">Partners</NavLink>
               <NavLink href="/about">About Us</NavLink>
               <NavLink href="/contact">Contact Us</NavLink>
-              <NavLink href="/partners">Partners</NavLink>
             </div>
 
             {/* Right side */}
@@ -508,17 +529,17 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Enhanced Mobile Menu with Navbar Color Scheme */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 transition-all duration-300">
+      {/* Enhanced Mobile Menu with Optimized Transitions */}
+      {isClient && (
+        <div className={`lg:hidden fixed inset-0 z-40 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
           {/* Backdrop */}
           <div 
-            className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
+            className="absolute inset-0 bg-black bg-opacity-50"
             onClick={() => setIsMobileMenuOpen(false)}
           />
           
-          {/* Sidebar with Navbar Color Scheme */}
-          <div className={`absolute left-0 top-0 h-full w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-all duration-500 ease-out ${
+          {/* Sidebar */}
+          <div className={`absolute left-0 top-0 h-full w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-transform duration-300 ease-in-out ${
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}>
             {/* Header */}
@@ -534,185 +555,107 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Menu Content with Staggered Animations */}
-            <div className="h-full overflow-y-auto pb-20">
-              
-              {/* Main Menu */}
-              {showMainMobileMenu && (
-                <div className="p-4 space-y-2">
-                  <div className="flex items-center text-gray-400 text-sm mb-4 animate-fadeIn">
+            {/* Menu Content Container with Sliding Panels */}
+            <div className="h-full relative overflow-x-hidden">
+              <div className="absolute inset-0 overflow-y-auto pb-24">
+                
+                {/* Main Menu Panel with Optimized Animations */}
+                <div className={`absolute inset-0 p-4 space-y-1 transition-transform duration-300 ease-in-out ${mobileView === 'main' ? 'translate-x-0' : '-translate-x-full'}`}>
+                  <div className={`flex items-center text-gray-400 text-sm mb-4 px-3 transition-all duration-700 ease-out ${showMobileItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '100ms' }}>
                     <span>Main Menu</span>
                   </div>
+                  
+                  {/* Mapped Nav Links with Smooth Animations */}
+                  {mainNavItems.map((item, index) => (
+                    <Link 
+                      key={item.href}
+                      href={item.href} 
+                      className={`flex items-center px-3 py-3 rounded-lg transition-all duration-700 ease-out text-gray-200 hover:bg-gray-800 hover:text-red-500 ${showMobileItems ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
+                      style={{ transitionDelay: `${300 + index * 150}ms` }}
+                      onClick={handleMobileLinkClick}
+                    >
+                      <item.icon className={`w-5 h-5 mr-4 transition-colors duration-300 ${isActiveLink(item.href) ? 'text-red-500' : ''}`} />
+                      <span>{item.name}</span>
+                    </Link>
+                  ))}
 
-                  <Link
-                    href="/"
-                    className={`relative flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn ${
-                      isActiveLink('/') ? 'bg-gray-800 text-red-500' : ''
-                    }`}
-                    style={{ animationDelay: '100ms' }}
-                    onClick={handleMobileLinkClick}
+                  {/* Products Button */}
+                  <button 
+                    onClick={handleShowProductsMenu} 
+                    className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-700 ease-out text-gray-200 hover:bg-gray-800 hover:text-red-500 ${showMobileItems ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
+                    style={{ transitionDelay: `${300 + mainNavItems.length * 150}ms` }}
                   >
-                    <FiHome className="h-5 w-5 mr-3" />
-                    <span>Home</span>
-                    {isActiveLink('/') && (
-                      <span className="absolute top-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                    )}
-                  </Link>
-
-                  <Link
-                    href="/about"
-                    className={`relative flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn ${
-                      isActiveLink('/about') ? 'bg-gray-800 text-red-500' : ''
-                    }`}
-                    style={{ animationDelay: '150ms' }}
-                    onClick={handleMobileLinkClick}
-                  >
-                    <FiUser className="h-5 w-5 mr-3" />
-                    <span>About</span>
-                    {isActiveLink('/about') && (
-                      <span className="absolute top-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                    )}
-                  </Link>
-
-                  <button
-                    onClick={handleShowProductsMenu}
-                    className={`relative w-full flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn ${
-                      isActiveLink('/products') ? 'bg-gray-800 text-red-500' : ''
-                    }`}
-                    style={{ animationDelay: '200ms' }}
-                  >
-                    <FiShoppingBag className="h-5 w-5 mr-3" />
+                    <FiShoppingBag className={`w-5 h-5 mr-4 transition-colors duration-300 ${isActiveLink('/products') ? 'text-red-500' : ''}`} />
                     <span>Products</span>
                     <FiChevronRight className="ml-auto h-4 w-4" />
-                    {isActiveLink('/products') && (
-                      <span className="absolute top-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                    )}
                   </button>
 
-                  <button
-                    onClick={handleShowSolutionsMenu}
-                    className={`relative w-full flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn ${
-                      isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`)) ? 'bg-gray-800 text-red-500' : ''
-                    }`}
-                    style={{ animationDelay: '250ms' }}
+                  {/* Solutions Button */}
+                  <button 
+                    onClick={handleShowSolutionsMenu} 
+                    className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-700 ease-out text-gray-200 hover:bg-gray-800 hover:text-red-500 ${showMobileItems ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
+                    style={{ transitionDelay: `${300 + (mainNavItems.length + 1) * 150}ms` }}
                   >
-                    <FiSettings className="h-5 w-5 mr-3" />
+                    <FiSettings className={`w-5 h-5 mr-4 transition-colors duration-300 ${(isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`))) ? 'text-red-500' : ''}`} />
                     <span>Solutions</span>
                     <FiChevronRight className="ml-auto h-4 w-4" />
-                    {(isActiveLink('/solutions') || solutionsData.some(solution => isActiveLink(`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`))) && (
-                      <span className="absolute top-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                    )}
                   </button>
 
-                  <Link
-                    href="/support"
-                    className={`relative flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn ${
-                      isActiveLink('/support') ? 'bg-gray-800 text-red-500' : ''
-                    }`}
-                    style={{ animationDelay: '300ms' }}
-                    onClick={handleMobileLinkClick}
-                  >
-                    <svg className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    <span>Support</span>
-                    {isActiveLink('/support') && (
-                      <span className="absolute top-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                    )}
-                  </Link>
-
-                  <Link
-                    href="/contact"
-                    className={`relative flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn ${
-                      isActiveLink('/contact') ? 'bg-gray-800 text-red-500' : ''
-                    }`}
-                    style={{ animationDelay: '350ms' }}
-                    onClick={handleMobileLinkClick}
-                  >
-                    <svg className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    <span>Contact</span>
-                    {isActiveLink('/contact') && (
-                      <span className="absolute top-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                    )}
-                  </Link>
-
-                  {/* Sign In/Profile with Enhanced Animations */}
+                  {/* Auth Section */}
                   {!session ? (
                     <div className="pt-4 border-t border-gray-700 mt-4">
-                      <Link
-                        href="/signin"
-                        className={`relative flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn ${
-                          isActiveLink('/signin') ? 'bg-gray-800 text-red-500' : ''
-                        }`}
-                        style={{ animationDelay: '400ms' }}
+                      <Link 
+                        href="/signup" 
+                        className={`flex items-center px-3 py-3 rounded-lg transition-all duration-700 ease-out text-gray-200 hover:bg-gray-800 hover:text-red-500 ${showMobileItems ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
+                        style={{ transitionDelay: `${300 + (mainNavItems.length + 2) * 150}ms` }} 
                         onClick={handleMobileLinkClick}
                       >
-                        <FiUser className="h-5 w-5 mr-3" />
+                        <FiUser className={`w-5 h-5 mr-4 transition-colors duration-300 ${isActiveLink('/signup') ? 'text-red-500' : ''}`} />
                         <span>Sign In</span>
-                        {isActiveLink('/signin') && (
-                          <span className="absolute top-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                        )}
                       </Link>
                     </div>
                   ) : (
-                    <div className="pt-4 border-t border-gray-700 mt-4 space-y-2">
-                      <Link
-                        href="/profile"
-                        className={`relative flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn ${
-                          isActiveLink('/profile') ? 'bg-gray-800 text-red-500' : ''
-                        }`}
-                        style={{ animationDelay: '400ms' }}
+                    <div className="pt-4 border-t border-gray-700 mt-4 space-y-1">
+                      <Link 
+                        href="/profile" 
+                        className={`flex items-center px-3 py-3 rounded-lg transition-all duration-700 ease-out text-gray-200 hover:bg-gray-800 hover:text-red-500 ${showMobileItems ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
+                        style={{ transitionDelay: `${300 + (mainNavItems.length + 2) * 150}ms` }} 
                         onClick={handleMobileLinkClick}
                       >
-                        <FiUser className="h-5 w-5 mr-3" />
+                        <FiUser className={`w-5 h-5 mr-4 transition-colors duration-300 ${isActiveLink('/profile') ? 'text-red-500' : ''}`} />
                         <span>Profile</span>
-                        {isActiveLink('/profile') && (
-                          <span className="absolute top-0 right-0 w-1 h-full bg-red-500 transform origin-right animate-slideIn"></span>
-                        )}
                       </Link>
-                      <button
-                        onClick={() => {
-                          handleLogout()
-                          resetMobileMenu()
-                        }}
-                        className="w-full flex items-center px-3 py-3 text-red-400 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn"
-                        style={{ animationDelay: '450ms' }}
+                      <button 
+                        onClick={() => { handleLogout(); resetMobileMenu(); }} 
+                        className={`w-full flex items-center px-3 py-3 text-red-400 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-700 ease-out ${showMobileItems ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
+                        style={{ transitionDelay: `${300 + (mainNavItems.length + 3) * 150}ms` }}
                       >
-                        <FiLogOut className="h-5 w-5 mr-3" />
+                        <FiLogOut className="w-5 h-5 mr-4" />
                         <span>Sign Out</span>
                       </button>
                     </div>
                   )}
                 </div>
-              )}
 
-              {/* Products Submenu with Slide Animation */}
-              {showProductsSubmenu && (
-                <div className="p-4 space-y-2 animate-slideInLeft">
-                  <button
-                    onClick={handleBackToMainMenu}
-                    className="w-full flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 mb-4 animate-fadeIn"
-                  >
+                {/* Products Submenu Panel - Optimized Transition */}
+                <div className={`absolute inset-0 p-4 space-y-2 transition-transform duration-300 ease-in-out bg-gradient-to-b from-gray-900 via-gray-800 to-black ${mobileView === 'products' ? 'translate-x-0' : 'translate-x-full'}`}>
+                  <button onClick={handleBackToMainMenu} className="w-full flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 mb-4">
                     <svg className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                     <span>Back to Main Menu</span>
                   </button>
-
                   <div className="border-b border-gray-700 pb-2 mb-4">
-                    <h3 className="text-lg font-bold text-gray-200 animate-fadeIn">Product Categories</h3>
+                    <h3 className="text-lg font-bold text-gray-200">Product Categories</h3>
                   </div>
-
                   {loading ? (
-                    <div className="text-gray-400 px-3 py-2 animate-fadeIn">Loading categories...</div>
+                    <div className="text-gray-400 px-3 py-2">Loading...</div>
                   ) : (
                     categories.map((category, index) => (
-                      <Link
-                        key={category}
-                        href={`/products?category=${encodeURIComponent(category)}`}
-                        className="flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn"
+                      <Link 
+                        key={category} 
+                        href={`/products?category=${encodeURIComponent(category)}`} 
+                        className="flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 opacity-0 animate-fadeInUp" 
                         style={{ animationDelay: `${index * 50}ms` }}
                         onClick={handleMobileLinkClick}
                       >
@@ -723,40 +666,27 @@ export default function Navbar() {
                       </Link>
                     ))
                   )}
-
-                  <Link
-                    href="/products"
-                    className="flex items-center px-3 py-3 text-red-400 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 font-medium mt-4 animate-fadeIn"
-                    style={{ animationDelay: `${categories.length * 50 + 100}ms` }}
-                    onClick={handleMobileLinkClick}
-                  >
+                  <Link href="/products" className="flex items-center px-3 py-3 text-red-400 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 font-medium mt-4 opacity-0 animate-fadeInUp" style={{ animationDelay: `${categories.length * 50}ms` }} onClick={handleMobileLinkClick}>
                     <span>View All Products →</span>
                   </Link>
                 </div>
-              )}
 
-              {/* Solutions Submenu with Slide Animation */}
-              {showSolutionsSubmenu && (
-                <div className="p-4 space-y-2 animate-slideInLeft">
-                  <button
-                    onClick={handleBackToMainMenu}
-                    className="w-full flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 mb-4 animate-fadeIn"
-                  >
+                {/* Solutions Submenu Panel - Optimized Transition */}
+                <div className={`absolute inset-0 p-4 space-y-2 transition-transform duration-300 ease-in-out bg-gradient-to-b from-gray-900 via-gray-800 to-black ${mobileView === 'solutions' ? 'translate-x-0' : 'translate-x-full'}`}>
+                  <button onClick={handleBackToMainMenu} className="w-full flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 mb-4">
                     <svg className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                     <span>Back to Main Menu</span>
                   </button>
-
                   <div className="border-b border-gray-700 pb-2 mb-4">
-                    <h3 className="text-lg font-bold text-gray-200 animate-fadeIn">Industry Solutions</h3>
+                    <h3 className="text-lg font-bold text-gray-200">Industry Solutions</h3>
                   </div>
-
                   {solutionsData.map((solution, index) => (
-                    <Link
-                      key={solution}
-                      href={`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`}
-                      className="flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 animate-fadeIn"
+                    <Link 
+                      key={solution} 
+                      href={`/${solution.toLowerCase().replace(/\s+/g, '').replace('&', '')}`} 
+                      className="flex items-center px-3 py-3 text-gray-200 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 opacity-0 animate-fadeInUp" 
                       style={{ animationDelay: `${index * 50}ms` }}
                       onClick={handleMobileLinkClick}
                     >
@@ -764,17 +694,11 @@ export default function Navbar() {
                       <span>{solution}</span>
                     </Link>
                   ))}
-
-                  <Link
-                    href="/solutions"
-                    className="flex items-center px-3 py-3 text-red-400 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 font-medium mt-4 animate-fadeIn"
-                    style={{ animationDelay: `${solutionsData.length * 50 + 100}ms` }}
-                    onClick={handleMobileLinkClick}
-                  >
+                  <Link href="/solutions" className="flex items-center px-3 py-3 text-red-400 hover:bg-gray-800 hover:text-red-500 rounded-lg transition-all duration-300 font-medium mt-4 opacity-0 animate-fadeInUp" style={{ animationDelay: `${solutionsData.length * 50}ms` }} onClick={handleMobileLinkClick}>
                     <span>View All Solutions →</span>
                   </Link>
                 </div>
-              )}
+              </div>
 
               {/* Contact Info Footer */}
               <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-800 border-t border-gray-700">
@@ -809,45 +733,21 @@ export default function Navbar() {
             transform: translateY(0);
           }
         }
-        @keyframes slideIn {
-          from {
-            transform: scaleY(0);
-          }
-          to {
-            transform: scaleY(1);
-          }
-        }
-        @keyframes fadeIn {
+        @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(15px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-        @keyframes slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
         .animate-navbarFadeIn {
           animation: navbarFadeIn 0.8s cubic-bezier(0.4,0,0.2,1) both;
         }
-        .animate-slideIn {
-          animation: slideIn 0.3s ease-out both;
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out both;
-        }
-        .animate-slideInLeft {
-          animation: slideInLeft 0.4s ease-out both;
+        .animate-fadeInUp {
+          animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
         }
         body {
           overflow-x: hidden !important;
